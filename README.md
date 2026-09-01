@@ -26,8 +26,31 @@ python3 -m http.server 8123
 ## Домен и деплой
 
 Домен: **padacha.ru**. Сайт лежит на том же сервере, что и ganin-site
-(`a318f7177847.vps.myjino.ru`, nginx на хосте), в `/opt/padacha`.
-Раскатка — `git pull` в этой папке, сборки нет.
+(`a318f7177847.vps.myjino.ru`, порт ssh 49197), в `/opt/padacha`.
+Отдаётся статикой напрямую nginx хоста — конфиг
+`/etc/nginx/sites-available/padacha`. Сосед (ganin) работает через
+127.0.0.1:8001 и никак не задет.
+
+Обновить сайт:
+
+```bash
+ssh -p 49197 root@a318f7177847.vps.myjino.ru 'cd /opt/padacha && git pull'
+```
+
+Сборки нет, перезапускать nginx не нужно — html не кэшируется.
+
+### Что осталось до запуска
+
+1. Направить домен на сервер: A-запись `padacha.ru` и `www.padacha.ru`
+   → **217.107.34.211**.
+2. Когда домен начнёт резолвиться — выпустить сертификат:
+
+```bash
+certbot --nginx -d padacha.ru -d www.padacha.ru
+```
+
+Certbot 2.9 с плагином nginx на сервере уже стоит, автопродление
+работает (по нему живёт сертификат ganin).
 
 ## Правки
 
