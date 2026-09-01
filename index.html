@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>Подача</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* ── Tokens ──────────────────────────────────────────────────────────── */
+  :root {
+    --bg:        #14110D;
+    --bg-deep:   #0C0A07;
+    --surface:   #1E1A14;
+    --raised:    #29231A;
+    --line:      #362E22;
+    --ink:       #F6F0E4;
+    --ink-dim:   #A99C87;
+    --ink-faint: #6E6455;
+    --heat:      #FF7A18;
+    --heat-ink:  #17110A;
+    --heat-soft: #3A2210;
+    --ready:     #4FD290;
+    --ticket:    #F7F1E3;
+    --ticket-ink:#191410;
+    --lamp:      radial-gradient(120% 100% at 50% 0%, rgba(255,122,24,.30) 0%, rgba(255,122,24,.07) 45%, transparent 72%);
+    --shadow:    0 20px 50px rgba(0,0,0,.5);
+  }
+  :root[data-theme="light"] {
+    --bg:        #EFEBE2;
+    --bg-deep:   #E4DFD3;
+    --surface:   #F8F5EE;
+    --raised:    #FFFFFF;
+    --line:      #D6CFC0;
+    --ink:       #17130E;
+    --ink-dim:   #5E5648;
+    --ink-faint: #8B8271;
+    --heat:      #D2570A;
+    --heat-ink:  #FFF7F0;
+    --heat-soft: #FBE6D4;
+    --ready:     #167D4E;
+    --ticket:    #FFFCF4;
+    --ticket-ink:#191410;
+    --lamp:      radial-gradient(120% 100% at 50% 0%, rgba(210,87,10,.16) 0%, rgba(210,87,10,.04) 45%, transparent 72%);
+    --shadow:    0 18px 44px rgba(60,45,25,.14);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:        #EFEBE2;
+      --bg-deep:   #E4DFD3;
+      --surface:   #F8F5EE;
+      --raised:    #FFFFFF;
+      --line:      #D6CFC0;
+      --ink:       #17130E;
+      --ink-dim:   #5E5648;
+      --ink-faint: #8B8271;
+      --heat:      #D2570A;
+      --heat-ink:  #FFF7F0;
+      --heat-soft: #FBE6D4;
+      --ready:     #167D4E;
+      --ticket:    #FFFCF4;
+      --ticket-ink:#191410;
+      --lamp:      radial-gradient(120% 100% at 50% 0%, rgba(210,87,10,.16) 0%, rgba(210,87,10,.04) 45%, transparent 72%);
+      --shadow:    0 18px 44px rgba(60,45,25,.14);
+    }
+  }
+
+  /* ── Base ────────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: "Unbounded", system-ui, sans-serif; margin: 0; line-height: 1.08; letter-spacing: -.02em; text-wrap: balance; }
+  p { margin: 0; }
+  a { color: inherit; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .wrap { width: min(1140px, 100% - 44px); margin-inline: auto; }
+  .lbl {
+    font-family: "IBM Plex Mono", monospace; font-size: .72rem; font-weight: 500;
+    letter-spacing: .22em; text-transform: uppercase; color: var(--heat);
+  }
+  :focus-visible { outline: 2px solid var(--heat); outline-offset: 3px; border-radius: 2px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: .88rem;
+    letter-spacing: .1em; text-transform: uppercase; text-decoration: none;
+    padding: 15px 26px; border: 1px solid var(--heat); background: var(--heat); color: var(--heat-ink);
+    transition: box-shadow .2s, transform .2s, background .2s, color .2s;
+  }
+  .btn:hover { box-shadow: 0 0 0 1px var(--heat), 0 10px 34px rgba(255,122,24,.32); transform: translateY(-2px); }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn.ghost:hover { border-color: var(--heat); color: var(--heat); box-shadow: none; }
+  .btn.sm { padding: 10px 18px; font-size: .76rem; }
+
+  /* ── Header ──────────────────────────────────────────────────────────── */
+  header {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; gap: 30px; height: 68px; }
+  .brand {
+    font-family: "Unbounded", sans-serif; font-weight: 800; font-size: 1.15rem;
+    letter-spacing: .06em; text-transform: uppercase; text-decoration: none; color: var(--ink);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .dot { width: 8px; height: 8px; background: var(--heat); border-radius: 50%; box-shadow: 0 0 12px var(--heat); animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .nav nav { display: flex; gap: 26px; margin-left: auto; }
+  .nav nav a { font-family: "IBM Plex Mono", monospace; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-dim); text-decoration: none; }
+  .nav nav a:hover { color: var(--heat); }
+  .theme-btn {
+    width: 38px; height: 38px; display: grid; place-items: center; flex: none;
+    background: transparent; border: 1px solid var(--line); color: var(--ink-dim);
+    cursor: pointer; transition: color .2s, border-color .2s;
+  }
+  .theme-btn:hover { color: var(--heat); border-color: var(--heat); }
+  .theme-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+  .theme-btn .moon { display: none; }
+  :root[data-theme="light"] .theme-btn .moon { display: block; }
+  :root[data-theme="light"] .theme-btn .sun { display: none; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .theme-btn .moon { display: block; }
+    :root:not([data-theme="dark"]) .theme-btn .sun { display: none; }
+  }
+
+  /* ── Hero ────────────────────────────────────────────────────────────── */
+  .hero { position: relative; padding: 78px 0 86px; }
+  .hero::before {
+    content: ""; position: absolute; inset: -68px 0 auto; height: 620px;
+    background: var(--lamp); pointer-events: none; z-index: 0;
+  }
+  .hero > .wrap { position: relative; z-index: 1; display: grid; grid-template-columns: 1.02fr .98fr; gap: 60px; align-items: center; }
+  .hero h1 { font-size: clamp(2.1rem, 4.9vw, 3.5rem); font-weight: 800; margin: 20px 0 0; }
+  .hero h1 .hot { color: var(--heat); }
+  .lede { font-size: 1.1rem; color: var(--ink-dim); max-width: 33em; margin-top: 24px; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
+  .hero-note { font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--ink-faint); margin-top: 20px; letter-spacing: .04em; }
+
+  /* The pass — heat lamp + ticket rail */
+  .pass { position: relative; padding-top: 26px; }
+  .lamp-bar {
+    height: 5px; border-radius: 3px;
+    background: linear-gradient(90deg, transparent, var(--heat), transparent);
+    box-shadow: 0 0 34px 6px rgba(255,122,24,.42);
+    animation: flicker 5s ease-in-out infinite;
+  }
+  @keyframes flicker { 0%,100% { opacity: .92; } 43% { opacity: .74; } 47% { opacity: .98; } }
+  .rail-label { display: flex; justify-content: space-between; align-items: baseline; margin: 16px 0 12px; }
+  .rail-label span { font-family: "IBM Plex Mono", monospace; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint); }
+  .rail { display: grid; gap: 10px; }
+  .chit {
+    background: var(--ticket); color: var(--ticket-ink);
+    font-family: "IBM Plex Mono", monospace; font-size: .8rem;
+    padding: 13px 16px; box-shadow: var(--shadow);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+    border-left: 4px solid var(--ink-faint);
+    transition: border-color .5s ease;
+  }
+  .chit .no { font-weight: 600; font-size: .95rem; }
+  .chit .what { color: color-mix(in srgb, var(--ticket-ink) 72%, transparent); }
+  .chit .st {
+    font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    padding: 4px 9px; white-space: nowrap; transition: background .4s, color .4s;
+  }
+  .chit[data-st="new"]  { border-left-color: var(--ink-faint); }
+  .chit[data-st="new"]  .st { background: #E6DFCE; color: #554B3B; }
+  .chit[data-st="cook"] { border-left-color: var(--heat); }
+  .chit[data-st="cook"] .st { background: color-mix(in srgb, var(--heat) 20%, #E6DFCE); color: #8A3F03; }
+  .chit[data-st="done"] { border-left-color: var(--ready); }
+  .chit[data-st="done"] .st { background: #D2F0DF; color: #10633D; }
+  .rail-foot { margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--ink-faint); letter-spacing: .06em; display: flex; justify-content: space-between; }
+
+  /* Reveal */
+  .rise { opacity: 0; transform: translateY(14px); animation: rise .7s cubic-bezier(.22,.9,.3,1) forwards; }
+  .rise:nth-child(1) { animation-delay: .05s; }
+  .rise:nth-child(2) { animation-delay: .13s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .rise { opacity: 1; transform: none; }
+  }
+
+  /* ── Sections ────────────────────────────────────────────────────────── */
+  section { padding: 88px 0; position: relative; }
+  section.deep { background: var(--bg-deep); border-block: 1px solid var(--line); }
+  .head { max-width: 40rem; margin-bottom: 48px; }
+  .head h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-weight: 800; margin: 16px 0 16px; }
+  .head p { color: var(--ink-dim); }
+
+  /* ── Bill (price comparison) ─────────────────────────────────────────── */
+  .bill { display: grid; gap: 4px; margin-bottom: 18px; }
+  .bill-row { display: grid; grid-template-columns: 190px 1fr auto; gap: 18px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .bill-row .who { font-family: "IBM Plex Mono", monospace; font-size: .84rem; color: var(--ink-dim); }
+  .bar-track { display: block; height: 26px; background: color-mix(in srgb, var(--line) 50%, transparent); position: relative; }
+  .bar {
+    display: block; height: 100%; width: var(--w);
+    background: color-mix(in srgb, var(--ink) 30%, transparent);
+  }
+  .bill-row .cost { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: .95rem; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-dim); min-width: 6.6em; text-align: right; }
+  .bill-row.us .who,
+  .bill-row.us .cost { color: var(--heat); font-weight: 600; }
+  .bill-row.us .bar { background: var(--heat); box-shadow: 0 0 26px rgba(255,122,24,.4); }
+  .bill-row.us { border-bottom-color: var(--heat); }
+  .bill-note { font-family: "IBM Plex Mono", monospace; font-size: .74rem; color: var(--ink-faint); line-height: 1.7; }
+  .save-shout { display: flex; align-items: baseline; gap: 16px; margin-top: 36px; flex-wrap: wrap; }
+  .save-shout b { font-family: "Unbounded", sans-serif; font-weight: 800; font-size: clamp(2.4rem, 6vw, 4rem); color: var(--heat); line-height: 1; letter-spacing: -.03em; }
+  .save-shout span { color: var(--ink-dim); max-width: 26em; }
+
+  /* ── Stations ────────────────────────────────────────────────────────── */
+  .stations { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .station { background: var(--bg); padding: 32px 28px; transition: background .25s; }
+  section.deep .station { background: var(--bg-deep); }
+  .station:hover { background: var(--surface); }
+  .station .who { font-family: "IBM Plex Mono", monospace; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--heat); }
+  .station h3 { font-size: 1.06rem; font-weight: 600; margin: 14px 0 12px; letter-spacing: -.01em; }
+  .station p { color: var(--ink-dim); font-size: .95rem; }
+
+  /* ── Scan flow ───────────────────────────────────────────────────────── */
+  .scan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .scan-step { border-top: 2px solid var(--heat); padding-top: 18px; }
+  .scan-step .n { font-family: "IBM Plex Mono", monospace; font-size: .72rem; letter-spacing: .16em; color: var(--heat); }
+  .scan-step b { display: block; margin: 10px 0 8px; font-weight: 600; }
+  .scan-step span { color: var(--ink-dim); font-size: .92rem; }
+
+  /* ── Pricing ─────────────────────────────────────────────────────────── */
+  .switch { display: inline-flex; border: 1px solid var(--line); margin-bottom: 44px; }
+  .switch button {
+    font-family: "IBM Plex Mono", monospace; font-size: .8rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; padding: 12px 22px;
+    background: transparent; color: var(--ink-dim); border: 0; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .switch button[aria-pressed="true"] { background: var(--heat); color: var(--heat-ink); }
+  .rail-line { height: 1px; background: var(--line); position: relative; margin-bottom: 0; }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+  .plan { position: relative; padding-top: 30px; }
+  .plan::before {
+    content: ""; position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 30px; background: var(--line);
+  }
+  .plan::after {
+    content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+    width: 9px; height: 9px; border-radius: 50%; background: var(--bg-deep); border: 2px solid var(--ink-faint);
+  }
+  .plan.pick::after { border-color: var(--heat); background: var(--heat); box-shadow: 0 0 14px var(--heat); }
+  .plan.pick::before { background: var(--heat); }
+  .card {
+    background: var(--ticket); color: var(--ticket-ink);
+    padding: 30px 26px 32px; box-shadow: var(--shadow);
+    display: grid; gap: 0;
+  }
+  .plan.pick .card { outline: 2px solid var(--heat); outline-offset: 0; }
+  .card .tag { font-family: "IBM Plex Mono", monospace; font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: #9A7B4F; }
+  .card h3 { font-family: "Unbounded", sans-serif; font-weight: 800; font-size: 1.5rem; margin: 8px 0 6px; letter-spacing: -.02em; }
+  .card .for { font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: #7A6A54; }
+  .card .price {
+    font-family: "Unbounded", sans-serif; font-weight: 800; font-size: 2.1rem; letter-spacing: -.03em;
+    margin: 22px 0 2px; font-variant-numeric: tabular-nums;
+  }
+  .card .per { font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: #7A6A54; letter-spacing: .04em; }
+  .card .cut { border: 0; border-top: 1px dashed #C9BCA0; margin: 22px 0 18px; }
+  .card li { font-family: "IBM Plex Mono", monospace; font-size: .8rem; line-height: 1.5; padding: 6px 0 6px 20px; position: relative; }
+  .card li::before { content: "+"; position: absolute; left: 0; color: var(--heat); font-weight: 600; }
+  .card li.base { color: #7A6A54; }
+  .card li.base::before { content: "="; color: #A8946F; }
+  .card .btn { margin-top: 24px; justify-content: center; }
+  .card .btn.ghost { color: var(--ticket-ink); border-color: #C9BCA0; }
+  .card .btn.ghost:hover { border-color: var(--heat); color: var(--heat); }
+  .extra {
+    margin-top: 34px; border: 1px dashed var(--line); padding: 26px 28px;
+    display: flex; gap: 22px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  .extra b { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 1.05rem; display: block; margin-bottom: 6px; }
+  .extra p { color: var(--ink-dim); font-size: .95rem; max-width: 44em; }
+  .fine { margin-top: 22px; font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: var(--ink-faint); line-height: 1.8; }
+
+  /* ── FAQ ─────────────────────────────────────────────────────────────── */
+  details { border-top: 1px solid var(--line); }
+  details:last-of-type { border-bottom: 1px solid var(--line); }
+  summary {
+    cursor: pointer; list-style: none; padding: 22px 0; font-weight: 500; font-size: 1.02rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: "IBM Plex Mono", monospace; color: var(--heat); font-size: 1.3rem; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--ink-dim); padding-bottom: 24px; max-width: 62ch; }
+
+  /* ── CTA / footer ────────────────────────────────────────────────────── */
+  .call { position: relative; text-align: center; padding: 104px 0 96px; border-top: 1px solid var(--line); overflow: hidden; }
+  .call::before { content: ""; position: absolute; inset: 0; background: var(--lamp); pointer-events: none; }
+  .call > .wrap { position: relative; }
+  .call h2 { font-size: clamp(2rem, 5.4vw, 3.4rem); font-weight: 800; }
+  .call p { color: var(--ink-dim); margin: 18px auto 34px; max-width: 34em; }
+  footer { padding: 34px 0 46px; border-top: 1px solid var(--line); }
+  .foot { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: var(--ink-faint); letter-spacing: .04em; }
+
+  @media (max-width: 900px) {
+    .hero > .wrap { grid-template-columns: 1fr; gap: 46px; }
+    .stations, .plans { grid-template-columns: 1fr; }
+    .scan { grid-template-columns: 1fr 1fr; }
+    .nav nav { display: none; }
+    .bill-row { grid-template-columns: 1fr auto; }
+    .bill-row .bar-track { display: none; }
+    section { padding: 64px 0; }
+  }
+  @media (max-width: 560px) {
+    .scan { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  /* Тема применяется до первой отрисовки — без мигания */
+  (function () {
+    try {
+      var saved = localStorage.getItem("podacha-theme");
+      if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+    } catch (e) {}
+  })();
+</script>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Подача</a>
+    <nav aria-label="Разделы">
+      <a href="#line">Станции</a>
+      <a href="#scan">Склад</a>
+      <a href="#pricing">Тарифы</a>
+      <a href="#faq">Вопросы</a>
+    </nav>
+    <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема">
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+    </button>
+    <a class="btn sm" href="#call">14 дней free</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="rise">
+        <div class="lbl">Система управления кафе</div>
+        <h1>Экранов — сколько нужно.<br><span class="hot">Цена — одна.</span></h1>
+        <p class="lede">Заказы со стола, экраны кухни и бара, склад, смены и зарплата — в одной подписке за заведение. Открывается на любом планшете, который у вас уже есть: касса, пас, бар, кладовка. Хоть десять экранов — счёт не вырастет.</p>
+        <div class="hero-cta">
+          <a class="btn" href="#call">Попробовать бесплатно</a>
+          <a class="btn ghost" href="#pricing">Тарифы</a>
+        </div>
+        <p class="hero-note">14 дней · без карты · запуск за вечер</p>
+      </div>
+
+      <div class="pass rise" aria-hidden="true">
+        <div class="lamp-bar"></div>
+        <div class="rail-label">
+          <span>Раздача · смена открыта</span>
+          <span class="mono" id="clock">19:42</span>
+        </div>
+        <div class="rail" id="rail">
+          <div class="chit" data-st="cook">
+            <span class="no">#41</span>
+            <span class="what">Стол 4 · том-ям, тартар</span>
+            <span class="st">Готовится</span>
+          </div>
+          <div class="chit" data-st="new">
+            <span class="no">#42</span>
+            <span class="what">Стол 7 · паста, салат, эспрессо</span>
+            <span class="st">Новый</span>
+          </div>
+          <div class="chit" data-st="done">
+            <span class="no">#40</span>
+            <span class="what">Стол 2 · матча ×2</span>
+            <span class="st">На подачу</span>
+          </div>
+          <div class="chit" data-st="new">
+            <span class="no">#43</span>
+            <span class="what">Стол 11 · бургер, лимонад</span>
+            <span class="st">Новый</span>
+          </div>
+        </div>
+        <div class="rail-foot">
+          <span>средняя подача 11 мин</span>
+          <span>выручка дня 68 400 ₽</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="deep" id="bill">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Счёт за автоматизацию</div>
+        <h2>Рынок продаёт лицензии на экраны. Мы продаём систему</h2>
+        <p>У классических систем каждый терминал — отдельная платная лицензия: касса, экран кухни, экран бара. Кафе на три экрана платит как за трёх сотрудников. У нас экраны — просто вкладки браузера, и они не стоят ничего.</p>
+      </div>
+
+      <div class="bill">
+        <div class="bill-row">
+          <span class="who">iiko «Профессиональный»</span>
+          <span class="bar-track"><span class="bar" style="--w: 100%"></span></span>
+          <span class="cost">25 800 ₽</span>
+        </div>
+        <div class="bill-row">
+          <span class="who">Quick Resto «Про»</span>
+          <span class="bar-track"><span class="bar" style="--w: 62%"></span></span>
+          <span class="cost">15 970 ₽</span>
+        </div>
+        <div class="bill-row">
+          <span class="who">r_keeper «Клауд Про»</span>
+          <span class="bar-track"><span class="bar" style="--w: 47%"></span></span>
+          <span class="cost">12 200 ₽</span>
+        </div>
+        <div class="bill-row us">
+          <span class="who">Подача «Максимум»</span>
+          <span class="bar-track"><span class="bar" style="--w: 31%"></span></span>
+          <span class="cost">7 990 ₽</span>
+        </div>
+      </div>
+      <p class="bill-note">Касса + экран кухни + экран бара, в месяц. Публичные цены с сайтов iiko.ru, quickresto.ru, rkeeper.ru — август 2026.</p>
+
+      <div class="save-shout">
+        <b>214 000 ₽</b>
+        <span>столько остаётся в кафе за год при переходе с iiko «Профессиональный» на «Подачу». Это годовая зарплата повара или новая кофемашина каждые полгода.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="line">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Станции</div>
+        <h2>У каждого в смене — свой экран</h2>
+        <p>Одна система, шесть рабочих мест. Каждый видит только то, что нужно ему, и всё обновляется вживую — новый заказ приходит со звуком.</p>
+      </div>
+      <div class="stations">
+        <div class="station">
+          <div class="who">Гость</div>
+          <h3>Меню в телефоне</h3>
+          <p>Листает меню с фото, ставит лайки, видит стоп-лист. Может заказать сам по QR со стола, а может просто показать пальцем — как вам привычнее.</p>
+        </div>
+        <div class="station">
+          <div class="who">Официант</div>
+          <h3>Столы-светофор</h3>
+          <p>Весь зал на одном экране: где ждут, где готово, где пора нести счёт. Заказ создаётся с планшета или телефона за полминуты, дозаказ — в два касания, счёт делится по гостям.</p>
+        </div>
+        <div class="station">
+          <div class="who">Кухня и бар</div>
+          <h3>Очередь с таймингом</h3>
+          <p>Свои позиции, свой ритм: принял — готовлю — отдал. Звук на новый заказ, время по каждому блюду. Кончилось — стоп-лист одной кнопкой, гость сразу видит.</p>
+        </div>
+        <div class="station">
+          <div class="who">Склад</div>
+          <h3>Остатки без ревизий</h3>
+          <p>Ингредиенты списываются сами в момент отдачи блюда. Система показывает, что заканчивается, и собирает список закупа на день. Себестоимость — по последним ценам прихода.</p>
+        </div>
+        <div class="station">
+          <div class="who">Управляющий</div>
+          <h3>Смены и зарплата</h3>
+          <p>Ставка плюс процент от выручки считаются сами. Штрафной стол для подарков за косяки, ручные штрафы, готовая сводка «к выплате» по каждому. Excel можно закрыть.</p>
+        </div>
+        <div class="station">
+          <div class="who">Владелец</div>
+          <h3>Деньги и бренд</h3>
+          <p>Выручка дня, нал и карта раздельно, что продаётся и что лайкают. Логотип, цвета и шрифты настраиваются из панели — гость видит ваше кафе, а не чужую систему.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deep" id="scan">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Приход на склад</div>
+        <h2>Сфотографировал накладную — приход готов</h2>
+        <p>Единственная система в своей цене, которая читает накладные сама. Нейросеть достаёт позиции, количество и цены и сверяет их с вашей номенклатурой. Вам остаётся нажать «подтвердить». Обычный ручной ввод тоже никуда не делся — фото просто быстрее.</p>
+      </div>
+      <div class="scan">
+        <div class="scan-step">
+          <div class="n">01 / ФОТО</div>
+          <b>Снимок у машины</b>
+          <span>Кладовщик фотографирует накладную на телефон, пока поставщик разгружается.</span>
+        </div>
+        <div class="scan-step">
+          <div class="n">02 / РАЗБОР</div>
+          <b>Позиции и цены</b>
+          <span>Нейросеть вытаскивает строки, переводит килограммы в граммы, литры в миллилитры.</span>
+        </div>
+        <div class="scan-step">
+          <div class="n">03 / СВЕРКА</div>
+          <b>Узнаёт ваши названия</b>
+          <span>Система помнит, что «Молоко Простоквашино 3,2%» — это ваше «Молоко», и с каждым разом ошибается реже.</span>
+        </div>
+        <div class="scan-step">
+          <div class="n">04 / ПРИХОД</div>
+          <b>Остатки обновлены</b>
+          <span>После подтверждения меняются остатки и цены закупки, себестоимость блюд пересчитывается.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Тарифы</div>
+        <h2>Цена за заведение, а не за железо</h2>
+        <p>Устройства, экраны, сотрудники и обновления — без ограничений и доплат на любом тарифе.</p>
+      </div>
+
+      <div class="switch" role="group" aria-label="Период оплаты">
+        <button type="button" data-period="month" aria-pressed="true">Помесячно</button>
+        <button type="button" data-period="year" aria-pressed="false">За год −17%</button>
+      </div>
+
+      <div class="rail-line"></div>
+      <div class="plans">
+        <div class="plan">
+          <div class="card">
+            <div class="tag">Тариф 01</div>
+            <h3>Старт</h3>
+            <div class="for">кофейня · небольшое кафе · бар</div>
+            <div class="price" data-month="2 990 ₽" data-year="2 490 ₽">2 990 ₽</div>
+            <div class="per">в месяц</div>
+            <hr class="cut">
+            <ul>
+              <li>Меню с фото и стоп-листом</li>
+              <li>Заказ по QR со стола</li>
+              <li>Экран официанта: весь зал</li>
+              <li>Дозаказ и счёт по гостям</li>
+              <li>Оплаты: наличные и карта</li>
+              <li>Отчёты по продажам и выручке</li>
+              <li>Свой бренд и приложение на телефон</li>
+            </ul>
+            <a class="btn ghost" href="#call">Начать</a>
+          </div>
+        </div>
+
+        <div class="plan pick">
+          <div class="card">
+            <div class="tag">Тариф 02 · чаще всего</div>
+            <h3>Зал</h3>
+            <div class="for">кафе с кухней и баром</div>
+            <div class="price" data-month="4 990 ₽" data-year="4 150 ₽">4 990 ₽</div>
+            <div class="per">в месяц</div>
+            <hr class="cut">
+            <ul>
+              <li class="base">Всё из тарифа «Старт»</li>
+              <li>Канбан кухни: новый → готов</li>
+              <li>Экран бара со своей очередью</li>
+              <li>Тайминги по каждой станции</li>
+              <li>Блок «К подаче» у официанта</li>
+              <li>Звук и подсветка новых заказов</li>
+            </ul>
+            <a class="btn" href="#call">Начать</a>
+          </div>
+        </div>
+
+        <div class="plan">
+          <div class="card">
+            <div class="tag">Тариф 03</div>
+            <h3>Максимум</h3>
+            <div class="for">полный контроль</div>
+            <div class="price" data-month="7 990 ₽" data-year="6 650 ₽">7 990 ₽</div>
+            <div class="per">в месяц</div>
+            <hr class="cut">
+            <ul>
+              <li class="base">Всё из тарифа «Зал»</li>
+              <li>Склад и инвентаризация</li>
+              <li>Приход по фото накладной</li>
+              <li>Тех. карты и себестоимость</li>
+              <li>Автосписание и закуп</li>
+              <li>Смены, зарплата, штрафы</li>
+            </ul>
+            <a class="btn ghost" href="#call">Начать</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="extra">
+        <p><b>Сеть или франшиза?</b>Вторая точка и все следующие — со скидкой 30%. Общий бренд, отдельные меню, склады и смены по каждой точке.</p>
+        <a class="btn ghost" href="#call">Обсудить</a>
+      </div>
+      <p class="fine">14 дней бесплатно на любом тарифе, карта не нужна. Перенос меню и настройка склада — бесплатно.<br>Никаких доплат «за кассу», «за пользователя», «за обновление» и «за поддержку».</p>
+    </div>
+  </section>
+
+  <section class="deep" id="faq">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Вопросы</div>
+        <h2>Честно о том, что спрашивают</h2>
+      </div>
+      <details>
+        <summary>Какое оборудование нужно покупать?</summary>
+        <p>Никакое. Подойдут планшеты и телефоны, которые уже есть — «Подача» открывается в браузере и ставится на экран как приложение. Кассовые моноблоки, серверы и лицензии на них не нужны.</p>
+      </details>
+      <details>
+        <summary>Обязательно клеить QR-коды на столы?</summary>
+        <p>Нет. С QR гость заказывает сам, и стол определяется автоматически — это экономит время официанта в час пик. Без QR всё работает как обычно: официант принимает заказ и выбирает стол на своём планшете.</p>
+      </details>
+      <details>
+        <summary>Что с доставкой и агрегаторами?</summary>
+        <p>Интеграций с Яндекс Едой и Деливери пока нет — скажем прямо, чтобы вы не теряли время. «Подача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню.</p>
+      </details>
+      <details>
+        <summary>А фискализация и онлайн-касса?</summary>
+        <p>Оплаты фиксируются в системе — наличные и карта отдельно, выручка считается сама. Чек вы пробиваете на своей онлайн-кассе как привыкли. Прямая интеграция со смарт-терминалами в разработке.</p>
+      </details>
+      <details>
+        <summary>Сколько стоит внедрение и обучение персонала?</summary>
+        <p>Нисколько. Запуск занимает вечер: меню, столы, планшеты. Официант и повар осваиваются за десять минут — экраны сделаны так, что учить нечему. Меню и склад поможем заполнить бесплатно.</p>
+      </details>
+      <details>
+        <summary>Что будет с моими данными, если я уйду?</summary>
+        <p>Заберёте их с собой. Меню, продажи, склад и историю смен выгрузим в таблицы по первой просьбе. Данные ваши, а не наши.</p>
+      </details>
+      <details>
+        <summary>Правда безлимит экранов? В чём подвох?</summary>
+        <p>Подвоха нет, это следствие архитектуры. Мы работаем в браузере, и нам незачем продавать лицензию на каждое устройство, как это делают классические POS-системы. Ограничение одно: подписка действует на одно заведение.</p>
+      </details>
+    </div>
+  </section>
+
+  <div class="call" id="call">
+    <div class="wrap">
+      <div class="lbl">Заказ принят</div>
+      <h2>Попробуйте на своей смене</h2>
+      <p>14 дней бесплатно. Запуск за вечер. Поможем перенести меню и не сломать ничего в разгар сервиса.</p>
+      <a class="btn" href="mailto:hello@podacha.example?subject=Хочу%20попробовать%20Подачу">Оставить заявку</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 Подача — система управления кафе</span>
+    <span>Работает каждый день в кафе «Хумухумунукунукуапуа»</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* Переключатель темы: явный выбор побеждает системный и запоминается */
+    var themeBtn = document.getElementById("theme");
+    themeBtn.addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.getAttribute("data-theme");
+      if (!current) {
+        current = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      var next = current === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("podacha-theme", next); } catch (e) {}
+    });
+
+    /* Tariff period switch */
+    var buttons = document.querySelectorAll(".switch button");
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var period = btn.dataset.period;
+        buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
+        document.querySelectorAll(".price").forEach(function (el) { el.textContent = el.dataset[period]; });
+        document.querySelectorAll(".per").forEach(function (el) {
+          el.textContent = period === "year" ? "в месяц, при оплате за год" : "в месяц";
+        });
+      });
+    });
+
+    if (reduce) return;
+
+    /* Live pass: chits advance through the line */
+    var order = ["new", "cook", "done"];
+    var labels = { "new": "Новый", "cook": "Готовится", "done": "На подачу" };
+    var rail = document.getElementById("rail");
+    var counter = 44;
+
+    var tables = [
+      "Стол 3 · сырники, капучино",
+      "Стол 9 · цезарь, лимонад",
+      "Стол 1 · паста карбонара",
+      "Стол 6 · том-ям, раф",
+      "Стол 12 · бургер, айс-латте ×2",
+      "Стол 8 · завтрак, апельсиновый фреш"
+    ];
+
+    /* Каждый чек идёт по своему кругу и в своём темпе — раздача не синхронна */
+    [].slice.call(rail.children).forEach(function (chit, i) {
+      var step = function () {
+        var st = chit.dataset.st;
+        if (st === "done") {
+          /* Отдали гостю — на месте чека появляется следующий заказ */
+          chit.dataset.st = "new";
+          chit.querySelector(".no").textContent = "#" + counter;
+          chit.querySelector(".what").textContent = tables[counter % tables.length];
+          counter += 1;
+        } else {
+          chit.dataset.st = order[order.indexOf(st) + 1];
+        }
+        chit.querySelector(".st").textContent = labels[chit.dataset.st];
+      };
+      var period = [4300, 5600, 3700, 6400][i % 4];
+      setTimeout(function () { setInterval(step, period); }, [700, 2100, 3400, 1300][i % 4]);
+    });
+
+    /* Service clock */
+    var clock = document.getElementById("clock");
+    var mins = 19 * 60 + 42;
+    setInterval(function () {
+      mins += 1;
+      var h = String(Math.floor(mins / 60) % 24).padStart(2, "0");
+      var m = String(mins % 60).padStart(2, "0");
+      clock.textContent = h + ":" + m;
+    }, 8000);
+  })();
+</script>
+
+</body>
+</html>
