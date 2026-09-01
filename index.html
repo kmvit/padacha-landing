@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Подача — система управления кафе: заказы со стола, экраны кухни и бара, склад, смены и зарплата. Цена за заведение, экраны без доплат.">
+<meta name="description" content="Падача — система управления кафе: заказы со стола, экраны кухни и бара, склад, смены и зарплата. Цена за заведение, экраны без доплат.">
 <meta name="theme-color" content="#FF7A18">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110D'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF7A18'/%3E%3C/svg%3E">
-<meta property="og:title" content="Подача — система управления кафе">
+<meta property="og:title" content="Падача — система управления кафе">
 <meta property="og:description" content="Экранов сколько нужно, цена одна. Заказы со стола, кухня и бар, склад, смены и зарплата.">
 <meta property="og:type" content="website">
-<title>Подача</title>
+<title>Падача</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -332,7 +332,7 @@
   /* Тема применяется до первой отрисовки — без мигания */
   (function () {
     try {
-      var saved = localStorage.getItem("podacha-theme");
+      var saved = localStorage.getItem("padacha-theme");
       if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
     } catch (e) {}
   })();
@@ -340,7 +340,7 @@
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Подача</a>
+    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Падача</a>
     <nav aria-label="Разделы">
       <a href="#line">Станции</a>
       <a href="#scan">Склад</a>
@@ -431,7 +431,7 @@
           <span class="cost">12 200 ₽</span>
         </div>
         <div class="bill-row us">
-          <span class="who">Подача «Максимум»</span>
+          <span class="who">Падача «Максимум»</span>
           <span class="bar-track"><span class="bar" style="--w: 31%"></span></span>
           <span class="cost">7 990 ₽</span>
         </div>
@@ -440,7 +440,7 @@
 
       <div class="save-shout">
         <b>214 000 ₽</b>
-        <span>столько остаётся в кафе за год при переходе с iiko «Профессиональный» на «Подачу». Это годовая зарплата повара или новая кофемашина каждые полгода.</span>
+        <span>столько остаётся в кафе за год при переходе с iiko «Профессиональный» на «Падачу». Это годовая зарплата повара или новая кофемашина каждые полгода.</span>
       </div>
     </div>
   </section>
@@ -612,7 +612,7 @@
       </div>
       <details>
         <summary>Какое оборудование нужно покупать?</summary>
-        <p>Никакое. Подойдут планшеты и телефоны, которые уже есть — «Подача» открывается в браузере и ставится на экран как приложение. Кассовые моноблоки, серверы и лицензии на них не нужны.</p>
+        <p>Никакое. Подойдут планшеты и телефоны, которые уже есть — «Падача» открывается в браузере и ставится на экран как приложение. Кассовые моноблоки, серверы и лицензии на них не нужны.</p>
       </details>
       <details>
         <summary>Обязательно клеить QR-коды на столы?</summary>
@@ -620,7 +620,7 @@
       </details>
       <details>
         <summary>Что с доставкой и агрегаторами?</summary>
-        <p>Интеграций с Яндекс Едой и Деливери пока нет — скажем прямо, чтобы вы не теряли время. «Подача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню.</p>
+        <p>Интеграций с Яндекс Едой и Деливери пока нет — скажем прямо, чтобы вы не теряли время. «Падача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню.</p>
       </details>
       <details>
         <summary>А фискализация и онлайн-касса?</summary>
@@ -646,14 +646,14 @@
       <div class="lbl">Заказ принят</div>
       <h2>Попробуйте на своей смене</h2>
       <p>14 дней бесплатно. Запуск за вечер. Поможем перенести меню и не сломать ничего в разгар сервиса.</p>
-      <a class="btn" href="mailto:hello@podacha.example?subject=Хочу%20попробовать%20Подачу">Оставить заявку</a>
+      <a class="btn" href="mailto:hello@padacha.ru?subject=Хочу%20попробовать%20Падачу">Оставить заявку</a>
     </div>
   </div>
 </main>
 
 <footer>
   <div class="wrap foot">
-    <span>© 2026 Подача — система управления кафе</span>
+    <span>© 2026 Падача — система управления кафе</span>
     <span>Работает каждый день в кафе «Хумухумунукунукуапуа»</span>
   </div>
 </footer>
@@ -672,7 +672,7 @@
       }
       var next = current === "dark" ? "light" : "dark";
       root.setAttribute("data-theme", next);
-      try { localStorage.setItem("podacha-theme", next); } catch (e) {}
+      try { localStorage.setItem("padacha-theme", next); } catch (e) {}
     });
 
     /* Tariff period switch */
