@@ -348,7 +348,17 @@
     .hero > .wrap { grid-template-columns: 1fr; gap: 46px; }
     .stations, .plans { grid-template-columns: 1fr; }
     .scan { grid-template-columns: 1fr 1fr; }
-    .nav nav { display: none; }
+    /* Меню не прячем: на телефоне оно уезжает во вторую строку и
+       прокручивается вбок — иначе с телефона по сайту не походить. */
+    .nav { flex-wrap: wrap; height: auto; padding-top: 12px; gap: 12px; }
+    .brand { margin-right: auto; font-size: 1.02rem; }
+    .nav .btn.sm { padding: 9px 14px; font-size: .72rem; }
+    .nav nav {
+      order: 5; width: 100%; margin: 0 -20px; padding: 2px 20px 12px;
+      gap: 22px; overflow-x: auto; scrollbar-width: none;
+    }
+    .nav nav::-webkit-scrollbar { display: none; }
+    .nav nav a { white-space: nowrap; }
     .bill-row { grid-template-columns: 1fr auto; }
     .bill-row .bar-track { display: none; }
     section { padding: 64px 0; }
