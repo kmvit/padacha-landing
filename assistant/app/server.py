@@ -100,7 +100,7 @@ def _limit_reply(reason: str) -> str:
         return "Секунду — отвечаю на предыдущий вопрос. Напишите через пару секунд."
     if reason == "минута":
         return "Слишком много сообщений подряд. Давайте помедленнее."
-    contact = kb.contact or "команде"
+    contact = kb.contact_line
     return f"На сегодня мы наговорились — дальше полезнее написать напрямую: {contact}."
 
 
@@ -179,14 +179,14 @@ async def chat(payload: ChatRequest, request: Request) -> JSONResponse:
         return JSONResponse({"reply": canned})
 
     if session.messages >= settings.max_messages_per_session:
-        contact = kb.contact or "команде"
+        contact = kb.contact_line
         return JSONResponse(
             {"reply": f"Мы с вами долго общаемся — дальше полезнее написать напрямую: {contact}."}
         )
 
     # 3. Предохранитель: суточный потолок на весь сервис исчерпан.
     if budget.exhausted:
-        contact = kb.contact or "команде"
+        contact = kb.contact_line
         return JSONResponse(
             {"reply": f"На сегодня лимит вопросов исчерпан. Напишите напрямую: {contact}."}
         )
@@ -200,7 +200,7 @@ async def chat(payload: ChatRequest, request: Request) -> JSONResponse:
     session.messages += 1
     session.last_user_text = text
 
-    contact = kb.contact or "почту команды"
+    contact = kb.contact_line
     try:
         answer = await session.agent.ask(text)
     except Exception:  # noqa: BLE001 — посетителю нужен ответ, а не 500

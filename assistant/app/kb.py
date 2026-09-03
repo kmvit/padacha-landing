@@ -45,8 +45,25 @@ class KnowledgeBase:
         return self._data.get("собрано", "")
 
     @property
-    def contact(self) -> str:
-        return self._data.get("контакт", "")
+    def contacts(self) -> dict:
+        return self._data.get("контакты", {})
+
+    @property
+    def contact_line(self) -> str:
+        """Одной строкой, для сообщений об ошибках и лимитах.
+
+        Телефон читаемым видом — та же цифровая строка неудобна для устной
+        диктовки в чате. WhatsApp и Telegram у этого номера настоящие ссылки,
+        а не выдумка «можно и туда».
+        """
+        c = self.contacts
+        phone = c.get("телефон", "")
+        if not phone:
+            return "команде"
+        pretty = phone
+        if phone.startswith("+7") and len(phone) == 12:
+            pretty = f"+7 {phone[2:5]} {phone[5:8]}-{phone[8:10]}-{phone[10:12]}"
+        return f"{pretty} — звонок, WhatsApp или Telegram"
 
     @property
     def tariffs(self) -> list[dict]:

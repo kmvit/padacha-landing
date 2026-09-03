@@ -344,6 +344,7 @@
   .call > .wrap { position: relative; }
   .call h2 { font-size: clamp(2rem, 5.4vw, 3.4rem); font-weight: 800; }
   .call p { color: var(--ink-dim); margin: 18px auto 34px; max-width: 34em; }
+  .contacts { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
   footer { padding: 34px 0 46px; border-top: 1px solid var(--line); }
   .foot { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-family: "IBM Plex Mono", monospace; font-size: .76rem; color: var(--ink-faint); letter-spacing: .04em; }
 
@@ -772,7 +773,12 @@
       <div class="lbl">Заказ принят</div>
       <h2>Попробуйте на своей смене</h2>
       <p>Запуск за вечер. Поможем перенести меню и не сломать ничего в разгар сервиса.</p>
-      <a class="btn" href="mailto:hello@padacha.ru?subject=Хочу%20попробовать%20Падачу">Оставить заявку</a>
+      <div class="contacts">
+        <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
+        <a class="btn ghost" href="https://wa.me/79943121222" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="btn ghost" href="https://t.me/+79943121222" target="_blank" rel="noreferrer">Telegram</a>
+        <a class="btn ghost" href="https://max.ru/u/f9LHodD0cOIIAAQbhXr2nnV8L7VZRhxS-b2jl7dlT1-hrMK2KHMn_9lIDfw" target="_blank" rel="noreferrer">MAX</a>
+      </div>
     </div>
   </div>
 </main>

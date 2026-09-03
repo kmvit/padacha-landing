@@ -68,11 +68,24 @@ def faq(page: str) -> list[dict]:
     ]
 
 
-def contact_email(page: str) -> str:
-    """Единственный сейчас канал связи — берём из ссылки на сайте, а не
-    вписываем руками: иначе рано или поздно разъедется, как цены."""
-    m = re.search(r'mailto:([^"?]+)', page)
-    return m.group(1) if m else ""
+def contacts(page: str) -> dict:
+    """Каналы связи — из настоящих ссылок в блоке #call, а не вписанные
+    руками: иначе рано или поздно разъедутся, как это уже было с ценами."""
+    block = section(page, 'id="call"', "</footer>")
+    out = {}
+    phone = re.search(r'href="tel:([^"]+)"', block)
+    if phone:
+        out["телефон"] = phone.group(1)
+    whatsapp = re.search(r'href="(https://wa\.me/[^"]+)"', block)
+    if whatsapp:
+        out["whatsapp"] = whatsapp.group(1)
+    telegram = re.search(r'href="(https://t\.me/[^"]+)"', block)
+    if telegram:
+        out["telegram"] = telegram.group(1)
+    max_ = re.search(r'href="(https://max\.ru/[^"]+)"', block)
+    if max_:
+        out["max"] = max_.group(1)
+    return out
 
 
 def main() -> None:
@@ -83,7 +96,7 @@ def main() -> None:
     ]
     kb = {
         "собрано": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "контакт": contact_email(page),
+        "контакты": contacts(page),
         "продукт": product,
         "политика": json.loads((PRODUCT / "policy.json").read_text(encoding="utf-8")),
         **tariffs(page),
@@ -92,7 +105,7 @@ def main() -> None:
     OUT.write_text(json.dumps(kb, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     size = len(json.dumps(kb, ensure_ascii=False))
-    print(f"контакт: {kb['контакт'] or '(не найден)'}")
+    print(f"контакты: {kb['контакты'] or '(не найдены)'}")
     print(f"тем о продукте: {len(product)}")
     print(f"тарифов: {len(kb['тарифы'])} — " + ", ".join(
         f"{p['тариф']} {p['в_месяц']}" for p in kb["тарифы"]))
