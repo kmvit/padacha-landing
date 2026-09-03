@@ -3,3 +3,13 @@ __pycache__/
 assistant/.venv/
 assistant/.env
 assistant/data/kb.json
+
+# Внутренние материалы: не в репозиторий и тем более не в веб-корень прода
+direct/
+
+# Мусор редакторов и ОС
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.log
