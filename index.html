@@ -241,6 +241,37 @@
   .scan-step b { display: block; margin: 10px 0 8px; font-weight: 600; }
   .scan-step span { color: var(--ink-dim); font-size: .92rem; }
 
+  /* ── Видео ───────────────────────────────────────────────────────────── */
+  .video-wrap {
+    position: relative; border: 1px solid var(--line); background: #000;
+    box-shadow: var(--shadow); overflow: hidden; line-height: 0;
+  }
+  .video-wrap video { width: 100%; height: auto; display: block; }
+  /* Кнопка звука: ролик крутится без него, но включить надо уметь. */
+  .video-sound {
+    position: absolute; right: 14px; bottom: 14px;
+    font-family: "IBM Plex Mono", monospace; font-size: .74rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; line-height: 1;
+    padding: 10px 16px; cursor: pointer;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    color: var(--ink); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  }
+  .video-sound:hover { border-color: var(--heat); color: var(--heat); }
+  /* Кнопка запуска поверх постера — пока ролик не начали смотреть. */
+  .video-play {
+    position: absolute; inset: 0; margin: auto; width: 96px; height: 96px;
+    display: grid; place-items: center; cursor: pointer;
+    font-size: 30px; line-height: 1; padding-left: 6px;
+    color: var(--heat-ink); background: var(--heat); border: 0; border-radius: 50%;
+    box-shadow: 0 12px 40px rgba(255,122,24,.45);
+    transition: transform .2s;
+  }
+  .video-play:hover { transform: scale(1.06); }
+  .video-note {
+    font-family: "IBM Plex Mono", monospace; font-size: .78rem;
+    color: var(--ink-faint); margin-top: 14px; letter-spacing: .04em;
+  }
+
   /* ── Pricing ─────────────────────────────────────────────────────────── */
   .switch { display: inline-flex; border: 1px solid var(--line); margin-bottom: 44px; }
   .switch button {
@@ -344,6 +375,7 @@
     <nav aria-label="Разделы">
       <a href="#line">Станции</a>
       <a href="#scan">Склад</a>
+      <a href="#video">Видео</a>
       <a href="#pricing">Тарифы</a>
       <a href="#faq">Вопросы</a>
       <a href="https://demo.humuhumunukunukuapua.ru" target="_blank" rel="noreferrer">Демо</a>
@@ -517,6 +549,24 @@
           <span>После подтверждения меняются остатки и цены закупки, себестоимость блюд пересчитывается.</span>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="video">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">За минуту</div>
+        <h2>Посмотрите, как это работает</h2>
+        <p>Путь заказа от телефона гостя до окна выдачи, и что в конце месяца показывают «Финансы».</p>
+      </div>
+      <div class="video-wrap">
+        <video id="promo" playsinline muted loop preload="none" poster="promo-poster.jpg">
+          <source src="promo.mp4" type="video/mp4">
+        </video>
+        <button class="video-play" id="play" type="button" aria-label="Смотреть ролик">▶</button>
+        <button class="video-sound" id="sound" type="button" hidden>Звук выкл</button>
+      </div>
+      <p class="video-note">Ролик идёт без звука и по кругу — включите звук кнопкой.</p>
     </div>
   </section>
 
@@ -697,6 +747,37 @@
         });
       });
     });
+
+    /* Промо-ролик. На широком экране заводим сам, без звука — так его
+       вообще увидят. На телефоне ждём нажатия: 4 МБ чужого трафика
+       автоматом тянуть невежливо. */
+    var promo = document.getElementById("promo");
+    var play = document.getElementById("play");
+    var sound = document.getElementById("sound");
+    if (promo && play && sound) {
+      // Кнопку прячем только когда ролик реально пошёл: если браузер
+      // запретит автозапуск, гость останется с постером и без кнопки.
+      promo.addEventListener("playing", function () {
+        play.hidden = true;
+        sound.hidden = false;
+      });
+      promo.addEventListener("pause", function () {
+        if (promo.currentTime === 0) play.hidden = false;
+      });
+      var start = function () {
+        promo.preload = "auto";
+        var p = promo.play();
+        if (p && p.catch) p.catch(function () { play.hidden = false; });
+      };
+      play.addEventListener("click", start);
+      if (window.innerWidth >= 900 && !reduce) start();
+
+      sound.addEventListener("click", function () {
+        promo.muted = !promo.muted;
+        sound.textContent = promo.muted ? "Звук выкл" : "Звук вкл";
+        if (!promo.muted) promo.play();
+      });
+    }
 
     if (reduce) return;
 
