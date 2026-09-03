@@ -777,8 +777,8 @@
       <p>Запуск за вечер. Поможем перенести меню и не сломать ничего в разгар сервиса.</p>
       <div class="contacts">
         <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
-        <a class="btn ghost" href="https://wa.me/79943121222" target="_blank" rel="noreferrer">WhatsApp</a>
-        <a class="btn ghost" href="https://t.me/+79943121222" target="_blank" rel="noreferrer">Telegram</a>
+        <a class="btn ghost" href="https://wa.me/79289557566" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="btn ghost" href="https://t.me/+79289557566" target="_blank" rel="noreferrer">Telegram</a>
         <a class="btn ghost" href="https://max.ru/u/f9LHodD0cOIIAAQbhXr2nnV8L7VZRhxS-b2jl7dlT1-hrMK2KHMn_9lIDfw" target="_blank" rel="noreferrer">MAX</a>
       </div>
     </div>
@@ -960,10 +960,14 @@
     function escapeHtml(s) {
       return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
+    // Мессенджер вместо голого адреса: посетителю нужно название, по
+    // которому кликнуть, а не URL, который он и так не читает.
+    var LINK_LABELS = { "wa.me": "WhatsApp", "t.me": "Telegram", "max.ru": "MAX" };
+
     function linkify(text) {
       // Один проход одним регэкспом с альтернативой: адрес или телефон.
       // Раздельные .replace() ловят баг — цифры номера внутри
-      // «https://t.me/+79943121222» повторно попадают под телефонный шаблон
+      // «https://t.me/+79289557566» повторно попадают под телефонный шаблон
       // и оборачиваются в свою ссылку прямо внутри уже готовой <a>.
       var pattern = /(https?:\/\/[^\s<]+)|(\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2})/g;
       return escapeHtml(text).replace(pattern, function (m, url) {
@@ -971,7 +975,12 @@
           var trail = "";
           var t = url.match(/[.,;:!?)]+$/);
           if (t) { trail = t[0]; url = url.slice(0, -trail.length); }
-          return '<a href="' + url + '" target="_blank" rel="noreferrer">' + url + "</a>" + trail;
+          var label = url;
+          try {
+            var host = new URL(url).hostname.replace(/^www\./, "");
+            if (LINK_LABELS[host]) label = LINK_LABELS[host];
+          } catch (e) { /* не распарсился — покажем адрес как есть */ }
+          return '<a href="' + url + '" target="_blank" rel="noreferrer">' + label + "</a>" + trail;
         }
         return '<a href="tel:+7' + m.replace(/\D/g, "").slice(1) + '">' + m + "</a>";
       });
