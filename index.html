@@ -555,18 +555,18 @@
   <section id="video">
     <div class="wrap">
       <div class="head">
-        <div class="lbl">Обзор · 1 минута</div>
+        <div class="lbl">Обзор · 1,5 минуты</div>
         <h2>Как устроена работа заведения</h2>
         <p>Один заказ проходит через все роли: гость, официант, кухня и бар, стойка, склад, менеджер.</p>
       </div>
       <div class="video-wrap">
-        <video id="promo" playsinline muted loop preload="none" poster="promo-poster.jpg">
+        <video id="promo" playsinline muted preload="none" poster="promo-poster.jpg">
           <source src="promo.mp4" type="video/mp4">
         </video>
         <button class="video-play" id="play" type="button" aria-label="Смотреть ролик">▶</button>
         <button class="video-sound" id="sound" type="button" hidden>Звук выкл</button>
       </div>
-      <p class="video-note">Ролик идёт без звука и по кругу — включите звук кнопкой.</p>
+      <p class="video-note">Ролик с закадровым рассказом. По кнопке ▶ он запустится со звуком.</p>
     </div>
   </section>
 
@@ -748,9 +748,10 @@
       });
     });
 
-    /* Промо-ролик. На широком экране заводим сам, без звука — так его
-       вообще увидят. На телефоне ждём нажатия: 4 МБ чужого трафика
-       автоматом тянуть невежливо. */
+    /* Промо-ролик с закадровым голосом. На широком экране заводим сам и
+       без звука — иначе браузер автозапуск запретит, да и говорящее видео
+       в лицо гостю невежливо. Нажали ▶ сами — включаем со звуком.
+       На телефоне ждём нажатия: 7 МБ чужого трафика автоматом не тянем. */
     var promo = document.getElementById("promo");
     var play = document.getElementById("play");
     var sound = document.getElementById("sound");
@@ -764,12 +765,22 @@
       promo.addEventListener("pause", function () {
         if (promo.currentTime === 0) play.hidden = false;
       });
+      // Ролик не зациклен: досмотрели — снова показываем кнопку.
+      promo.addEventListener("ended", function () {
+        play.hidden = false;
+        promo.currentTime = 0;
+      });
       var start = function () {
         promo.preload = "auto";
         var p = promo.play();
         if (p && p.catch) p.catch(function () { play.hidden = false; });
       };
-      play.addEventListener("click", start);
+      play.addEventListener("click", function () {
+        // осознанное нажатие — значит, звук уместен
+        promo.muted = false;
+        sound.textContent = "Звук вкл";
+        start();
+      });
       if (window.innerWidth >= 900 && !reduce) start();
 
       sound.addEventListener("click", function () {
