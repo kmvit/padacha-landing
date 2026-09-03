@@ -425,6 +425,19 @@
     .ask-btn { right: 12px; bottom: 12px; }
   }
 </style>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112273830', 'ym');
+
+    ym(112273830, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112273830" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 </head>
 <body>
 <script>
@@ -1070,6 +1083,22 @@
           bubble("bot", "Не получилось отправить сообщение. Проверьте связь и попробуйте ещё раз.");
         })
         .finally(function () { send.disabled = false; input.focus(); });
+    });
+  })();
+</script>
+<script>
+  /* Цели Метрики: имена согласованы с кампанией Директа (direct/kampaniya-poisk-skfo.md) */
+  (function () {
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a || typeof ym !== "function") return;
+      var h = a.getAttribute("href");
+      var goal =
+        h === "#call" ? "click_connect" :
+        h.indexOf("tel:") === 0 ? "click_phone" :
+        /wa\.me|t\.me|max\.ru/.test(h) ? "click_messenger" :
+        h.indexOf("demo.humuhumunukunukuapua.ru") !== -1 ? "click_demo" : null;
+      if (goal) ym(112273830, "reachGoal", goal);
     });
   })();
 </script>
