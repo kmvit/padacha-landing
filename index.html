@@ -267,6 +267,9 @@
     transition: transform .2s;
   }
   .video-play:hover { transform: scale(1.06); }
+  /* без этого display:grid из класса перебивает атрибут hidden
+     и кнопка остаётся висеть поверх идущего ролика */
+  .video-play[hidden], .video-sound[hidden] { display: none; }
   .video-note {
     font-family: "IBM Plex Mono", monospace; font-size: .78rem;
     color: var(--ink-faint); margin-top: 14px; letter-spacing: .04em;
@@ -772,8 +775,13 @@
         play.hidden = true;
         sound.hidden = false;
       });
+      // На паузе кнопку возвращаем: она же и продолжает просмотр.
       promo.addEventListener("pause", function () {
-        if (promo.currentTime === 0) play.hidden = false;
+        play.hidden = false;
+      });
+      // Клик по кадру ставит на паузу и снимает с неё — как в любом плеере.
+      promo.addEventListener("click", function () {
+        if (promo.paused) start(); else promo.pause();
       });
       // Ролик не зациклен: досмотрели — снова показываем кнопку.
       promo.addEventListener("ended", function () {
