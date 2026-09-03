@@ -1,0 +1,37 @@
+# systemd-юнит ассистента. Ставится так:
+#   sudo cp assistant.service /etc/systemd/system/padacha-assistant.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now padacha-assistant
+#   sudo systemctl status padacha-assistant
+#
+# Пути подогнаны под /opt/padacha на сервере ganin — там же лежит лендинг.
+
+[Unit]
+Description=ИИ-ассистент «Падачи»
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/padacha/assistant
+Environment=PYTHONUNBUFFERED=1
+# Снапшот базы знаний собирается перед каждым стартом — из того же
+# index.html, что отдаёт nginx. `git pull` меняет файлы, но не бежит и не
+# перечитывает их сам; так перезапуск сервиса всегда означает свежие данные.
+# `-` в начале: не собралось — стартуем со старым снапшотом, это лучше,
+# чем молчащий ассистент.
+ExecStartPre=-/opt/padacha/assistant/.venv/bin/python -m scripts.export_kb
+ExecStart=/opt/padacha/assistant/.venv/bin/python -m app.server
+# Один воркер — не оптимизация, а требование: истории диалогов лежат
+# в памяти процесса. См. app/sessions.py.
+Restart=always
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

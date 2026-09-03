@@ -369,6 +369,58 @@
   @media (max-width: 560px) {
     .scan { grid-template-columns: 1fr; }
   }
+
+  /* ── Ассистент ───────────────────────────────────────────────────────── */
+  .ask-btn {
+    position: fixed; right: 22px; bottom: 22px; z-index: 60;
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px; border: 1px solid var(--heat); background: var(--heat);
+    color: var(--heat-ink); font-family: "IBM Plex Mono", monospace;
+    font-weight: 600; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase;
+    cursor: pointer; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s;
+  }
+  .ask-btn:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--heat), 0 10px 34px rgba(255,122,24,.32); }
+  .ask-btn[hidden] { display: none; }
+  .ask-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+  .ask-panel {
+    position: fixed; right: 22px; bottom: 22px; z-index: 61;
+    width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100vh - 100px));
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+  }
+  .ask-panel[hidden] { display: none; }
+  .ask-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--bg-deep);
+  }
+  .ask-head b { font-family: "Unbounded", sans-serif; font-size: .92rem; }
+  .ask-head span { display: block; margin-top: 2px; font-family: "IBM Plex Mono", monospace; font-size: .68rem; color: var(--ink-faint); letter-spacing: .04em; }
+  .ask-close {
+    border: 0; background: transparent; color: var(--ink-dim); cursor: pointer;
+    width: 30px; height: 30px; display: grid; place-items: center; font-size: 1.1rem;
+  }
+  .ask-close:hover { color: var(--heat); }
+  .ask-log { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .ask-msg { max-width: 88%; padding: 10px 14px; font-size: .92rem; line-height: 1.45; white-space: pre-wrap; }
+  .ask-msg.bot { align-self: flex-start; background: var(--bg-deep); color: var(--ink); border: 1px solid var(--line); }
+  .ask-msg.me { align-self: flex-end; background: var(--heat); color: var(--heat-ink); }
+  .ask-msg.wait { align-self: flex-start; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; font-size: .78rem; }
+  .ask-form { display: flex; gap: 8px; padding: 14px; border-top: 1px solid var(--line); }
+  .ask-form input {
+    flex: 1; min-width: 0; padding: 11px 13px; background: var(--bg); border: 1px solid var(--line);
+    color: var(--ink); font-family: "IBM Plex Sans", sans-serif; font-size: .92rem;
+  }
+  .ask-form input:focus { outline: none; border-color: var(--heat); }
+  .ask-form button {
+    border: 1px solid var(--heat); background: var(--heat); color: var(--heat-ink);
+    padding: 0 16px; cursor: pointer; font-size: 1rem;
+  }
+  .ask-form button:disabled { opacity: .5; cursor: default; }
+  @media (max-width: 480px) {
+    .ask-panel { right: 12px; left: 12px; bottom: 12px; width: auto; height: min(70vh, 560px); }
+    .ask-btn { right: 12px; bottom: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -732,6 +784,22 @@
   </div>
 </footer>
 
+<button class="ask-btn" id="askOpen" type="button">
+  <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5Z" stroke-linejoin="round"/></svg>
+  Спросить
+</button>
+<div class="ask-panel" id="askPanel" hidden role="dialog" aria-label="Вопрос о работе Падачи">
+  <div class="ask-head">
+    <div><b>Ассистент «Падачи»</b><span>Отвечает по документации сервиса</span></div>
+    <button class="ask-close" id="askClose" type="button" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="ask-log" id="askLog"></div>
+  <form class="ask-form" id="askForm">
+    <input id="askInput" type="text" placeholder="Например: как считается себестоимость" maxlength="1000" autocomplete="off">
+    <button type="submit" id="askSend" aria-label="Отправить">→</button>
+  </form>
+</div>
+
 <script>
   (function () {
     var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -854,6 +922,112 @@
       var m = String(mins % 60).padStart(2, "0");
       clock.textContent = h + ":" + m;
     }, 8000);
+  })();
+</script>
+
+<script>
+  /* Ассистент: отдельный блок, не завязан на анимации выше — работает и
+     при prefers-reduced-motion. Сессия открывается лениво, при первом
+     клике на кнопку: заглянувший на сайт человек, который её не нажал,
+     не занимает у сервиса место в лимите открытых диалогов. */
+  (function () {
+    var API = "/api/assistant";
+    var btn = document.getElementById("askOpen");
+    var panel = document.getElementById("askPanel");
+    var closeBtn = document.getElementById("askClose");
+    var log = document.getElementById("askLog");
+    var form = document.getElementById("askForm");
+    var input = document.getElementById("askInput");
+    var send = document.getElementById("askSend");
+    if (!btn || !panel || !form) return;
+
+    var sessionId = null;
+    var starting = null;
+
+    function bubble(role, text) {
+      var el = document.createElement("div");
+      el.className = "ask-msg " + role;
+      el.textContent = text;
+      log.appendChild(el);
+      log.scrollTop = log.scrollHeight;
+      return el;
+    }
+
+    function ensureSession() {
+      if (sessionId) return Promise.resolve();
+      if (starting) return starting;
+      starting = fetch(API + "/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.session_id) throw new Error("no session");
+          sessionId = d.session_id;
+          bubble("bot", d.greeting || "Здравствуйте.");
+        })
+        .catch(function () {
+          bubble("bot", "Ассистент сейчас недоступен. Напишите нам напрямую — контакты в разделе «Вопросы».");
+        })
+        .finally(function () { starting = null; });
+      return starting;
+    }
+
+    function open() {
+      panel.hidden = false;
+      btn.hidden = true;
+      ensureSession().then(function () { input.focus(); });
+    }
+    function close() {
+      panel.hidden = true;
+      btn.hidden = false;
+    }
+
+    btn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !panel.hidden) close();
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      send.disabled = true;
+      bubble("me", text);
+      var waiting = bubble("wait", "печатает…");
+
+      ensureSession()
+        .then(function () {
+          return fetch(API + "/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_id: sessionId, message: text }),
+          });
+        })
+        .then(function (r) {
+          if (r.status === 410) {
+            // сессия истекла — открываем новую и повторяем тот же вопрос молча
+            sessionId = null;
+            waiting.remove();
+            return ensureSession().then(function () {
+              return fetch(API + "/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id: sessionId, message: text }),
+              }).then(function (r2) { return r2.json(); });
+            });
+          }
+          return r.json();
+        })
+        .then(function (d) {
+          if (waiting.parentNode) waiting.remove();
+          bubble("bot", d.reply || d.message || "Не получилось ответить — попробуйте ещё раз.");
+        })
+        .catch(function () {
+          if (waiting.parentNode) waiting.remove();
+          bubble("bot", "Не получилось отправить сообщение. Проверьте связь и попробуйте ещё раз.");
+        })
+        .finally(function () { send.disabled = false; input.focus(); });
+    });
   })();
 </script>
 </body>

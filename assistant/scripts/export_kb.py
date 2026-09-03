@@ -16,6 +16,7 @@ from __future__ import annotations
 import html
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
@@ -67,6 +68,13 @@ def faq(page: str) -> list[dict]:
     ]
 
 
+def contact_email(page: str) -> str:
+    """Единственный сейчас канал связи — берём из ссылки на сайте, а не
+    вписываем руками: иначе рано или поздно разъедется, как цены."""
+    m = re.search(r'mailto:([^"?]+)', page)
+    return m.group(1) if m else ""
+
+
 def main() -> None:
     page = SITE.read_text(encoding="utf-8")
     product = [
@@ -74,6 +82,8 @@ def main() -> None:
         for f in sorted(PRODUCT.glob("[0-9]*.json"))
     ]
     kb = {
+        "собрано": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "контакт": contact_email(page),
         "продукт": product,
         "политика": json.loads((PRODUCT / "policy.json").read_text(encoding="utf-8")),
         **tariffs(page),
@@ -82,6 +92,7 @@ def main() -> None:
     OUT.write_text(json.dumps(kb, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     size = len(json.dumps(kb, ensure_ascii=False))
+    print(f"контакт: {kb['контакт'] or '(не найден)'}")
     print(f"тем о продукте: {len(product)}")
     print(f"тарифов: {len(kb['тарифы'])} — " + ", ".join(
         f"{p['тариф']} {p['в_месяц']}" for p in kb["тарифы"]))
