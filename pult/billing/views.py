@@ -11,6 +11,7 @@
 import hashlib
 import hmac
 import json
+from datetime import timedelta
 
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
@@ -43,9 +44,16 @@ def license_view(request: HttpRequest):
     instance.last_version = str(payload.get("version", ""))[:40]
     instance.save(update_fields=["last_seen_at", "last_version"])
 
+    # Своя точка не биллится, но инстанс считает лестницу блокировки
+    # локально по «оплачено до» — поэтому ей отдаём скользящий год вперёд,
+    # иначе она однажды заблокирует сама себя.
+    paid_until = instance.paid_until
+    if instance.is_internal:
+        paid_until = timezone.localdate() + timedelta(days=365)
+
     data = {
         "plan": instance.plan,
-        "paid_until": instance.paid_until.isoformat(),
+        "paid_until": paid_until.isoformat(),
         "grace_days": instance.grace_days,
         "status": instance.status(),
         # По issued_at инстанс отличает свежий ответ от сохранённого

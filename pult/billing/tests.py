@@ -110,3 +110,20 @@ class LicenseEndpointTests(TestCase):
 
     def test_get_not_allowed(self):
         self.assertEqual(self.client.get("/api/license/").status_code, 405)
+
+
+class InternalInstanceLicenseTests(TestCase):
+    def test_internal_point_gets_rolling_year(self):
+        """Своя точка с любой датой оплаты получает «+год» — не блокируется."""
+        inst = make_instance(is_internal=True, paid_until=date(2020, 1, 1))
+        res = self.client.post(
+            "/api/license/",
+            json.dumps({"key": inst.license_key}),
+            content_type="application/json",
+        )
+        data = res.json()["data"]
+        self.assertEqual(
+            data["paid_until"],
+            (timezone.localdate() + timedelta(days=365)).isoformat(),
+        )
+        self.assertEqual(data["status"], "active")
