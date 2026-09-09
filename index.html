@@ -371,6 +371,36 @@
     .scan { grid-template-columns: 1fr; }
   }
 
+  /* ── Что видит гость: макеты телефона ──────────────────────────────── */
+  .guest-grid {
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:34px; align-items:start;
+  }
+  .shot { margin:0; }
+  .shot img {
+    display:block; width:100%; height:auto;
+    /* тень «поднимает» телефон над фоном — рамка нарисована в самой картинке */
+    filter:drop-shadow(0 26px 46px rgba(0,0,0,.5));
+  }
+  /* средний экран крупнее: лента — самое сильное, что показываем */
+  .shot.pick img { transform:scale(1.06); transform-origin:top center; }
+  .shot figcaption { display:block; margin-top:26px; }
+  .shot.pick figcaption { margin-top:46px; }
+  .shot b {
+    display:block; font-family:"Unbounded",sans-serif; font-size:1.05rem; font-weight:600;
+  }
+  .shot.pick b { color:var(--heat); }
+  .shot span { display:block; color:var(--ink-dim); font-size:.92rem; margin-top:9px; line-height:1.5; }
+  .guest-note {
+    margin-top:46px; padding-top:22px; border-top:1px solid var(--line);
+    color:var(--ink-faint); font-family:"IBM Plex Mono",monospace; font-size:.82rem;
+    letter-spacing:.03em; text-align:center;
+  }
+  @media (max-width: 900px) {
+    .guest-grid { grid-template-columns:1fr; gap:52px; max-width:340px; margin-inline:auto; }
+    .shot.pick img { transform:none; }
+    .shot.pick figcaption { margin-top:26px; }
+  }
+
   /* ── Ассистент ───────────────────────────────────────────────────────── */
   .ask-btn {
     position: fixed; right: 22px; bottom: 22px; z-index: 60;
@@ -455,6 +485,7 @@
     <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Падача</a>
     <nav aria-label="Разделы">
       <a href="#line">Станции</a>
+      <a href="#guest">Гостю</a>
       <a href="#scan">Склад</a>
       <a href="#video">Видео</a>
       <a href="#pricing">Тарифы</a>
@@ -556,6 +587,36 @@
         <b>262 000 ₽</b>
         <span>столько остаётся в кафе за год при переходе с iiko «Профессиональный» на «Падачу». Это годовая зарплата повара или новая кофемашина каждые полгода.</span>
       </div>
+    </div>
+  </section>
+
+  <section id="guest">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Что видит гость</div>
+        <h2>Меню в телефоне, а не ламинированная папка</h2>
+        <p>Гость наводит камеру на QR — и открывает ваше меню с фотографиями. Собирает заказ сам, платит картой и следит за готовностью в своём телефоне. Печатать новое меню из-за смены цены больше не нужно.</p>
+      </div>
+
+      <div class="guest-grid">
+        <figure class="shot">
+          <img src="menu-list.webp" alt="Меню списком в телефоне гостя: категории, фотографии блюд, цены" width="780" height="1688" loading="lazy">
+          <figcaption><b>Списком</b><span>Все блюда с ценами и граммовкой. Когда гость знает, чего хочет, — самый быстрый способ собрать заказ.</span></figcaption>
+        </figure>
+
+        <figure class="shot pick">
+          <img src="menu-reels.webp" alt="Меню лентой: фотография блюда во весь экран" width="780" height="1688" loading="lazy">
+          <figcaption><b>Лентой с фото</b><span>Блюдо во весь экран, листается как в соцсетях. Продаёт то, о чём гость не думал, — средний чек растёт сам.</span></figcaption>
+        </figure>
+
+        <figure class="shot">
+          <img src="menu-pay.webp" alt="Оплата заказа картой в телефоне гостя" width="780" height="1688" loading="lazy">
+          <figcaption><b>Оплата картой</b><span>Гость платит прямо при заказе — Т-Банк, Сбербанк или ЮKassa, что подключено у вас. Очередь на кассе не собирается.</span></figcaption>
+        </figure>
+
+      </div>
+
+      <p class="guest-note">Оба вида меню — один и тот же каталог: цену и стоп-лист правите один раз, гость видит их сразу в обоих.</p>
     </div>
   </section>
 

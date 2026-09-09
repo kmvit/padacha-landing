@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Исходник макетов телефона для лэндинга. Не публикуется — из него
+     рендерятся PNG скриптом render.py. Токены те же, что на сайте,
+     чтобы снимки не отличались по цвету от блока, куда их вставят. */
+  :root {
+    --bg:#14110D; --bg-deep:#0C0A07; --surface:#1E1A14; --raised:#29231A;
+    --line:#362E22; --ink:#F6F0E4; --ink-dim:#A99C87; --ink-faint:#6E6455;
+    --heat:#FF7A18; --heat-ink:#17110A; --ready:#4FD290;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:transparent; font-family:"IBM Plex Sans",sans-serif; }
+
+  /* Рамка телефона: снимаем ровно её, поэтому размер фиксированный */
+  .phone {
+    width:390px; height:844px; background:var(--bg); color:var(--ink);
+    border-radius:44px; border:10px solid #0a0806; overflow:hidden;
+    position:relative; display:flex; flex-direction:column;
+    box-shadow:0 40px 90px rgba(0,0,0,.55);
+  }
+  .notch {
+    position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:112px; height:30px; background:#0a0806; border-radius:16px; z-index:5;
+  }
+  .status {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 26px 6px; font-family:"IBM Plex Mono",monospace;
+    font-size:13px; color:var(--ink); font-weight:600;
+  }
+
+  .bar {
+    display:flex; align-items:center; gap:10px; padding:10px 18px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo {
+    width:34px; height:34px; border-radius:10px; background:var(--heat);
+    display:grid; place-items:center; color:var(--heat-ink); font-size:17px;
+  }
+  .cafe { font-family:"Unbounded",sans-serif; font-weight:800; font-size:14px; letter-spacing:.04em; }
+  .grow { margin-left:auto; }
+  .chip-btn {
+    border:1px solid var(--line); border-radius:9px; padding:7px 11px;
+    font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-dim);
+  }
+
+  .body { flex:1; overflow:hidden; padding:16px 18px; }
+  h1 { font-family:"Unbounded",sans-serif; font-weight:800; font-size:30px; letter-spacing:-.02em; }
+  .sub { color:var(--ink-dim); font-size:13px; margin-top:7px; line-height:1.4; }
+  .lbl {
+    font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--heat); margin:18px 0 9px;
+  }
+
+  .views { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .view {
+    border:1px solid var(--line); border-radius:14px; padding:12px;
+    background:var(--surface);
+  }
+  .view.on { border-color:var(--heat); background:rgba(255,122,24,.10); }
+  .view .ic { font-size:17px; color:var(--ink-dim); line-height:1; }
+  .view b {
+    display:block; font-family:"Unbounded",sans-serif; font-size:14px;
+    margin-top:7px; font-weight:600;
+  }
+  .view.on b { color:var(--heat); }
+  .view.on .ic { color:var(--heat); }
+  .view span { display:block; color:var(--ink-dim); font-size:11px; margin-top:4px; line-height:1.35; }
+
+  .cats { display:flex; gap:7px; margin:16px 0 6px; }
+  .cat {
+    border:1px solid var(--line); border-radius:99px; padding:7px 13px;
+    font-size:12px; color:var(--ink-dim); white-space:nowrap;
+  }
+  .cat.on { background:var(--heat); color:var(--heat-ink); border-color:var(--heat); font-weight:600; }
+
+  .row { display:flex; align-items:center; gap:13px; padding:13px 0; border-top:1px solid var(--line); }
+  .row:first-of-type { border-top:0; }
+  .row img { width:54px; height:54px; border-radius:12px; object-fit:cover; }
+  .row .nm { font-size:15px; font-weight:500; }
+  .row .gr { font-size:11px; color:var(--ink-faint); margin-top:3px; font-family:"IBM Plex Mono",monospace; }
+  .row .pr { margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:15px; color:var(--heat); font-weight:600; }
+  .plus {
+    width:30px; height:30px; border-radius:9px; background:var(--heat); color:var(--heat-ink);
+    display:grid; place-items:center; font-size:18px; font-weight:600;
+  }
+
+  /* ── Лента: фото во весь экран ── */
+  .reel { position:relative; flex:1; }
+  .reel img { width:100%; height:100%; object-fit:cover; }
+  .reel .top {
+    position:absolute; top:0; left:0; right:0; display:flex; gap:8px;
+    /* сверху 54px — чтобы категории не уезжали под чёлку */
+    padding:54px 16px 40px; z-index:3;
+    background:linear-gradient(180deg, rgba(12,10,7,.94) 40%, transparent 100%);
+  }
+  .reel .btm {
+    /* справа оставляем место под круглую кнопку, иначе название заезжает под неё */
+    position:absolute; left:0; right:0; bottom:0; padding:70px 104px 34px 22px; z-index:3;
+    background:linear-gradient(0deg, rgba(12,10,7,.97) 45%, transparent 100%);
+  }
+  .reel .btm h2 { font-family:"Unbounded",sans-serif; font-size:28px; line-height:1.1; font-weight:800; }
+  .reel .btm .p { font-family:"IBM Plex Mono",monospace; font-size:26px; font-weight:600; margin-top:6px; }
+  .fab {
+    position:absolute; right:22px; bottom:38px; width:62px; height:62px;
+    border-radius:50%; background:var(--heat); color:var(--heat-ink);
+    display:grid; place-items:center; font-size:32px; z-index:4;
+    box-shadow:0 10px 30px rgba(255,122,24,.45);
+  }
+  .heart {
+    position:absolute; right:18px; top:78px; width:44px; height:44px; border-radius:14px;
+    background:rgba(12,10,7,.55); display:grid; place-items:center; font-size:19px; z-index:4;
+  }
+
+  /* ── Оплата ── */
+  .pay-card {
+    border:1px solid var(--line); border-radius:16px; background:var(--surface);
+    padding:17px; margin-top:16px;
+  }
+  .pl { display:flex; justify-content:space-between; font-size:14px; padding:9px 0; }
+  .pl.total {
+    border-top:1px solid var(--line); margin-top:9px; padding-top:14px;
+    font-family:"IBM Plex Mono",monospace; font-size:20px; font-weight:600;
+  }
+  .paybtn {
+    margin-top:18px; padding:16px; border-radius:12px; background:var(--heat);
+    color:var(--heat-ink); text-align:center; font-family:"IBM Plex Mono",monospace;
+    font-size:13px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  }
+  .banks { display:flex; gap:8px; justify-content:center; margin-top:13px; }
+  .bank {
+    border:1px solid var(--line); border-radius:9px; padding:7px 12px;
+    font-family:"IBM Plex Mono",monospace; font-size:10px; color:var(--ink-dim);
+  }
+  .after { color:var(--ink-dim); font-size:13px; line-height:1.5; margin-top:20px; }
+  .num-box { text-align:center; padding:26px 0 8px; }
+  .num-box .k {
+    font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.2em;
+    color:var(--ink-faint); text-transform:uppercase;
+  }
+  .num-box .n {
+    font-family:"Unbounded",sans-serif; font-size:88px; font-weight:800;
+    color:var(--ready); line-height:1; margin:12px 0 10px;
+  }
+  .num-box .s { font-size:15px; color:var(--ready); }
+  .track { display:flex; gap:6px; justify-content:center; margin-top:22px; }
+  .dot { width:38px; height:4px; border-radius:2px; background:var(--line); }
+  .dot.on { background:var(--ready); }
+</style>
+</head>
+<body>
+
+<!-- ═══ 1. Меню списком ═══ -->
+<div class="phone" id="shot-list">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span>▂▄▆ ⌁</span></div>
+  <div class="bar">
+    <div class="logo">☕</div>
+    <div class="cafe">КОФЕЙНЯ «КОМПАС»</div>
+    <div class="grow"></div>
+    <div class="chip-btn">Войти</div>
+  </div>
+  <div class="body">
+    <h1>Меню</h1>
+    <p class="sub">Соберите заказ и отправьте — официант примет его на ваш стол</p>
+
+    <div class="lbl">Варианты меню</div>
+    <div class="views">
+      <div class="view on">
+        <div class="ic">≡</div><b>Списком</b>
+        <span>Все блюда с ценами — быстро собрать заказ</span>
+      </div>
+      <div class="view">
+        <div class="ic">✦</div><b>Лентой с фото</b>
+        <span>Листать во весь экран, как в соцсетях</span>
+      </div>
+    </div>
+
+    <div class="cats">
+      <div class="cat on">Все</div><div class="cat">Кофе</div>
+      <div class="cat">Завтраки</div><div class="cat">Боулы</div>
+    </div>
+
+    <div class="row">
+      <img src="sq_latte.jpg" alt=""><div><div class="nm">Латте</div><div class="gr">320 мл</div></div>
+      <div class="pr">240 ₽</div><div class="plus">+</div>
+    </div>
+    <div class="row">
+      <img src="sq_raf.jpg" alt=""><div><div class="nm">Карамельный раф</div><div class="gr">300 мл</div></div>
+      <div class="pr">290 ₽</div><div class="plus">+</div>
+    </div>
+    <div class="row">
+      <img src="sq_bowl_crab.jpg" alt=""><div><div class="nm">Боул с крабом</div><div class="gr">380 г</div></div>
+      <div class="pr">650 ₽</div><div class="plus">+</div>
+    </div>
+    <div class="row">
+      <img src="sq_hawaii_breakfast.jpg" alt=""><div><div class="nm">Гавайский завтрак</div><div class="gr">340 г</div></div>
+      <div class="pr">480 ₽</div><div class="plus">+</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 2. Лента с фото ═══ -->
+<div class="phone" id="shot-reels">
+  <div class="notch"></div>
+  <div class="reel">
+    <img src="tall_bowl.jpg" alt="">
+    <div class="top">
+      <div class="cat">←</div><div class="cat on">Боулы</div>
+      <div class="cat">Кофе</div><div class="cat">Завтраки</div>
+    </div>
+    <div class="heart">♡</div>
+    <div class="btm">
+      <h2>Боул с крабом</h2>
+      <div class="p">650 ₽</div>
+    </div>
+    <div class="fab">+</div>
+  </div>
+</div>
+
+<!-- ═══ 3. Оплата онлайн ═══ -->
+<div class="phone" id="shot-pay">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span>▂▄▆ ⌁</span></div>
+  <div class="bar">
+    <div class="logo">☕</div>
+    <div class="cafe">КОФЕЙНЯ «КОМПАС»</div>
+  </div>
+  <div class="body">
+    <h1>Ваш заказ</h1>
+    <p class="sub">Оплатите картой — заберёте по номеру, без очереди на кассе</p>
+
+    <div class="pay-card">
+      <div class="pl"><span>Боул с крабом</span><span>650 ₽</span></div>
+      <div class="pl"><span>Латте</span><span>240 ₽</span></div>
+      <div class="pl"><span>Карамельный раф</span><span>290 ₽</span></div>
+      <div class="pl total"><span>Итого</span><span>1 180 ₽</span></div>
+      <div class="paybtn">Оплатить картой</div>
+      <div class="banks"><div class="bank">Т-БАНК</div><div class="bank">СБЕР</div><div class="bank">ЮKASSA</div></div>
+    </div>
+
+    <p class="after">После оплаты придёт номер заказа — готовность видно здесь же,
+      в телефоне. Подходить к стойке и ждать у кассы не нужно.</p>
+  </div>
+</div>
+
+</body>
+</html>

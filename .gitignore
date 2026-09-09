@@ -19,3 +19,7 @@ pult/.venv/
 pult/.env
 pult/var/
 pult/staticfiles/
+shots/src_*
+shots/sq_*
+shots/tall_*
+shots/*.png
