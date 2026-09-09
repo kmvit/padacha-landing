@@ -1,0 +1,32 @@
+# systemd-юнит пульта. Ставится так:
+#   sudo cp pult.service /etc/systemd/system/padacha-pult.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now padacha-pult
+#
+# Пути подогнаны под /opt/padacha на сервере ganin — тот же клон репозитория,
+# что лендинг и ассистент; деплой не меняется: git pull + restart.
+
+[Unit]
+Description=Пульт «Падачи»
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/padacha/pult
+Environment=PYTHONUNBUFFERED=1
+# Миграции и статика — перед каждым стартом: git pull привозит новые,
+# но сам их не применяет. Перезапуск сервиса = актуальная схема.
+ExecStartPre=/opt/padacha/pult/.venv/bin/python manage.py migrate --noinput
+ExecStartPre=/opt/padacha/pult/.venv/bin/python manage.py collectstatic --noinput
+ExecStart=/opt/padacha/pult/.venv/bin/gunicorn config.wsgi:application --bind 127.0.0.1:8110 --workers 2 --timeout 30
+Restart=always
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

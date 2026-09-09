@@ -13,3 +13,9 @@ direct/
 .vscode/
 *.swp
 *.log
+
+# Пульт: секреты, база, собранная статика, venv
+pult/.venv/
+pult/.env
+pult/var/
+pult/staticfiles/
