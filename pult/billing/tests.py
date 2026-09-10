@@ -113,17 +113,26 @@ class LicenseEndpointTests(TestCase):
 
 
 class InternalInstanceLicenseTests(TestCase):
-    def test_internal_point_gets_rolling_year(self):
-        """Своя точка с любой датой оплаты получает «+год» — не блокируется."""
-        inst = make_instance(is_internal=True, paid_until=date(2020, 1, 1))
+    def _license(self, inst):
         res = self.client.post(
             "/api/license/",
             json.dumps({"key": inst.license_key}),
             content_type="application/json",
         )
-        data = res.json()["data"]
-        self.assertEqual(
-            data["paid_until"],
-            (timezone.localdate() + timedelta(days=365)).isoformat(),
-        )
+        return res.json()["data"]
+
+    def test_internal_point_gets_real_date_and_flag(self):
+        """Своей точке — честная дата и признак, а не фиктивный «+год».
+
+        Инстанс не блокируется по признаку; дата нужна, чтобы панель
+        владельца и пульт показывали одно и то же.
+        """
+        inst = make_instance(is_internal=True, paid_until=date(2020, 1, 1))
+        data = self._license(inst)
+        self.assertEqual(data["paid_until"], "2020-01-01")
+        self.assertTrue(data["internal"])
         self.assertEqual(data["status"], "active")
+
+    def test_ordinary_point_is_not_internal(self):
+        data = self._license(make_instance())
+        self.assertFalse(data["internal"])

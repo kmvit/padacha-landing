@@ -44,16 +44,14 @@ def license_view(request: HttpRequest):
     instance.last_version = str(payload.get("version", ""))[:40]
     instance.save(update_fields=["last_seen_at", "last_version"])
 
-    # Своя точка не биллится, но инстанс считает лестницу блокировки
-    # локально по «оплачено до» — поэтому ей отдаём скользящий год вперёд,
-    # иначе она однажды заблокирует сама себя.
-    paid_until = instance.paid_until
-    if instance.is_internal:
-        paid_until = timezone.localdate() + timedelta(days=365)
-
+    # Своей точке отдаём НАСТОЯЩУЮ дату и отдельный признак: инстанс по
+    # нему просто не блокируется (core/license.py). Раньше здесь была
+    # фиктивная «сегодня + год» — она спасала от самоблокировки, но врала
+    # в панели владельца: пульт показывал одно, приложение другое.
     data = {
         "plan": instance.plan,
-        "paid_until": paid_until.isoformat(),
+        "paid_until": instance.paid_until.isoformat(),
+        "internal": instance.is_internal,
         "grace_days": instance.grace_days,
         "status": instance.status(),
         # По issued_at инстанс отличает свежий ответ от сохранённого
