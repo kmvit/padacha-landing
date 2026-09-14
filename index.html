@@ -3,13 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Падача — система управления кафе: заказы со стола, экраны кухни и бара, склад, смены и зарплата. Цена за заведение, экраны без доплат.">
+<meta name="description" content="Программа для кафе и ресторана: QR-меню и заказы со стола, экраны кухни и бара, склад и себестоимость, смены и зарплата. Одна цена за заведение — от 1 990 ₽/мес, экраны без доплат.">
 <meta name="theme-color" content="#FF7A18">
+<link rel="canonical" href="https://padacha.ru/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110D'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF7A18'/%3E%3C/svg%3E">
-<meta property="og:title" content="Падача — система управления кафе">
-<meta property="og:description" content="Экранов сколько нужно, цена одна. Заказы со стола, кухня и бар, склад, смены и зарплата.">
+<meta property="og:title" content="Падача — программа для автоматизации кафе и ресторана">
+<meta property="og:description" content="Экранов сколько нужно, цена одна. QR-меню и заказы со стола, кухня и бар, склад, смены и зарплата — от 1 990 ₽/мес за заведение.">
 <meta property="og:type" content="website">
-<title>Падача</title>
+<meta property="og:url" content="https://padacha.ru/">
+<meta property="og:site_name" content="Падача">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://padacha.ru/promo-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<title>Падача — программа для автоматизации кафе и ресторана</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -468,6 +474,54 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/112273830" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Падача",
+      "url": "https://padacha.ru/",
+      "description": "Программа для автоматизации кафе и ресторана: QR-меню и заказы со стола, экраны кухни и бара, склад и себестоимость, смены и зарплата. Одна цена за заведение, экраны без доплат.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "ru",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "RUB",
+        "lowPrice": "1990",
+        "highPrice": "3990",
+        "offerCount": "3",
+        "offers": [
+          {"@type": "Offer", "name": "Старт", "price": "1990", "priceCurrency": "RUB", "description": "Кофейня, фудтрак, окно выдачи, бар: QR-меню, заказ со стола или выдача по номеру, экран стойки, отчёты"},
+          {"@type": "Offer", "name": "Зал", "price": "2990", "priceCurrency": "RUB", "description": "Кафе с кухней и баром: канбан кухни, экран бара, тайминги станций, блок «К подаче»"},
+          {"@type": "Offer", "name": "Максимум", "price": "3990", "priceCurrency": "RUB", "description": "Полный контроль: склад, приход по фото накладной, тех-карты и себестоимость, смены и зарплата, финансы"}
+        ]
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Падача",
+        "url": "https://padacha.ru/",
+        "telephone": "+7 994 312-12-22"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Можно посмотреть систему до подключения?", "acceptedAnswer": {"@type": "Answer", "text": "Да, открыт демо-стенд demo.padacha.ru — вымышленная кофейня с настоящими данными: меню, заказы, склад, смены и финансы. Вход под любой ролью с паролем demo12345."}},
+        {"@type": "Question", "name": "Какое оборудование нужно покупать?", "acceptedAnswer": {"@type": "Answer", "text": "Никакое. Подойдут планшеты и телефоны, которые уже есть: «Падача» открывается в браузере и ставится на экран как приложение. Кассовые моноблоки, серверы и лицензии не нужны."}},
+        {"@type": "Question", "name": "Обязательно клеить QR-коды на столы?", "acceptedAnswer": {"@type": "Answer", "text": "Нет. С QR гость заказывает сам, и стол определяется автоматически. Без QR официант принимает заказ и выбирает стол на своём планшете."}},
+        {"@type": "Question", "name": "А если нет зала — киоск, фудтрак, окно выдачи?", "acceptedAnswer": {"@type": "Answer", "text": "Есть формат «стойка»: гость сканирует QR, заказывает и получает номер, заказ попадает на экран за стойкой, выдача по номеру. Гость следит за готовностью в телефоне."}},
+        {"@type": "Question", "name": "Что с доставкой и агрегаторами?", "acceptedAnswer": {"@type": "Answer", "text": "Интеграций с Яндекс Едой и Деливери пока нет. «Падача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню."}},
+        {"@type": "Question", "name": "А фискализация и онлайн-касса?", "acceptedAnswer": {"@type": "Answer", "text": "Оплаты фиксируются в системе — наличные и карта отдельно. Чек пробивается на вашей онлайн-кассе как обычно. Прямая интеграция со смарт-терминалами в разработке."}},
+        {"@type": "Question", "name": "Сколько стоит внедрение и обучение персонала?", "acceptedAnswer": {"@type": "Answer", "text": "15 000 ₽ один раз при подключении: поднимаем систему, переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Дальше — только тариф, без доплат за поддержку и обновления."}},
+        {"@type": "Question", "name": "Что будет с моими данными, если я уйду?", "acceptedAnswer": {"@type": "Answer", "text": "Заберёте их с собой: меню, продажи, склад и историю смен выгрузим в таблицы по первой просьбе."}},
+        {"@type": "Question", "name": "Правда безлимит экранов? В чём подвох?", "acceptedAnswer": {"@type": "Answer", "text": "Подвоха нет: система работает в браузере, лицензии на каждое устройство не нужны. Ограничение одно — подписка действует на одно заведение."}}
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <script>
@@ -556,7 +610,7 @@
       <div class="head">
         <div class="lbl">Что видит гость</div>
         <h2>Меню в телефоне, а не ламинированная папка</h2>
-        <p>Гость наводит камеру на QR — и открывает ваше меню с фотографиями. Собирает заказ сам, платит картой и следит за готовностью в своём телефоне. Печатать новое меню из-за смены цены больше не нужно.</p>
+        <p>Гость наводит камеру на QR — и открывает ваше электронное меню с фотографиями. Собирает заказ сам, платит картой и следит за готовностью в своём телефоне. Печатать новое меню из-за смены цены больше не нужно.</p>
       </div>
 
       <div class="guest-grid">
@@ -630,7 +684,7 @@
       <div class="stations">
         <div class="station">
           <div class="who">Гость</div>
-          <h3>Меню в телефоне</h3>
+          <h3>QR-меню в телефоне</h3>
           <p>Листает меню с фото, ставит лайки, видит стоп-лист. Может заказать сам по QR со стола, а может просто показать пальцем — как вам привычнее.</p>
         </div>
         <div class="station">
@@ -640,13 +694,13 @@
         </div>
         <div class="station">
           <div class="who">Кухня и бар</div>
-          <h3>Очередь с таймингом</h3>
+          <h3>Экран кухни и бара</h3>
           <p>Свои позиции, свой ритм: принял — готовлю — отдал. Звук на новый заказ, время по каждому блюду. Кончилось — стоп-лист одной кнопкой, гость сразу видит.</p>
         </div>
         <div class="station">
           <div class="who">Склад</div>
           <h3>Остатки без ревизий</h3>
-          <p>Ингредиенты списываются сами в момент отдачи блюда. Система показывает, что заканчивается, и собирает список закупа на день. Себестоимость — по последним ценам прихода.</p>
+          <p>Складской учёт ведётся сам: ингредиенты списываются в момент отдачи блюда по тех-картам. Система показывает, что заканчивается, и собирает список закупа на день. Себестоимость и фудкост — по последним ценам прихода.</p>
         </div>
         <div class="station">
           <div class="who">Управляющий</div>
