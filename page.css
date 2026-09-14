@@ -1,0 +1,147 @@
+/* Общие стили внутренних страниц «Падачи». Токены синхронизированы с index.html */
+:root {
+  --bg:#14110D; --bg-deep:#0C0A07; --surface:#1E1A14; --raised:#29231A; --line:#362E22;
+  --ink:#F6F0E4; --ink-dim:#A99C87; --ink-faint:#6E6455;
+  --heat:#FF7A18; --heat-ink:#17110A; --heat-soft:#3A2210; --ready:#4FD290;
+  --lamp: radial-gradient(120% 100% at 50% 0%, rgba(255,122,24,.30) 0%, rgba(255,122,24,.07) 45%, transparent 72%);
+  --shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+:root[data-theme="light"] {
+  --bg:#EFEBE2; --bg-deep:#E4DFD3; --surface:#F8F5EE; --raised:#FFFFFF; --line:#D6CFC0;
+  --ink:#17130E; --ink-dim:#5E5648; --ink-faint:#8B8271;
+  --heat:#D2570A; --heat-ink:#FFF7F0; --heat-soft:#FBE6D4; --ready:#167D4E;
+  --lamp: radial-gradient(120% 100% at 50% 0%, rgba(210,87,10,.16) 0%, rgba(210,87,10,.04) 45%, transparent 72%);
+  --shadow: 0 18px 44px rgba(60,45,25,.14);
+}
+:root[data-theme="light"] .theme-btn .moon { display:block; }
+:root[data-theme="light"] .theme-btn .sun { display:none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-btn .moon { display:block; }
+  :root:not([data-theme="dark"]) .theme-btn .sun { display:none; }
+}
+.theme-btn .moon { display:none; }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin:0; background: var(--bg); color: var(--ink);
+  font-family:"IBM Plex Sans", system-ui, sans-serif; font-size:17px; line-height:1.6; overflow-x:hidden;
+}
+h1,h2,h3 { font-family:"Unbounded", system-ui, sans-serif; margin:0; line-height:1.12; letter-spacing:-.02em; text-wrap:balance; }
+p { margin:0; }
+a { color: inherit; }
+ul, ol { margin:0; padding:0; }
+.mono { font-family:"IBM Plex Mono", ui-monospace, monospace; }
+.wrap { width:min(1140px, 100% - 44px); margin-inline:auto; }
+.narrow { width:min(760px, 100% - 44px); margin-inline:auto; }
+:focus-visible { outline:2px solid var(--heat); outline-offset:3px; border-radius:2px; }
+
+.lbl { font-family:"IBM Plex Mono", monospace; font-size:.72rem; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:var(--heat); }
+
+.btn {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:.88rem;
+  letter-spacing:.1em; text-transform:uppercase; text-decoration:none;
+  padding:15px 26px; border:1px solid var(--heat); background:var(--heat); color:var(--heat-ink);
+  transition: box-shadow .2s, transform .2s, background .2s, color .2s;
+}
+.btn:hover { box-shadow:0 0 0 1px var(--heat), 0 10px 34px rgba(255,122,24,.32); transform:translateY(-2px); }
+.btn.ghost { background:transparent; color:var(--ink); border-color:var(--line); }
+.btn.ghost:hover { border-color:var(--heat); color:var(--heat); box-shadow:none; }
+.btn.sm { padding:10px 18px; font-size:.76rem; }
+
+header { position:sticky; top:0; z-index:60; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+.nav { display:flex; align-items:center; gap:30px; height:68px; }
+.brand { font-family:"Unbounded", sans-serif; font-weight:800; font-size:1.15rem; letter-spacing:.06em; text-transform:uppercase; text-decoration:none; color:var(--ink); display:flex; align-items:center; gap:10px; }
+.dot { width:8px; height:8px; background:var(--heat); border-radius:50%; box-shadow:0 0 12px var(--heat); animation:pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+.nav nav { display:flex; gap:26px; margin-left:auto; }
+.nav nav a { font-family:"IBM Plex Mono", monospace; font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); text-decoration:none; }
+.nav nav a:hover { color:var(--heat); }
+.theme-btn { width:38px; height:38px; display:grid; place-items:center; flex:none; background:transparent; border:1px solid var(--line); color:var(--ink-dim); cursor:pointer; transition:color .2s, border-color .2s; }
+.theme-btn:hover { color:var(--heat); border-color:var(--heat); }
+.theme-btn svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; }
+
+/* ── Шапка страницы ── */
+.page-hero { padding:66px 0 54px; background:var(--lamp), var(--bg-deep); border-bottom:1px solid var(--line); }
+.page-hero h1 { font-size:clamp(1.9rem, 4vw, 3rem); font-weight:800; margin:16px 0 18px; }
+.page-hero .lede { color:var(--ink-dim); font-size:1.08rem; max-width:44rem; }
+.page-hero .btns { display:flex; gap:14px; flex-wrap:wrap; margin-top:30px; }
+.crumbs { font-family:"IBM Plex Mono", monospace; font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:18px; }
+.crumbs a { color:var(--ink-dim); text-decoration:none; }
+.crumbs a:hover { color:var(--heat); }
+
+section { padding:76px 0; position:relative; }
+section.deep { background:var(--bg-deep); border-block:1px solid var(--line); }
+.head { max-width:40rem; margin-bottom:42px; }
+.head h2 { font-size:clamp(1.55rem, 3.2vw, 2.2rem); font-weight:800; margin:14px 0 16px; }
+.head p { color:var(--ink-dim); }
+
+/* ── Карточки ── */
+.cards { display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+.card { background:var(--bg); padding:30px 26px; }
+section.deep .card { background:var(--bg-deep); }
+.card h3 { font-size:1.06rem; font-weight:600; margin-bottom:12px; }
+.card p { color:var(--ink-dim); font-size:.96rem; }
+
+/* ── Текст статьи ── */
+.prose { font-size:1.02rem; }
+.prose > * + * { margin-top:20px; }
+.prose h2 { font-size:clamp(1.4rem, 2.8vw, 1.85rem); font-weight:800; margin-top:52px; }
+.prose h3 { font-size:1.12rem; font-weight:600; margin-top:36px; }
+.prose p, .prose li { color:var(--ink-dim); }
+.prose strong { color:var(--ink); font-weight:600; }
+.prose ul, .prose ol { padding-left:22px; }
+.prose ul { list-style:disc; }
+.prose ol { list-style:decimal; }
+.prose li + li { margin-top:8px; }
+.prose a { color:var(--heat); text-decoration:underline; text-underline-offset:3px; }
+.prose table { width:100%; border-collapse:collapse; font-size:.95rem; display:block; overflow-x:auto; }
+.prose th, .prose td { border:1px solid var(--line); padding:11px 14px; text-align:left; color:var(--ink-dim); }
+.prose th { font-family:"IBM Plex Mono", monospace; font-size:.76rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink); background:var(--surface); }
+.prose td.num, .prose th.num { text-align:right; font-family:"IBM Plex Mono", monospace; }
+.callout { border:1px solid var(--heat); border-left-width:3px; background:var(--heat-soft); padding:24px 26px; }
+.callout p { color:var(--ink); }
+.callout .lbl { display:block; margin-bottom:10px; }
+
+/* ── FAQ ── */
+details { border-bottom:1px solid var(--line); padding:20px 0; }
+summary { cursor:pointer; font-weight:600; list-style:none; display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+summary::-webkit-details-marker { display:none; }
+summary::after { content:"+"; font-family:"IBM Plex Mono", monospace; color:var(--heat); flex:none; }
+details[open] summary::after { content:"−"; }
+details p { color:var(--ink-dim); margin-top:14px; }
+details p + p { margin-top:10px; }
+
+/* ── Финальный призыв ── */
+.call { padding:76px 0; background:var(--lamp), var(--bg-deep); border-top:1px solid var(--line); text-align:center; }
+.call h2 { font-size:clamp(1.55rem, 3.2vw, 2.2rem); font-weight:800; margin:14px 0 14px; }
+.call p { color:var(--ink-dim); max-width:36rem; margin-inline:auto; }
+.contacts { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+
+/* ── Перелинковка ── */
+.more { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+.more a { background:var(--bg); padding:26px 24px; text-decoration:none; display:block; transition:background .2s; }
+section.deep .more a { background:var(--bg-deep); }
+.more a:hover { background:var(--surface); }
+.more b { display:block; font-family:"Unbounded", sans-serif; font-size:1rem; margin-bottom:8px; }
+.more span { color:var(--ink-dim); font-size:.93rem; }
+
+/* ── Список статей ── */
+.posts { border:1px solid var(--line); }
+.posts a { display:block; padding:30px 28px; text-decoration:none; border-bottom:1px solid var(--line); transition:background .2s; }
+.posts a:last-child { border-bottom:0; }
+.posts a:hover { background:var(--surface); }
+.posts .meta { font-family:"IBM Plex Mono", monospace; font-size:.72rem; font-weight:500; letter-spacing:.16em; text-transform:uppercase; color:var(--heat); }
+.posts h2 { font-family:"Unbounded", sans-serif; font-size:1.28rem; font-weight:600; margin:11px 0 11px; }
+.posts p { color:var(--ink-dim); font-size:.97rem; max-width:54rem; }
+
+footer { padding:34px 0 46px; border-top:1px solid var(--line); }
+.foot { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; font-family:"IBM Plex Mono", monospace; font-size:.76rem; color:var(--ink-faint); letter-spacing:.04em; }
+.foot a { color:var(--ink-dim); text-decoration:none; }
+.foot a:hover { color:var(--heat); }
+
+@media (max-width: 900px) {
+  .cards, .more { grid-template-columns:1fr; }
+  .nav nav { display:none; }
+}
