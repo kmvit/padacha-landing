@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Программа для кафе и ресторана: QR-меню и заказы со стола, экраны кухни и бара, склад и себестоимость, смены и зарплата. Одна цена за заведение — от 1 990 ₽/мес, экраны без доплат.">
+<meta name="description" content="Программа для кафе и ресторана: QR-меню и заказы со стола, экраны кухни и бара, склад и себестоимость, смены и зарплата. Одна цена за заведение — от 2 590 ₽/мес, экраны без доплат.">
 <meta name="theme-color" content="#FF7A18">
 <link rel="canonical" href="https://padacha.ru/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110D'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF7A18'/%3E%3C/svg%3E">
 <meta property="og:title" content="Падача — программа для автоматизации кафе и ресторана">
-<meta property="og:description" content="Экранов сколько нужно, цена одна. QR-меню и заказы со стола, кухня и бар, склад, смены и зарплата — от 1 990 ₽/мес за заведение.">
+<meta property="og:description" content="Экранов сколько нужно, цена одна. QR-меню и заказы со стола, кухня и бар, склад, смены и зарплата — от 2 590 ₽/мес за заведение.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://padacha.ru/">
 <meta property="og:site_name" content="Падача">
@@ -227,6 +227,8 @@
   .bill-row.us .bar { background: var(--heat); box-shadow: 0 0 26px rgba(255,122,24,.4); }
   .bill-row.us { border-bottom-color: var(--heat); }
   .bill-note { font-family: "IBM Plex Mono", monospace; font-size: .74rem; color: var(--ink-faint); line-height: 1.7; }
+  .bill-note a { color: var(--heat); text-decoration: none; }
+  .bill-note a:hover { text-decoration: underline; text-underline-offset: 3px; }
   .save-shout { display: flex; align-items: baseline; gap: 16px; margin-top: 36px; flex-wrap: wrap; }
   .save-shout b { font-family: "Unbounded", sans-serif; font-weight: 800; font-size: clamp(2.4rem, 6vw, 4rem); color: var(--heat); line-height: 1; letter-spacing: -.03em; }
   .save-shout span { color: var(--ink-dim); max-width: 26em; }
@@ -491,20 +493,20 @@
       "offers": {
         "@type": "AggregateOffer",
         "priceCurrency": "RUB",
-        "lowPrice": "1990",
-        "highPrice": "3990",
+        "lowPrice": "2590",
+        "highPrice": "5990",
         "offerCount": "3",
         "offers": [
-          {"@type": "Offer", "name": "Старт", "price": "1990", "priceCurrency": "RUB", "description": "Кофейня, фудтрак, окно выдачи, бар: QR-меню, заказ со стола или выдача по номеру, экран стойки, отчёты"},
-          {"@type": "Offer", "name": "Зал", "price": "2990", "priceCurrency": "RUB", "description": "Кафе с кухней и баром: канбан кухни, экран бара, тайминги станций, блок «К подаче»"},
-          {"@type": "Offer", "name": "Максимум", "price": "3990", "priceCurrency": "RUB", "description": "Полный контроль: склад, приход по фото накладной, тех-карты и себестоимость, смены и зарплата, финансы"}
+          {"@type": "Offer", "name": "Старт", "price": "2590", "priceCurrency": "RUB", "description": "Кофейня, фудтрак, окно выдачи, бар: QR-меню, заказ со стола или выдача по номеру, экран стойки, отчёты"},
+          {"@type": "Offer", "name": "Зал", "price": "3990", "priceCurrency": "RUB", "description": "Кафе с кухней и баром: канбан кухни, экран бара, тайминги станций, блок «К подаче»"},
+          {"@type": "Offer", "name": "Максимум", "price": "5990", "priceCurrency": "RUB", "description": "Полный контроль: склад, приход по фото накладной, тех-карты и себестоимость, смены и зарплата, финансы"}
         ]
       },
       "publisher": {
         "@type": "Organization",
         "name": "Падача",
         "url": "https://padacha.ru/",
-        "telephone": "+7 994 312-12-22"
+        "telephone": "+7 994 312-12-22"
       }
     },
     {
@@ -516,7 +518,7 @@
         {"@type": "Question", "name": "А если нет зала — киоск, фудтрак, окно выдачи?", "acceptedAnswer": {"@type": "Answer", "text": "Есть формат «стойка»: гость сканирует QR, заказывает и получает номер, заказ попадает на экран за стойкой, выдача по номеру. Гость следит за готовностью в телефоне."}},
         {"@type": "Question", "name": "Что с доставкой и агрегаторами?", "acceptedAnswer": {"@type": "Answer", "text": "Интеграций с Яндекс Едой и Деливери пока нет. «Падача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню."}},
         {"@type": "Question", "name": "А фискализация и онлайн-касса?", "acceptedAnswer": {"@type": "Answer", "text": "Оплаты фиксируются в системе — наличные и карта отдельно. Чек пробивается на вашей онлайн-кассе как обычно. Прямая интеграция со смарт-терминалами в разработке."}},
-        {"@type": "Question", "name": "Сколько стоит внедрение и обучение персонала?", "acceptedAnswer": {"@type": "Answer", "text": "15 000 ₽ один раз при подключении: поднимаем систему, переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Дальше — только тариф, без доплат за поддержку и обновления."}},
+        {"@type": "Question", "name": "Сколько стоит внедрение и обучение персонала?", "acceptedAnswer": {"@type": "Answer", "text": "15 000 ₽ один раз при подключении: поднимаем систему, переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Дальше — только тариф, без доплат за поддержку и обновления."}},
         {"@type": "Question", "name": "Что будет с моими данными, если я уйду?", "acceptedAnswer": {"@type": "Answer", "text": "Заберёте их с собой: меню, продажи, склад и историю смен выгрузим в таблицы по первой просьбе."}},
         {"@type": "Question", "name": "Правда безлимит экранов? В чём подвох?", "acceptedAnswer": {"@type": "Answer", "text": "Подвоха нет: система работает в браузере, лицензии на каждое устройство не нужны. Ограничение одно — подписка действует на одно заведение."}}
       ]
@@ -546,6 +548,7 @@
       <a href="#video">Видео</a>
       <a href="#pricing">Тарифы</a>
       <a href="#faq">Вопросы</a>
+      <a href="/dlya-kofejni/">Кофейне</a>
       <a href="/blog/">Статьи</a>
       <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо</a>
     </nav>
@@ -602,7 +605,7 @@
         </div>
         <div class="rail-foot">
           <span>средняя подача 11 мин</span>
-          <span>выручка дня 68 400 ₽</span>
+          <span>выручка дня 68 400 ₽</span>
         </div>
       </div>
     </div>
@@ -650,28 +653,28 @@
         <div class="bill-row">
           <span class="who">iiko «Профессиональный»</span>
           <span class="bar-track"><span class="bar" style="--w: 100%"></span></span>
-          <span class="cost">25 800 ₽</span>
+          <span class="cost">25 800 ₽</span>
         </div>
         <div class="bill-row">
           <span class="who">Quick Resto «Про»</span>
           <span class="bar-track"><span class="bar" style="--w: 62%"></span></span>
-          <span class="cost">15 970 ₽</span>
+          <span class="cost">15 970 ₽</span>
         </div>
         <div class="bill-row">
           <span class="who">r_keeper «Клауд Про»</span>
           <span class="bar-track"><span class="bar" style="--w: 47%"></span></span>
-          <span class="cost">12 200 ₽</span>
+          <span class="cost">12 200 ₽</span>
         </div>
         <div class="bill-row us">
           <span class="who">Падача «Максимум»</span>
           <span class="bar-track"><span class="bar" style="--w: 23%"></span></span>
-          <span class="cost">5 990 ₽</span>
+          <span class="cost">5 990 ₽</span>
         </div>
       </div>
-      <p class="bill-note">Касса + экран кухни + экран бара, в месяц. Публичные цены с сайтов iiko.ru, quickresto.ru, rkeeper.ru — август 2026.</p>
+      <p class="bill-note">Касса + экран кухни + экран бара, в месяц. Публичные цены с сайтов iiko.ru, quickresto.ru, rkeeper.ru — август 2026. <a href="/sravnenie/">Подробный разбор цен →</a></p>
 
       <div class="save-shout">
-        <b>238 000 ₽</b>
+        <b>238 000 ₽</b>
         <span>столько остаётся в кафе за год при переходе с iiko «Профессиональный» на «Падачу». Это годовая зарплата повара или новая кофемашина каждые полгода.</span>
       </div>
     </div>
@@ -791,7 +794,7 @@
             <div class="tag">Тариф 01</div>
             <h3>Старт</h3>
             <div class="for">кофейня · фудтрак · окно выдачи · бар</div>
-            <div class="price" data-month="2 590 ₽" data-year="2 150 ₽">2 590 ₽</div>
+            <div class="price" data-month="2 590 ₽" data-year="2 150 ₽">2 590 ₽</div>
             <div class="per">в месяц</div>
             <hr class="cut">
             <ul>
@@ -812,7 +815,7 @@
             <div class="tag">Тариф 02 · чаще всего</div>
             <h3>Зал</h3>
             <div class="for">кафе с кухней и баром</div>
-            <div class="price" data-month="3 990 ₽" data-year="3 310 ₽">3 990 ₽</div>
+            <div class="price" data-month="3 990 ₽" data-year="3 310 ₽">3 990 ₽</div>
             <div class="per">в месяц</div>
             <hr class="cut">
             <ul>
@@ -832,7 +835,7 @@
             <div class="tag">Тариф 03</div>
             <h3>Максимум</h3>
             <div class="for">полный контроль</div>
-            <div class="price" data-month="5 990 ₽" data-year="4 970 ₽">5 990 ₽</div>
+            <div class="price" data-month="5 990 ₽" data-year="4 970 ₽">5 990 ₽</div>
             <div class="per">в месяц</div>
             <hr class="cut">
             <ul>
@@ -851,7 +854,7 @@
       </div>
 
       <div class="extra">
-        <p><b>Подключение под ключ — 15 000 ₽ разово</b>Поднимем систему на адресе вида вашекафе.padacha.ru или подключим ваш домен, перенесём меню с фотографиями, настроим столы и склад, обучим команду. Запуск занимает один вечер.</p>
+        <p><b>Подключение под ключ — 15 000 ₽ разово</b>Поднимем систему на адресе вида вашекафе.padacha.ru или подключим ваш домен, перенесём меню с фотографиями, настроим столы и склад, обучим команду. Запуск занимает один вечер.</p>
         <a class="btn" href="#call">Подключиться</a>
       </div>
       <div class="extra">
@@ -895,7 +898,7 @@
       </details>
       <details>
         <summary>Сколько стоит внедрение и обучение персонала?</summary>
-        <p>15 000 ₽, один раз при подключении. За эти деньги мы делаем всё сами: поднимаем систему на адресе вида вашекафе.padacha.ru (или подключаем ваш домен), переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Запуск занимает вечер, официант и повар осваиваются за десять минут — экраны сделаны так, что учить нечему.</p>
+        <p>15 000 ₽, один раз при подключении. За эти деньги мы делаем всё сами: поднимаем систему на адресе вида вашекафе.padacha.ru (или подключаем ваш домен), переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Запуск занимает вечер, официант и повар осваиваются за десять минут — экраны сделаны так, что учить нечему.</p>
         <p>Дальше — только тариф. Доплат за поддержку, обновления и новые экраны нет.</p>
       </details>
       <details>
@@ -915,7 +918,7 @@
       <h2>Попробуйте на своей смене</h2>
       <p>Запуск за вечер. Поможем перенести меню и не сломать ничего в разгар сервиса.</p>
       <div class="contacts">
-        <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
+        <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
         <a class="btn ghost" href="https://wa.me/79289557566" target="_blank" rel="noreferrer">WhatsApp</a>
         <a class="btn ghost" href="https://t.me/+79289557566" target="_blank" rel="noreferrer">Telegram</a>
         <a class="btn ghost" href="https://max.ru/u/f9LHodD0cOIIAAQbhXr2nnV8L7VZRhxS-b2jl7dlT1-hrMK2KHMn_9lIDfw" target="_blank" rel="noreferrer">MAX</a>
@@ -928,7 +931,7 @@
   <div class="wrap foot">
     <span>© 2026 Падача — система управления кафе</span>
     <span>Работает каждый день в кафе «Хумухумунукунукуапуа»</span>
-    <span><a href="/qr-menu/">QR-меню</a> · <a href="/ekran-kuhni/">Экран кухни</a> · <a href="/sklad/">Склад</a> · <a href="/blog/">Статьи</a></span>
+    <span><a href="/qr-menu/">QR-меню</a> · <a href="/ekran-kuhni/">Экран кухни</a> · <a href="/sklad/">Склад</a> · <a href="/dlya-kofejni/">Кофейне</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
   </div>
 </footer>
 

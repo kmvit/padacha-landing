@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Программа для кофейни: электронное меню по QR, выдача заказа по номеру, склад зерна и молока, смены бариста и отчёты по дню. Фикс 2 590 ₽ в месяц за точку, без платы за каждый экран и без нового оборудования.">
+<meta name="theme-color" content="#FF7A18">
+<link rel="canonical" href="https://padacha.ru/dlya-kofejni/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110D'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF7A18'/%3E%3C/svg%3E">
+<meta property="og:title" content="Программа для кофейни: меню, выдача по номеру и учёт — Падача">
+<meta property="og:description" content="Программа для кофейни: электронное меню по QR, выдача заказа по номеру, склад зерна и молока, смены бариста и отчёты по дню. Фикс 2 590 ₽ в месяц за точку, без платы за каждый экран и без нового оборудования.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://padacha.ru/dlya-kofejni/">
+<meta property="og:site_name" content="Падача">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://padacha.ru/promo-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<title>Программа для кофейни: меню, выдача по номеру и учёт — Падача</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/page.css">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112273830', 'ym');
+
+    ym(112273830, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112273830" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Падача — программа для кофейни",
+      "url": "https://padacha.ru/",
+      "description": "Программа для кофейни: электронное меню по QR, выдача заказа по номеру, склад, смены бариста и отчёты.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "ru",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "RUB",
+        "lowPrice": "2590",
+        "highPrice": "5990",
+        "offerCount": "3"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Падача",
+        "url": "https://padacha.ru/",
+        "telephone": "+7 994 312-12-22"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Падача",
+          "item": "https://padacha.ru/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Для кофейни",
+          "item": "https://padacha.ru/dlya-kofejni/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Сколько стоит программа для кофейни?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Тариф «Старт» — 2 590 ₽ в месяц за точку, и в него уже входит всё, что нужно кофейне: меню, приём заказа, выдача по номеру, оплаты и отчёты. Плата не зависит от числа планшетов, бариста и гостей. Отдельно один раз оплачивается внедрение — 15 000 ₽: мы переносим меню с фотографиями, настраиваем модификаторы и печатаем коды."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Заменяет ли «Падача» онлайн-кассу?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нет. Чек вы пробиваете на своей онлайн-кассе, как привыкли, — «Падача» её не заменяет и не требует менять. В системе фиксируется сам заказ и способ оплаты: наличные и карта считаются раздельно, выручка дня собирается сама. Прямая интеграция со смарт-терминалами в разработке."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Нужно ли покупать оборудование?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нет. Система открывается в браузере на том, что уже есть: планшет на стойке, телефон бариста, старый ноутбук или телевизор под табло выдачи. Ставится как приложение на главный экран, отдельной установки не требует."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Как работает выдача по номеру?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Гость получает номер заказа, а на экране у стойки видно, что готовится и что готово. Гость может следить за своим номером и в телефоне — тогда никто не толпится у стойки и не переспрашивает бариста. Это формат «стойка»: он рассчитан на кофейню, фудтрак и окно выдачи, где нет столов и официантов."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Считает ли система расход молока и зерна?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, на тарифе «Максимум»: каждый проданный напиток списывает ингредиенты по тех-карте, а приход заводится фотографией накладной. Видно, сколько зерна ушло за день и совпадает ли это с остатком на полке. Как устроен расчёт, разобрано в статьях про технологическую карту и фудкост."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Кофейня работает и на вынос, и с посадкой — это разные тарифы?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нет, форматы переключаются. На «Старте» вы выбираете один из двух — зал со столами или стойку с выдачей по номеру. Если нужны оба сразу плюс экран бариста с очередью напитков, это тариф «Зал» — 3 990 ₽ в месяц."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("padacha-theme");
+      if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+    } catch (e) {}
+  })();
+</script>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
+    <nav aria-label="Разделы">
+      <a href="/qr-menu/">QR-меню</a>
+      <a href="/ekran-kuhni/">Кухня</a>
+      <a href="/sklad/">Склад</a>
+      <a href="/dlya-kofejni/">Кофейне</a>
+      <a href="/sravnenie/">Сравнение</a>
+      <a href="/blog/">Статьи</a>
+      <a href="/#pricing">Тарифы</a>
+      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо</a>
+    </nav>
+    <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема">
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+    </button>
+    <a class="btn sm" href="#call">Подключить</a>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Падача</a> → Для кофейни</div>
+      <h1>Программа для кофейни:<br>меню, выдача, учёт</h1>
+      <p class="lede">У кофейни нет официантов и столов-светофоров — есть очередь, стойка и скорость. «Падача» настраивается под этот ритм: гость заказывает по QR или на кассе, получает номер и следит за ним в телефоне, а зерно и молоко списываются сами. 2 590 ₽ в месяц за точку, сколько бы экранов вы ни открыли.</p>
+      <div class="btns">
+        <a class="btn" href="#call">Подключить</a>
+        <a class="btn ghost" href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Живое демо</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Формат «стойка»</div>
+        <h2>Что получает кофейня</h2>
+        <p>Отдельный режим для заведений без зала: заказ, номер, табло готовности. Ничего лишнего от ресторанной системы — и ничего не пропущено из того, что нужно каждый день.</p>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Меню с фото по QR</h3>
+          <p>Гость в очереди открывает меню в своём телефоне и приходит к стойке уже с готовым выбором. Сезонное меню и новинки добавляются за минуту, печатать ничего не нужно.</p>
+        </div>
+        <div class="card">
+          <h3>Выдача по номеру</h3>
+          <p>Заказ получает номер, у стойки висит табло «готовится / готово». Гость видит свой номер и в телефоне — толпы у стойки не собирается, бариста не переспрашивают.</p>
+        </div>
+        <div class="card">
+          <h3>Модификаторы напитков</h3>
+          <p>Размер, молоко, сироп, дополнительный шот — всё в карточке напитка. Бариста получает заказ без уточнений, а цена пересчитывается сама.</p>
+        </div>
+        <div class="card">
+          <h3>Зерно и молоко на счету</h3>
+          <p>Проданный капучино списывает граммы зерна и миллилитры молока по тех-карте. Видно расход за день и что пора заказывать, — без ревизии на коленке.</p>
+        </div>
+        <div class="card">
+          <h3>Смены и зарплата бариста</h3>
+          <p>Ставка за смену плюс процент от выручки считаются сами. К концу месяца сводка «к выплате» готова, без пересчёта в таблице.</p>
+        </div>
+        <div class="card">
+          <h3>Ваш бренд на экране гостя</h3>
+          <p>Логотип, цвета и шрифты настраиваются из панели. Гость видит вашу кофейню, а не название системы.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deep">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Честно о цене</div>
+        <h2>Почему ресторанная система кофейне дорога</h2>
+      </div>
+      <div class="narrow prose" style="margin-inline:0">
+        <p>Большинство систем для общепита считают деньги за кассу или за рабочее место. Кофейне это бьёт по карману дважды: сначала за саму кассу, потом за второй экран на баре или табло выдачи. При выручке маленькой точки подписка в 10–15 тысяч рублей съедает заметную часть прибыли.</p>
+        <table>
+          <thead><tr><th>Что нужно кофейне</th><th>Как обычно продают</th><th>«Падача»</th></tr></thead>
+          <tbody>
+            <tr><td>Касса на стойке</td><td>тариф за кассу</td><td>входит в 2 590 ₽ за точку</td></tr>
+            <tr><td>Второй экран у бариста</td><td>доплата за рабочее место</td><td>без доплаты</td></tr>
+            <tr><td>Табло выдачи</td><td>отдельный модуль или оборудование</td><td>открывается на любом экране</td></tr>
+            <tr><td>Меню в телефоне гостя</td><td>отдельная подписка</td><td>входит в тариф</td></tr>
+            <tr><td>Оборудование</td><td>смарт-терминал под систему</td><td>работает на вашем планшете</td></tr>
+          </tbody>
+        </table>
+        <p>Мы считаем иначе: <strong>фикс за заведение</strong>. Открыли второй экран, посадили третьего бариста, повесили телевизор под табло — счёт не меняется. Разбор цен по системам с цифрами — на странице <a href="/sravnenie/">сравнения</a>.</p>
+        <div class="callout">
+          <span class="lbl">Что не входит</span>
+          <p>«Падача» не онлайн-касса: фискальный чек вы пробиваете на своей ККТ, как привыкли. Система берёт на себя заказ, выдачу, учёт и деньги в разрезе смен — но не заменяет кассовый аппарат и не требует его менять.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Запуск</div>
+        <h2>Открыть можно к завтрашней смене</h2>
+        <p>Внедрение — 15 000 ₽ один раз: переносим меню с фотографиями, заводим модификаторы напитков, печатаем коды и показываем бариста, куда нажимать. Дальше только тариф от 2 590 ₽ в месяц.</p>
+      </div>
+      <div class="cards">
+        <div class="card"><h3>01 · Меню и модификаторы</h3><p>Заводим напитки с размерами, видами молока и сиропами — так, как их называете вы.</p></div>
+        <div class="card"><h3>02 · Стойка и табло</h3><p>Настраиваем формат выдачи по номеру и открываем табло на любом свободном экране.</p></div>
+        <div class="card"><h3>03 · Первая смена</h3><p>Бариста осваивается за десять минут: заказ собирается в два касания, обучать нечему.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deep">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Вопросы</div>
+        <h2>Что спрашивают владельцы кофеен</h2>
+      </div>
+      <details>
+        <summary>Сколько стоит программа для кофейни?</summary>
+        <p>Тариф «Старт» — 2 590 ₽ в месяц за точку, и в него уже входит всё, что нужно кофейне: меню, приём заказа, выдача по номеру, оплаты и отчёты. Плата не зависит от числа планшетов, бариста и гостей.</p>
+        <p>Отдельно один раз оплачивается внедрение — 15 000 ₽: мы переносим меню с фотографиями, настраиваем модификаторы и печатаем коды.</p>
+      </details>
+      <details>
+        <summary>Заменяет ли «Падача» онлайн-кассу?</summary>
+        <p>Нет. Чек вы пробиваете на своей онлайн-кассе, как привыкли, — «Падача» её не заменяет и не требует менять. В системе фиксируется сам заказ и способ оплаты: наличные и карта считаются раздельно, выручка дня собирается сама.</p>
+        <p>Прямая интеграция со смарт-терминалами в разработке.</p>
+      </details>
+      <details>
+        <summary>Нужно ли покупать оборудование?</summary>
+        <p>Нет. Система открывается в браузере на том, что уже есть: планшет на стойке, телефон бариста, старый ноутбук или телевизор под табло выдачи. Ставится как приложение на главный экран, отдельной установки не требует.</p>
+      </details>
+      <details>
+        <summary>Как работает выдача по номеру?</summary>
+        <p>Гость получает номер заказа, а на экране у стойки видно, что готовится и что готово. Гость может следить за своим номером и в телефоне — тогда никто не толпится у стойки и не переспрашивает бариста.</p>
+        <p>Это формат «стойка»: он рассчитан на кофейню, фудтрак и окно выдачи, где нет столов и официантов.</p>
+      </details>
+      <details>
+        <summary>Считает ли система расход молока и зерна?</summary>
+        <p>Да, на тарифе «Максимум»: каждый проданный напиток списывает ингредиенты по тех-карте, а приход заводится фотографией накладной. Видно, сколько зерна ушло за день и совпадает ли это с остатком на полке.</p>
+        <p>Как устроен расчёт, разобрано в статьях про технологическую карту и фудкост.</p>
+      </details>
+      <details>
+        <summary>Кофейня работает и на вынос, и с посадкой — это разные тарифы?</summary>
+        <p>Нет, форматы переключаются. На «Старте» вы выбираете один из двух — зал со столами или стойку с выдачей по номеру. Если нужны оба сразу плюс экран бариста с очередью напитков, это тариф «Зал» — 3 990 ₽ в месяц.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Читать дальше</div>
+        <h2>Рядом по теме</h2>
+      </div>
+      <div class="more">
+        <a href="/sravnenie/"><b>Сравнение систем</b><span>Цены iiko, r_keeper, Quick Resto и «Падачи» на одном примере.</span></a>
+        <a href="/qr-menu/"><b>QR-меню</b><span>Меню с фотографиями в телефоне гостя, стоп-лист, заказ со стола.</span></a>
+        <a href="/blog/kak-otkryt-kofejnyu/"><b>Как открыть кофейню</b><span>Порядок шагов, смета запуска и расчёт точки безубыточности.</span></a>
+      </div>
+    </div>
+  </section>
+
+<div class="call" id="call">
+    <div class="wrap">
+      <div class="lbl">Заказ принят</div>
+      <h2>Посчитаем на вашей выручке</h2>
+      <p>Позвоните — прикинем, что даст система именно вашей точке, и покажем демо на вашем меню. Запуск занимает вечер.</p>
+      <div class="contacts">
+        <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
+        <a class="btn ghost" href="https://wa.me/79289557566" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="btn ghost" href="https://t.me/+79289557566" target="_blank" rel="noreferrer">Telegram</a>
+        <a class="btn ghost" href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Открыть демо</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 Падача — система управления кафе</span>
+    <span><a href="/">Главная</a> · <a href="/qr-menu/">QR-меню</a> · <a href="/sklad/">Склад</a> · <a href="/ekran-kuhni/">Экран кухни</a> · <a href="/dlya-kofejni/">Кофейне</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
+  </div>
+</footer>
+<script>
+  (function () {
+    var btn = document.getElementById("theme");
+    if (btn) btn.addEventListener("click", function () {
+      var root = document.documentElement;
+      var dark = !(root.getAttribute("data-theme") === "light" ||
+                   (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: light)").matches));
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("padacha-theme", next); } catch (e) {}
+    });
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a || typeof ym !== "function") return;
+      var h = a.getAttribute("href");
+      var goal =
+        h.indexOf("#call") !== -1 ? "click_connect" :
+        h.indexOf("tel:") === 0 ? "click_phone" :
+        /wa\.me|t\.me|max\.ru/.test(h) ? "click_messenger" :
+        h.indexOf("demo.padacha.ru") !== -1 ? "click_demo" : null;
+      if (goal) ym(112273830, "reachGoal", goal);
+    });
+  })();
+</script>
+</body>
+</html>
