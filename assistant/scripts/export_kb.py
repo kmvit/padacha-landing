@@ -55,9 +55,19 @@ def tariffs(page: str) -> dict:
             "кому": text(who.group(1)) if who else "",
             "входит": [text(li) for li in re.findall(r"<li[^>]*>(.*?)</li>", card, re.S)],
         })
-    # приписка под тарифами: пробный период, скидка сети, отсутствие доплат
-    tail = text(block).split("Обсудить")[-1]
-    return {"тарифы": plans, "условия": tail}
+    # блоки под карточками: внедрение, платные надстройки, условия для сетей.
+    # Берём их поимённо, а не «хвостом после последней кнопки»: хвост ломался
+    # от любой перестановки блоков и молча терял то, что в них написано.
+    extras = [
+        text(e).strip()
+        for e in re.findall(r'<div class="extra">(.*?)</div>', block, re.S)
+    ]
+    fine = re.search(r'<p class="fine">(.*?)</p>', block, re.S)
+    return {
+        "тарифы": plans,
+        "дополнительно": extras,
+        "условия": text(fine.group(1)) if fine else "",
+    }
 
 
 def faq(page: str) -> list[dict]:
