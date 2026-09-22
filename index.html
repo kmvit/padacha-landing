@@ -323,10 +323,6 @@
   .card li::before { content: "+"; position: absolute; left: 0; color: var(--heat); font-weight: 600; }
   .card li.base { color: #7A6A54; }
   .card li.base::before { content: "="; color: #A8946F; }
-  /* платная надстройка: маркер «±» и приглушённый цвет — чтобы её не
-     прочитали как «входит в тариф» вместе с остальным списком */
-  .card li.paid { color: #7A6A54; }
-  .card li.paid::before { content: "±"; color: #A8946F; }
   .card .btn { margin-top: 24px; justify-content: center; }
   .card .btn.ghost { color: var(--ticket-ink); border-color: #C9BCA0; }
   .card .btn.ghost:hover { border-color: var(--heat); color: var(--heat); }
@@ -905,7 +901,6 @@
               <li>Приход по фото накладной</li>
               <li>Смены, зарплата, финансы, бонусы гостям</li>
               <li>Оплаты, отчёты, брендирование</li>
-              <li class="paid">Фотостудия меню — за доплату, 2 000 ₽ за 100 фото</li>
             </ul>
             <a class="btn ghost" href="#call">Начать</a>
           </div>
