@@ -39,6 +39,23 @@ def section(page: str, start: str, end: str) -> str:
     return page[a : page.index(end, a)]
 
 
+def plan_items(card: str) -> dict:
+    """Строки карточки тарифа. Карточка разбита на группы («Заказ и касса»,
+    «Бэк-офис») заголовками li.grp — они становятся префиксом строк, а не
+    отдельными пунктами. li.no — то, чего в тарифе нет: в «входит» ему не место,
+    иначе ассистент прочтёт «Экраны кухни и бара» как включённые."""
+    group, included, missing = "", [], []
+    for cls, li in re.findall(r'<li(?:\s+class="([^"]*)")?[^>]*>(.*?)</li>', card, re.S):
+        item = text(li)
+        if "grp" in cls.split():
+            group = item
+        elif "no" in cls.split():
+            missing.append(item)
+        else:
+            included.append(f"{group}: {item}" if group else item)
+    return {"входит": included, "нет_в_тарифе": missing}
+
+
 def tariffs(page: str) -> dict:
     block = section(page, 'id="pricing"', 'id="faq"')
     plans = []
@@ -53,7 +70,7 @@ def tariffs(page: str) -> dict:
             "в_месяц": text(price.group(1)),
             "при_оплате_за_год": text(price.group(2)),
             "кому": text(who.group(1)) if who else "",
-            "входит": [text(li) for li in re.findall(r"<li[^>]*>(.*?)</li>", card, re.S)],
+            **plan_items(card),
         })
     # блоки под карточками: внедрение, платные надстройки, условия для сетей.
     # Берём их поимённо, а не «хвостом после последней кнопки»: хвост ломался
