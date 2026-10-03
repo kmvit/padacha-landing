@@ -139,6 +139,7 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="/nav.css">
 </head>
 <body>
 <script>
@@ -153,21 +154,38 @@
 <header>
   <div class="wrap nav">
     <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
-    <nav aria-label="Разделы">
-      <a href="/qr-menu/">QR-меню</a>
-      <a href="/ekran-kuhni/">Кухня</a>
-      <a href="/sklad/">Склад</a>
-      <a href="/dlya-kofejni/">Кофейне</a>
+    <nav class="menu" id="menu" aria-label="Разделы сайта">
+      <div class="drop">
+        <button class="drop-btn" type="button" aria-expanded="false" aria-controls="features">Возможности <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="features">
+          <a href="/qr-menu/"><b>QR-меню</b><span>Заказ и оплата с телефона гостя</span></a>
+          <a href="/ekran-kuhni/"><b>Экран кухни и бара</b><span>Очереди станций и тайминги блюд</span></a>
+          <a href="/sklad/"><b>Склад и себестоимость</b><span>Тех. карты, приход по фото, списания</span></a>
+          <a href="/personal/"><b>Персонал и зарплата</b><span>Смены, оплата за результат, ведомость</span></a>
+          <a href="/oplata/"><b>Оплата, касса и бонусы</b><span>Онлайн, смарт-касса, возвраты, бонусы гостям</span></a>
+        </div>
+      </div>
+      <div class="drop">
+        <button class="drop-btn" type="button" aria-expanded="false" aria-controls="formats">Форматы <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="formats">
+          <a href="/dlya-kofejni/"><b>Точка без зала</b><span>Кофейня, фудтрак, пекарня, окно выдачи, островок в ТЦ</span></a>
+          <a href="/dlya-kafe/"><b>Кафе с залом</b><span>Кафе, бистро, ресторан, бар с посадкой</span></a>
+        </div>
+      </div>
       <a href="/sravnenie/">Сравнение</a>
-      <a href="/blog/">Статьи</a>
       <a href="/#pricing">Тарифы</a>
-      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо</a>
+      <a href="/blog/" aria-current="page">Статьи</a>
+      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо <span class="ext" aria-hidden="true">↗</span></a>
     </nav>
     <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема">
       <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></svg>
       <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
     </button>
     <a class="btn sm" href="#call">Подключить</a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню">
+      <svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
   </div>
 </header>
 
@@ -332,7 +350,7 @@
 <footer>
   <div class="wrap foot">
     <span>© 2026 Падача — система управления кафе</span>
-    <span><a href="/">Главная</a> · <a href="/qr-menu/">QR-меню</a> · <a href="/sklad/">Склад</a> · <a href="/ekran-kuhni/">Экран кухни</a> · <a href="/dlya-kofejni/">Кофейне</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
+    <span><a href="/">Главная</a> · <a href="/qr-menu/">QR-меню</a> · <a href="/ekran-kuhni/">Экран кухни и бара</a> · <a href="/sklad/">Склад и себестоимость</a> · <a href="/personal/">Персонал и зарплата</a> · <a href="/oplata/">Оплата, касса и бонусы</a> · <a href="/dlya-kofejni/">Точка без зала</a> · <a href="/dlya-kafe/">Кафе с залом</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
   </div>
 </footer>
 <script>
@@ -359,5 +377,6 @@
     });
   })();
 </script>
+<script src="/nav.js" defer></script>
 </body>
 </html>

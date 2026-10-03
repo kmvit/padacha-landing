@@ -149,6 +149,7 @@
   .track { display:flex; gap:6px; justify-content:center; margin-top:22px; }
   .dot { width:38px; height:4px; border-radius:2px; background:var(--line); }
   .dot.on { background:var(--ready); }
+  .paybtn.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none; margin-top:10px; }
 </style>
 </head>
 <body>
@@ -231,14 +232,15 @@
   </div>
   <div class="body">
     <h1>Ваш заказ</h1>
-    <p class="sub">Оплатите картой — заберёте по номеру, без очереди на кассе</p>
+    <p class="sub">Оплатите онлайн или на кассе — заберёте по номеру</p>
 
     <div class="pay-card">
       <div class="pl"><span>Боул с крабом</span><span>650 ₽</span></div>
       <div class="pl"><span>Латте</span><span>240 ₽</span></div>
       <div class="pl"><span>Карамельный раф</span><span>290 ₽</span></div>
       <div class="pl total"><span>Итого</span><span>1 180 ₽</span></div>
-      <div class="paybtn">Оплатить картой</div>
+      <div class="paybtn">Оплатить онлайн</div>
+      <div class="paybtn ghost">Оплатить на кассе</div>
       <div class="banks"><div class="bank">Т-БАНК</div><div class="bank">СБЕР</div><div class="bank">ЮKASSA</div></div>
     </div>
 

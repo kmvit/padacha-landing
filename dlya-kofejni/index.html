@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Программа для кофейни: электронное меню по QR, выдача заказа по номеру, склад зерна и молока, смены бариста и отчёты по дню. Фикс 3 990 ₽ в месяц за точку, без платы за каждый экран и без нового оборудования.">
+<meta name="description" content="Программа для кофейни, фудтрака, пекарни и окна выдачи: меню по QR, выдача заказа по номеру, предоплата, склад, смены и отчёты. Фикс 3 990 ₽ в месяц за точку, без платы за каждый экран и без нового оборудования.">
 <meta name="theme-color" content="#FF7A18">
 <link rel="canonical" href="https://padacha.ru/dlya-kofejni/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110D'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF7A18'/%3E%3C/svg%3E">
-<meta property="og:title" content="Программа для кофейни: меню, выдача по номеру и учёт — Падача">
-<meta property="og:description" content="Программа для кофейни: электронное меню по QR, выдача заказа по номеру, склад зерна и молока, смены бариста и отчёты по дню. Фикс 3 990 ₽ в месяц за точку, без платы за каждый экран и без нового оборудования.">
+<meta property="og:title" content="Программа для кофейни и точки без зала: меню, выдача по номеру и учёт — Падача">
+<meta property="og:description" content="Программа для кофейни, фудтрака, пекарни и окна выдачи: меню по QR, выдача заказа по номеру, предоплата, склад, смены и отчёты. Фикс 3 990 ₽ в месяц за точку, без платы за каждый экран и без нового оборудования.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://padacha.ru/dlya-kofejni/">
 <meta property="og:site_name" content="Падача">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:image" content="https://padacha.ru/promo-poster.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<title>Программа для кофейни: меню, выдача по номеру и учёт — Падача</title>
+<title>Программа для кофейни, фудтрака и точки без зала — Падача</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -39,7 +39,7 @@
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "name": "Падача — программа для кофейни",
+      "name": "Падача — программа для кофейни и точки без зала",
       "url": "https://padacha.ru/",
       "description": "Программа для кофейни: электронное меню по QR, выдача заказа по номеру, склад, смены бариста и отчёты.",
       "applicationCategory": "BusinessApplication",
@@ -71,7 +71,7 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Для кофейни",
+          "name": "Точка без зала",
           "item": "https://padacha.ru/dlya-kofejni/"
         }
       ]
@@ -129,6 +129,14 @@
         },
         {
           "@type": "Question",
+          "name": "Подойдёт ли программа фудтраку, пекарне или островку в ТЦ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да. Формат «стойка» не привязан к кофе: гость заказывает у прилавка или по QR, получает номер и забирает сам. Готовая еда без кухни, штучный товар на складе, выдача из окна — всё это тот же тариф «Стойка» за 3 990 ₽ в месяц за точку."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Кофейня работает и на вынос, и с посадкой — это разные тарифы?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -140,6 +148,7 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="/nav.css">
 </head>
 <body>
 <script>
@@ -154,30 +163,47 @@
 <header>
   <div class="wrap nav">
     <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
-    <nav aria-label="Разделы">
-      <a href="/qr-menu/">QR-меню</a>
-      <a href="/ekran-kuhni/">Кухня</a>
-      <a href="/sklad/">Склад</a>
-      <a href="/dlya-kofejni/">Кофейне</a>
+    <nav class="menu" id="menu" aria-label="Разделы сайта">
+      <div class="drop">
+        <button class="drop-btn" type="button" aria-expanded="false" aria-controls="features">Возможности <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="features">
+          <a href="/qr-menu/"><b>QR-меню</b><span>Заказ и оплата с телефона гостя</span></a>
+          <a href="/ekran-kuhni/"><b>Экран кухни и бара</b><span>Очереди станций и тайминги блюд</span></a>
+          <a href="/sklad/"><b>Склад и себестоимость</b><span>Тех. карты, приход по фото, списания</span></a>
+          <a href="/personal/"><b>Персонал и зарплата</b><span>Смены, оплата за результат, ведомость</span></a>
+          <a href="/oplata/"><b>Оплата, касса и бонусы</b><span>Онлайн, смарт-касса, возвраты, бонусы гостям</span></a>
+        </div>
+      </div>
+      <div class="drop">
+        <button class="drop-btn here" type="button" aria-expanded="false" aria-controls="formats">Форматы <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="formats">
+          <a href="/dlya-kofejni/" aria-current="page"><b>Точка без зала</b><span>Кофейня, фудтрак, пекарня, окно выдачи, островок в ТЦ</span></a>
+          <a href="/dlya-kafe/"><b>Кафе с залом</b><span>Кафе, бистро, ресторан, бар с посадкой</span></a>
+        </div>
+      </div>
       <a href="/sravnenie/">Сравнение</a>
-      <a href="/blog/">Статьи</a>
       <a href="/#pricing">Тарифы</a>
-      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо</a>
+      <a href="/blog/">Статьи</a>
+      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо <span class="ext" aria-hidden="true">↗</span></a>
     </nav>
     <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема">
       <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></svg>
       <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
     </button>
     <a class="btn sm" href="#call">Подключить</a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню">
+      <svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
   </div>
 </header>
 
 <main>
   <div class="page-hero">
     <div class="wrap">
-      <div class="crumbs"><a href="/">Падача</a> → Для кофейни</div>
-      <h1>Программа для кофейни:<br>меню, выдача, учёт</h1>
-      <p class="lede">У кофейни нет официантов и столов-светофоров — есть очередь, стойка и скорость. «Падача» настраивается под этот ритм: гость заказывает по QR или на кассе, получает номер и следит за ним в телефоне, а зерно и молоко списываются сами. 3 990 ₽ в месяц за точку, сколько бы экранов вы ни открыли.</p>
+      <div class="crumbs"><a href="/">Падача</a> → Точка без зала</div>
+      <h1>Программа для кофейни<br>и любой точки без зала</h1>
+      <p class="lede">У кофейни, фудтрака или пекарни навынос нет официантов и столов — есть очередь, стойка и скорость. «Падача» настраивается под этот ритм: гость заказывает по QR или на кассе, получает номер и следит за ним в телефоне, а сырьё списывается со склада само. 3 990 ₽ в месяц за точку, сколько бы экранов вы ни открыли.</p>
       <div class="btns">
         <a class="btn" href="#call">Подключить</a>
         <a class="btn ghost" href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Живое демо</a>
@@ -189,9 +215,10 @@
     <div class="wrap">
       <div class="head">
         <div class="lbl">Формат «стойка»</div>
-        <h2>Что получает кофейня</h2>
+        <h2>Что получает точка без зала</h2>
         <p>Отдельный режим для заведений без зала: заказ, номер, табло готовности. Ничего лишнего от ресторанной системы — и ничего не пропущено из того, что нужно каждый день.</p>
       </div>
+      <figure class="screen wide"><img src="/counter.webp" alt="Экран баристы на планшете: колонки «Ждут оплаты», «Новые», «Собираем», «Готов — выдать»" width="2000" height="1288" loading="lazy"><figcaption>Экран стойки: оплата, сборка и выдача по номеру — у одного человека</figcaption></figure>
       <div class="cards">
         <div class="card">
           <h3>Меню с фото по QR</h3>
@@ -211,7 +238,7 @@
         </div>
         <div class="card">
           <h3>Смены и зарплата бариста</h3>
-          <p>Ставка за смену плюс процент от выручки считаются сами. К концу месяца сводка «к выплате» готова, без пересчёта в таблице.</p>
+          <p>Ставка плюс процент от выручки или оплата за результат: бонус за выручку в час, фокусные позиции, допродажи сиропов и молока. Ведомость за месяц собирается сама.</p>
         </div>
         <div class="card">
           <h3>Ваш бренд на экране гостя</h3>
@@ -223,10 +250,35 @@
         <span class="lbl">Фото напитков</span>
         <p>Фотографа можно не звать: нейросеть нарисует каждый напиток в вашем стакане — вы загружаете его снимок один раз. Латте, раф и эспрессо выходят одной съёмкой, а не подборкой из интернета. Надстройка к тарифу — 2 000 ₽ за 100 фото. <a href="/#photos">Посмотреть примеры →</a></p>
       </div>
+      <div class="head" style="margin-top:76px">
+        <div class="lbl">Заказ у окна</div>
+        <h2>Гость назвал заказ — бариста набирает его сам</h2>
+        <p>Без QR тоже можно: «Новый заказ» на планшете баристы, объём, молоко и сироп в пару касаний. Заказ встаёт в ту же очередь, что и заказы с телефонов, и получает тот же сквозной номер. Если подключена касса, кнопка «На оплату» сразу отправляет его на кассу.</p>
+      </div>
+      <figure class="screen wide" style="margin:0"><img src="/compose-counter.webp" alt="Бариста набирает заказ на планшете: меню кофе с объёмами, выбор молока и сиропа для рафа, кнопка «На оплату»" width="2000" height="1288" loading="lazy"><figcaption>«Новый заказ» у баристы: объём, молоко, сироп — и на оплату</figcaption></figure>
     </div>
   </section>
 
   <section class="deep">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Кому подходит</div>
+        <h2>Один формат — для всех, кто выдаёт по номеру</h2>
+        <p>Если гость заказывает у прилавка или по QR и забирает сам, это тариф «Стойка» — 3 990 ₽ в месяц за точку. Неважно, что вы продаёте: кофе, шаурму или круассаны.</p>
+      </div>
+      <div class="cards">
+        <div class="card"><h3>Кофейня</h3><p>Размеры 0,3 / 0,4 / 0,5, молоко и сиропы опциями, расход зерна и молока по каждому стакану.</p></div>
+        <div class="card"><h3>Фудтрак и стритфуд</h3><p>Один человек за окном, вся очередь на одном планшете или телефоне. Касса и меню — те же устройства.</p></div>
+        <div class="card"><h3>Пекарня и кондитерская</h3><p>Готовая выпечка без кухни: штучный товар на складе в штуках, остатки и списания просрочки с причиной.</p></div>
+        <div class="card"><h3>Островок в ТЦ</h3><p>Гость заказывает по QR, отходит и следит за номером в телефоне — толпа у стойки не собирается.</p></div>
+        <div class="card"><h3>Бар и лимонады навынос</h3><p>Напитки с опциями, предоплата до приготовления, бонусы постоянным гостям.</p></div>
+        <div class="card"><h3>Окно выдачи при кафе</h3><p>Заказ по QR заранее и оплата онлайн: гость подходит, когда номер уже готов.</p></div>
+      </div>
+      <p style="margin-top:28px; color:var(--ink-dim)">Есть посадка и официанты? Это другой формат. <a href="/dlya-kafe/" style="color:var(--heat)">Программа для кафе с залом →</a></p>
+    </div>
+  </section>
+
+  <section>
     <div class="wrap">
       <div class="head">
         <div class="lbl">Честно о цене</div>
@@ -253,7 +305,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="deep">
     <div class="wrap">
       <div class="head">
         <div class="lbl">Запуск</div>
@@ -268,11 +320,11 @@
     </div>
   </section>
 
-  <section class="deep">
+  <section>
     <div class="wrap">
       <div class="head">
         <div class="lbl">Вопросы</div>
-        <h2>Что спрашивают владельцы кофеен</h2>
+        <h2>Что спрашивают владельцы точек</h2>
       </div>
       <details>
         <summary>Сколько стоит программа для кофейни?</summary>
@@ -304,20 +356,24 @@
         <p>Кадр не попадает к гостю сам: вы выбираете удачный и ставите его в меню, остальные удаляете. В меню он подписан как иллюстрация — гость должен понимать, что это не снимок его порции. Стоит 2 000 ₽ за 100 генераций, дальше пакет докупается. <a href="/#photos">Посмотреть примеры на главной →</a></p>
       </details>
       <details>
+        <summary>Подойдёт ли программа фудтраку, пекарне или островку в ТЦ?</summary>
+        <p>Да. Формат «стойка» не привязан к кофе: гость заказывает у прилавка или по QR, получает номер и забирает сам. Готовая еда без кухни, штучный товар на складе, выдача из окна — всё это тот же тариф «Стойка» за 3 990 ₽ в месяц за точку.</p>
+      </details>
+      <details>
         <summary>Кофейня работает и на вынос, и с посадкой — это разные тарифы?</summary>
         <p>Да, формат работы и есть тариф. Если гости заказывают у стойки и забирают по номеру — это «Стойка» 3 990 ₽ в месяц, даже когда в зале есть посадочные места: столы просто не нужны системе. Если официант принимает заказ за столом, а кухня и бар работают со своими экранами — это «Зал» 5 990 ₽. Функции учёта в обоих тарифах одинаковые, разница только в экранах зала.</p>
       </details>
     </div>
   </section>
 
-  <section>
+  <section class="deep">
     <div class="wrap">
       <div class="head">
         <div class="lbl">Читать дальше</div>
         <h2>Рядом по теме</h2>
       </div>
       <div class="more">
-        <a href="/sravnenie/"><b>Сравнение систем</b><span>Цены iiko, r_keeper, Quick Resto и «Падачи» на одном примере.</span></a>
+        <a href="/oplata/"><b>Оплата, касса и бонусы</b><span>Предоплата на стойке, смарт-касса aQsi, возвраты и бонусы гостям.</span></a>
         <a href="/qr-menu/"><b>QR-меню</b><span>Меню с фотографиями в телефоне гостя, стоп-лист, заказ со стола.</span></a>
         <a href="/blog/kak-otkryt-kofejnyu/"><b>Как открыть кофейню</b><span>Порядок шагов, смета запуска и расчёт точки безубыточности.</span></a>
       </div>
@@ -342,7 +398,7 @@
 <footer>
   <div class="wrap foot">
     <span>© 2026 Падача — система управления кафе</span>
-    <span><a href="/">Главная</a> · <a href="/qr-menu/">QR-меню</a> · <a href="/sklad/">Склад</a> · <a href="/ekran-kuhni/">Экран кухни</a> · <a href="/dlya-kofejni/">Кофейне</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
+    <span><a href="/">Главная</a> · <a href="/qr-menu/">QR-меню</a> · <a href="/ekran-kuhni/">Экран кухни и бара</a> · <a href="/sklad/">Склад и себестоимость</a> · <a href="/personal/">Персонал и зарплата</a> · <a href="/oplata/">Оплата, касса и бонусы</a> · <a href="/dlya-kofejni/">Точка без зала</a> · <a href="/dlya-kafe/">Кафе с залом</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
   </div>
 </footer>
 <script>
@@ -369,5 +425,6 @@
     });
   })();
 </script>
+<script src="/nav.js" defer></script>
 </body>
 </html>

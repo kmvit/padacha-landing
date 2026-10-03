@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Учёт смен и зарплаты персонала кафе: ставка по роли и типу смены, оплата по часам, бонус за выручку в час, фокусные позиции и допродажи, ведомость за месяц. В обоих тарифах — от 3 990 ₽/мес за заведение.">
+<meta name="theme-color" content="#FF7A18">
+<link rel="canonical" href="https://padacha.ru/personal/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314110D'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23FF7A18'/%3E%3C/svg%3E">
+<meta property="og:title" content="Смены и зарплата персонала кафе: оплата за результат без Excel">
+<meta property="og:description" content="Ставка по роли, оплата по часам, бонус за выручку в час, фокусные позиции и допродажи — зарплата бариста и официантов считается сама.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://padacha.ru/personal/">
+<meta property="og:site_name" content="Падача">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://padacha.ru/promo-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<title>Смены и зарплата персонала кафе: оплата за результат без Excel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/page.css">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112273830', 'ym');
+
+    ym(112273830, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112273830" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Падача — смены и зарплата персонала кафе",
+      "url": "https://padacha.ru/",
+      "description": "Учёт смен персонала кафе и расчёт зарплаты: ставка по роли, оплата по часам, бонус за выручку в час, фокусные позиции, допродажи, ведомость.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "ru",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "RUB",
+        "lowPrice": "3990",
+        "highPrice": "5990",
+        "offerCount": "2"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Падача",
+        "url": "https://padacha.ru/",
+        "telephone": "+7 994 312-12-22"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Падача", "item": "https://padacha.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Персонал и зарплата", "item": "https://padacha.ru/personal/" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Можно платить как раньше — ставка и процент поровну?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Да. Схему оплаты выбирает владелец: «поровну» — ставка за смену плюс процент от выручки дня, разделённый на всех в смене; «за результат» — ставка по роли плюс личные надбавки. Переключиться можно в любой день, прошлые смены останутся посчитанными по своим правилам." }
+        },
+        {
+          "@type": "Question",
+          "name": "Как считается бонус за выручку, если на смене двое?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Каждый закрытый заказ относится к часу, в который его закрыли, и делится поровну между всеми, кто в этот момент был на смене и участвует в бонусе. Так человек, вышедший на час позже, не получает чужую выручку утра." }
+        },
+        {
+          "@type": "Question",
+          "name": "На точке один планшет на всех. Как понять, кто сделал заказ?",
+          "acceptedAnswer": { "@type": "Answer", "text": "У заказа есть исполнитель: бариста выбирает себя на карточке заказа, а заказ можно передать напарнику. Не выбрали — ничего не ломается, заказ просто не попадает в личный счёт." }
+        },
+        {
+          "@type": "Question",
+          "name": "Видит ли сотрудник зарплату коллег?",
+          "acceptedAnswer": { "@type": "Answer", "text": "При оплате за результат — нет. Сотрудник видит свои деньги целиком, а у коллег только имя, роль и время работы. Все суммы видят менеджер и владелец." }
+        },
+        {
+          "@type": "Question",
+          "name": "Что, если человек опоздал или ушёл раньше?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Если включена оплата по часам, ставка пересчитывается по отработанному времени: менеджер отмечает приход и уход, часы округляются до целого, полчаса — в пользу сотрудника. Время не отметили — смена оплачивается по плану." }
+        },
+        {
+          "@type": "Question",
+          "name": "В каком тарифе есть смены и зарплата?",
+          "acceptedAnswer": { "@type": "Answer", "text": "В обоих: «Стойка» — 3 990 ₽, «Зал» — 5 990 ₽ в месяц за заведение. Без доплат за сотрудников." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<link rel="stylesheet" href="/nav.css">
+</head>
+<body>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("padacha-theme");
+      if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+    } catch (e) {}
+  })();
+</script>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
+    <nav class="menu" id="menu" aria-label="Разделы сайта">
+      <div class="drop">
+        <button class="drop-btn here" type="button" aria-expanded="false" aria-controls="features">Возможности <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="features">
+          <a href="/qr-menu/"><b>QR-меню</b><span>Заказ и оплата с телефона гостя</span></a>
+          <a href="/ekran-kuhni/"><b>Экран кухни и бара</b><span>Очереди станций и тайминги блюд</span></a>
+          <a href="/sklad/"><b>Склад и себестоимость</b><span>Тех. карты, приход по фото, списания</span></a>
+          <a href="/personal/" aria-current="page"><b>Персонал и зарплата</b><span>Смены, оплата за результат, ведомость</span></a>
+          <a href="/oplata/"><b>Оплата, касса и бонусы</b><span>Онлайн, смарт-касса, возвраты, бонусы гостям</span></a>
+        </div>
+      </div>
+      <div class="drop">
+        <button class="drop-btn" type="button" aria-expanded="false" aria-controls="formats">Форматы <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="formats">
+          <a href="/dlya-kofejni/"><b>Точка без зала</b><span>Кофейня, фудтрак, пекарня, окно выдачи, островок в ТЦ</span></a>
+          <a href="/dlya-kafe/"><b>Кафе с залом</b><span>Кафе, бистро, ресторан, бар с посадкой</span></a>
+        </div>
+      </div>
+      <a href="/sravnenie/">Сравнение</a>
+      <a href="/#pricing">Тарифы</a>
+      <a href="/blog/">Статьи</a>
+      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо <span class="ext" aria-hidden="true">↗</span></a>
+    </nav>
+    <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема">
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+    </button>
+    <a class="btn sm" href="#call">Подключить</a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню">
+      <svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="/">Падача</a> → Персонал и зарплата</div>
+      <h1>Зарплата смены считается сама —<br>поровну или за результат</h1>
+      <p class="lede">Менеджер отмечает, кто вышел. Дальше «Падача» сама сводит ставку, бонус за выручку, надбавки за фокусные позиции и допродажи и собирает ведомость за месяц. Правила оплаты владелец меняет сам, без программиста и без таблиц.</p>
+      <div class="btns">
+        <a class="btn" href="#call">Подключить</a>
+        <a class="btn ghost" href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Живое демо</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Каждый день</div>
+        <h2>Смена — это рабочий день, а не строка в тетради</h2>
+        <p>Состав смены ставит менеджер, а сотрудник открывает раздел «Смены» и видит, кто сегодня рядом и сколько он уже заработал.</p>
+      </div>
+      <div class="screen-row">
+      <div class="cards two">
+        <div class="card">
+          <h3>Типы смен</h3>
+          <p>«Утро 8 ч», «Полная 12 ч», «Вечер 6 ч» — со своим временем начала и конца, хоть через полночь. Ставка задаётся на пересечении типа смены и роли: бариста, официант, повар.</p>
+        </div>
+        <div class="card">
+          <h3>Приход и уход</h3>
+          <p>Менеджер отмечает время, для ушедших раньше есть кнопка «Ушёл сейчас». Если включена оплата по часам, ставка считается по отработанному времени.</p>
+        </div>
+        <div class="card">
+          <h3>Старший смены</h3>
+          <p>Отмечается в самой смене и получает надбавку: фиксированную или за каждый час.</p>
+        </div>
+        <div class="card">
+          <h3>Кто сделал заказ</h3>
+          <p>На точке один планшет и общий вход, но у заказа свой исполнитель. Бариста отмечает себя на карточке, передаёт заказ напарнику — и личная выручка не путается.</p>
+        </div>
+        <div class="card">
+          <h3>Штрафной стол</h3>
+          <p>Комплимент гостю за ошибку команды оформляется на отдельный стол: в выручку он не идёт, а его сумма делится на смену и вычитается из выплаты.</p>
+        </div>
+        <div class="card">
+          <h3>Свои деньги — только свои</h3>
+          <p>При оплате за результат сотрудник видит свой расчёт целиком, а у коллег — только имя, роль и время. Все суммы видят менеджер и владелец.</p>
+        </div>
+      </div>
+      <figure class="screen phone"><img src="/shifts.webp" alt="Смена в телефоне менеджера: выручка дня, состав смены, у каждого расчёт выплаты по строкам" width="780" height="1688" loading="lazy"><figcaption>Смена в телефоне менеджера</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="deep">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Две схемы оплаты</div>
+        <h2>Платите за смену или за то, как она прошла</h2>
+        <p>Схему выбирает владелец. Можно начать с привычной и перейти на оплату за результат, когда цифры по людям накопятся.</p>
+      </div>
+      <div class="split">
+        <div class="prose">
+          <h3 style="margin-top:0">Поровну</h3>
+          <p>Ставка за смену плюс процент от выручки дня, разделённый на всех, кто вышел. Команда заинтересована помогать друг другу, а считать ничего не нужно.</p>
+          <h3>За результат</h3>
+          <p>Ставка по роли и типу смены, сверху — личные надбавки:</p>
+          <ul>
+            <li><strong>Бонус за выручку в час.</strong> Личная выручка за час работы попадает на ступень сетки, ступень даёт бонус за смену. Если на смене двое, выручка каждого часа делится между ними поровну.</li>
+            <li><strong>Фокусные позиции.</strong> Новинка или напиток с хорошей маржой получает надбавку за каждую проданную штуку: на неделю, на конкретный объём или на любой.</li>
+            <li><strong>Допродажи.</strong> Надбавка за платную опцию: сироп, альтернативное молоко, двойной шот. Ставится прямо в карточке опции.</li>
+            <li><strong>Старшему смены</strong> — своя надбавка.</li>
+          </ul>
+          <p>Всё это поля в настройках, а не зашитые числа: сетку, ставки, фокус недели и надбавки можно менять хоть каждый день.</p>
+        </div>
+        <div class="slip" aria-label="Пример расчёта выплаты">
+          <span class="lbl">Расчёт за смену · пример</span>
+          <div class="who">Бариста · «Полная 12 ч» · старший</div>
+          <dl>
+            <dt>Ставка</dt><dd>2 200 ₽</dd>
+            <dt>Выручка в час<small>2 900 ₽/ч → ступень «от 2 500»</small></dt><dd>800 ₽</dd>
+            <dt>Фокус недели<small>лавандовый раф, 12 × 30 ₽</small></dt><dd>360 ₽</dd>
+            <dt>Допродажи<small>21 опция × 10 ₽</small></dt><dd>210 ₽</dd>
+            <dt>Старший смены</dt><dd>300 ₽</dd>
+            <dt>Штрафной стол<small>доля смены</small></dt><dd class="minus">−120 ₽</dd>
+            <dt class="total">К выплате</dt><dd class="total">3 750 ₽</dd>
+          </dl>
+        </div>
+      </div>
+      <figure class="screen wide" style="margin:56px 0 0"><img src="/payroll.webp" alt="Вкладка «К выплате» на компьютере: месяц по каждому сотруднику, расчёт расписан по строкам, фонд оплаты за месяц" width="2000" height="1250" loading="lazy"><figcaption>«К выплате» за месяц: у каждого расчёт по строкам, внизу — фонд оплаты</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">История не переписывается</div>
+        <h2>Подняли ставку — прошлые выплаты остались прежними</h2>
+      </div>
+      <div class="narrow prose" style="margin-inline:0">
+        <p>Каждая смена запоминает правила, по которым её открыли. Новая ставка или сетка действует с сегодняшней смены, а уже выплаченное задним числом не меняется.</p>
+        <p>Если нужно, владелец пересчитывает конкретную прошлую смену по текущим правилам одной кнопкой. Это удобно, когда оплату по часам включили сегодня, а вчерашнему опоздавшему её тоже надо применить. Отмеченное время, состав и старший при этом не трогаются.</p>
+        <p><strong>Возвраты.</strong> Возврат в тот же день в бонус за выручку не засчитывается. Если вернули вчерашний заказ, вчерашняя смена не пересчитывается: возврат ложится в день, когда его сделали.</p>
+        <div class="callout">
+          <span class="lbl">Из смен — в ведомость</span>
+          <p>Отмеченные смены сами собираются в ведомость за месяц: начислено, выплачено, осталось по каждому сотруднику. Выплат за месяц может быть несколько, например аванс и расчёт. Итоговый фонд оплаты труда попадает в отчёт о прибыли в разделе «Финансы».</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deep">
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Вопросы</div>
+        <h2>Что спрашивают чаще всего</h2>
+      </div>
+      <details>
+        <summary>Можно платить как раньше — ставка и процент поровну?</summary>
+        <p>Да. Схему оплаты выбирает владелец: «поровну» — ставка за смену плюс процент от выручки дня, разделённый на всех в смене; «за результат» — ставка по роли плюс личные надбавки. Переключиться можно в любой день, прошлые смены останутся посчитанными по своим правилам.</p>
+      </details>
+      <details>
+        <summary>Как считается бонус за выручку, если на смене двое?</summary>
+        <p>Каждый закрытый заказ относится к часу, в который его закрыли, и делится поровну между всеми, кто в этот момент был на смене и участвует в бонусе. Так человек, вышедший на час позже, не получает чужую выручку утра.</p>
+      </details>
+      <details>
+        <summary>На точке один планшет на всех. Как понять, кто сделал заказ?</summary>
+        <p>У заказа есть исполнитель: бариста выбирает себя на карточке заказа, а заказ можно передать напарнику. Не выбрали — ничего не ломается, заказ просто не попадает в личный счёт.</p>
+      </details>
+      <details>
+        <summary>Видит ли сотрудник зарплату коллег?</summary>
+        <p>При оплате за результат — нет. Сотрудник видит свои деньги целиком, а у коллег только имя, роль и время работы. Все суммы видят менеджер и владелец.</p>
+      </details>
+      <details>
+        <summary>Что, если человек опоздал или ушёл раньше?</summary>
+        <p>Если включена оплата по часам, ставка пересчитывается по отработанному времени: менеджер отмечает приход и уход, часы округляются до целого, полчаса — в пользу сотрудника. Время не отметили — смена оплачивается по плану.</p>
+      </details>
+      <details>
+        <summary>В каком тарифе есть смены и зарплата?</summary>
+        <p>В обоих: «Стойка» — 3 990 ₽, «Зал» — 5 990 ₽ в месяц за заведение. Без доплат за сотрудников.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <div class="lbl">Читать дальше</div>
+        <h2>Другие части системы</h2>
+      </div>
+      <div class="more">
+        <a href="/blog/grafik-smen/"><b>График смен в кафе</b><span>Нормы Трудового кодекса, расчёт часов при 2/2 и законная замена штрафам.</span></a>
+        <a href="/oplata/"><b>Оплата, касса и бонусы</b><span>Откуда берётся выручка, из которой считаются бонусы смены.</span></a>
+        <a href="/sklad/"><b>Склад и себестоимость</b><span>Вторая большая статья расходов после зарплаты.</span></a>
+      </div>
+    </div>
+  </section>
+
+<div class="call" id="call">
+    <div class="wrap">
+      <div class="lbl">Заказ принят</div>
+      <h2>Попробуйте на своей смене</h2>
+      <p>Запуск занимает вечер. Типы смен, ставки и сетку бонусов настроим вместе с вами при подключении.</p>
+      <div class="contacts">
+        <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
+        <a class="btn ghost" href="https://wa.me/79289557566" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="btn ghost" href="https://t.me/+79289557566" target="_blank" rel="noreferrer">Telegram</a>
+        <a class="btn ghost" href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Открыть демо</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 Падача — система управления кафе</span>
+    <span><a href="/">Главная</a> · <a href="/qr-menu/">QR-меню</a> · <a href="/ekran-kuhni/">Экран кухни и бара</a> · <a href="/sklad/">Склад и себестоимость</a> · <a href="/personal/">Персонал и зарплата</a> · <a href="/oplata/">Оплата, касса и бонусы</a> · <a href="/dlya-kofejni/">Точка без зала</a> · <a href="/dlya-kafe/">Кафе с залом</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
+  </div>
+</footer>
+<script>
+  (function () {
+    var btn = document.getElementById("theme");
+    if (btn) btn.addEventListener("click", function () {
+      var root = document.documentElement;
+      var dark = !(root.getAttribute("data-theme") === "light" ||
+                   (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: light)").matches));
+      var next = dark ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("padacha-theme", next); } catch (e) {}
+    });
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a || typeof ym !== "function") return;
+      var h = a.getAttribute("href");
+      var goal =
+        h.indexOf("#call") !== -1 ? "click_connect" :
+        h.indexOf("tel:") === 0 ? "click_phone" :
+        /wa\.me|t\.me|max\.ru/.test(h) ? "click_messenger" :
+        h.indexOf("demo.padacha.ru") !== -1 ? "click_demo" : null;
+      if (goal) ym(112273830, "reachGoal", goal);
+    });
+  })();
+</script>
+<script src="/nav.js" defer></script>
+</body>
+</html>

@@ -51,13 +51,9 @@ ul, ol { margin:0; padding:0; }
 .btn.sm { padding:10px 18px; font-size:.76rem; }
 
 header { position:sticky; top:0; z-index:60; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
-.nav { display:flex; align-items:center; gap:30px; height:68px; }
 .brand { font-family:"Unbounded", sans-serif; font-weight:800; font-size:1.15rem; letter-spacing:.06em; text-transform:uppercase; text-decoration:none; color:var(--ink); display:flex; align-items:center; gap:10px; }
 .dot { width:8px; height:8px; background:var(--heat); border-radius:50%; box-shadow:0 0 12px var(--heat); animation:pulse 2.4s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-.nav nav { display:flex; gap:26px; margin-left:auto; }
-.nav nav a { font-family:"IBM Plex Mono", monospace; font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); text-decoration:none; }
-.nav nav a:hover { color:var(--heat); }
 .theme-btn { width:38px; height:38px; display:grid; place-items:center; flex:none; background:transparent; border:1px solid var(--line); color:var(--ink-dim); cursor:pointer; transition:color .2s, border-color .2s; }
 .theme-btn:hover { color:var(--heat); border-color:var(--heat); }
 .theme-btn svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; }
@@ -141,7 +137,32 @@ footer { padding:34px 0 46px; border-top:1px solid var(--line); }
 .foot a { color:var(--ink-dim); text-decoration:none; }
 .foot a:hover { color:var(--heat); }
 
+/* ── Расчётный листок: строки «за что — сколько» в виде чека ── */
+.slip { background:var(--raised); border:1px solid var(--line); padding:26px 26px 22px; font-family:"IBM Plex Mono", monospace; font-size:.9rem; box-shadow:var(--shadow); }
+.slip .lbl { display:block; margin-bottom:6px; }
+.slip .who { color:var(--ink-dim); font-size:.8rem; margin-bottom:16px; }
+.slip dl { margin:0; display:grid; grid-template-columns:1fr auto; gap:10px 18px; }
+.slip dt { color:var(--ink-dim); }
+.slip dt small { display:block; color:var(--ink-faint); font-size:.76rem; }
+.slip dd { margin:0; text-align:right; color:var(--ink); white-space:nowrap; }
+.slip .minus { color:var(--heat); }
+.slip .total { border-top:1px dashed var(--line); padding-top:12px; font-weight:600; color:var(--ink); }
+.split { display:grid; grid-template-columns:1.15fr .85fr; gap:46px; align-items:start; }
+.split .prose { margin:0; }
+
+/* ── Экран продукта: макет планшета или телефона под шапкой страницы ── */
+.screen { margin:0; }
+.screen img { display:block; width:100%; height:auto; filter:drop-shadow(0 26px 46px rgba(0,0,0,.45)); }
+.screen figcaption { margin-top:18px; color:var(--ink-faint); font-family:"IBM Plex Mono", monospace; font-size:.8rem; letter-spacing:.03em; text-align:center; }
+.screen.phone { max-width:340px; margin-inline:auto; }
+.screens { display:grid; grid-template-columns:repeat(3, 1fr); gap:34px; align-items:start; }
+.screens .screen { max-width:300px; }
+.screen-row { display:grid; grid-template-columns:1.6fr 1fr; gap:46px; align-items:center; }
+.cards.two { grid-template-columns:1fr 1fr; }
+.screen.wide { margin:0 0 46px; }
+
 @media (max-width: 900px) {
-  .cards, .more { grid-template-columns:1fr; }
-  .nav nav { display:none; }
+  .cards, .more, .split, .screens, .screen-row { grid-template-columns:1fr; }
+  .screens .screen { margin-inline:auto; }
+  .cards.two { grid-template-columns:1fr; }
 }
