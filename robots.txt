@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /pult/
+Disallow: /shots/
+Disallow: /tools/
+Disallow: /404.html
 
 Sitemap: https://padacha.ru/sitemap.xml

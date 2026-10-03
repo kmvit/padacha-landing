@@ -106,7 +106,8 @@ def footer_links() -> str:
 
 
 def main() -> None:
-    for page in sorted(ROOT.glob("**/index.html")):
+    # 404.html — та же шапка; nginx отдаёт её на любой несуществующий адрес
+    for page in sorted(ROOT.glob("**/index.html")) + [ROOT / "404.html"]:
         if any(part in {"assistant", "pult", "direct", "node_modules", "tools"} for part in page.parts):
             continue
         src = page.read_text(encoding="utf-8")
