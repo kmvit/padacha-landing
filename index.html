@@ -199,16 +199,22 @@
   }
   .nav { height: 74px; gap: 16px; }
   .brand {
+    /* display:flex живёт в page.css, которого у главной нет: без него кружок
+       остаётся строчным и сплющивается в полоску */
+    display: inline-flex;
+    align-items: center;
     font-family: var(--disp);
     font-weight: 800;
     font-size: 1.4rem;
     letter-spacing: -.01em;
     text-transform: none;
+    text-decoration: none;   /* page.css сюда не подключён — снимаем сами */
     color: var(--jade);
     gap: 11px;
   }
   .dot {
     width: 26px; height: 26px;
+    flex: none;              /* иначе флекс сплющивает кружок в овал */
     border-radius: 50%;
     background: var(--poppy);
     border: 2px solid var(--ink);

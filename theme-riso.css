@@ -107,6 +107,7 @@ header {
 .brand { font-family: var(--riso-disp); font-weight: 800; letter-spacing: -.01em; text-transform: none; font-size: 1.35rem; color: var(--ready); }
 .dot {
   width: 26px; height: 26px;
+  flex: none;            /* в тесной шапке флекс иначе сплющит кружок в овал */
   border-radius: 50%;
   background: var(--heat);
   border: 2px solid var(--ink);
