@@ -1,0 +1,278 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Тема «Ризограф» — двухкрасочная печать по бежевой бумаге.
+
+   Подключается ПОСЛЕ page.css и nav.css и работает наложением: переопределяет
+   токены, шрифты и печатные детали, а раскладку (сетки, отступы, порядок
+   блоков) оставляет как есть. Поэтому разметку страниц менять не нужно —
+   тема включается и выключается одной строкой в <head>:
+
+       python3 tools/theme.py --set riso      # включить
+       python3 tools/theme.py --set classic   # вернуть текущее оформление
+
+   Фирменные приёмы печати: бумага вместо фона, чернильные рамки в 2 px,
+   нулевые скругления, жёсткие тени-сдвиги вместо размытых, несовмещение
+   красок под крупным заголовком и зерно поверх всей страницы.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;0,600;0,800;0,900;1,600&family=Onest:wght@400;500;600&display=swap");
+
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  /* Бумага и краски */
+  --bg:        #F2EAD8;   /* лист */
+  --bg-deep:   #E7DBC0;   /* вторая бумага — для секций .deep */
+  --surface:   #F2EAD8;
+  --raised:    #E7DBC0;
+  --line:      #181613;   /* линия — это чернила, отсюда рамки в 2 px */
+  --ink:       #181613;
+  --ink-dim:   #0A5E49;   /* второй голос — глубокий нефрит */
+  --ink-faint: #0A5E49;
+  --heat:      #F0431F;   /* поппи: напряжение, кнопки, акценты */
+  --heat-ink:  #F2EAD8;
+  --heat-soft: #F6C544;   /* масло: ценники и подсветка */
+  --ready:     #0E8F6E;   /* нефрит: готово, спокойная структура */
+  --lamp:      none;
+  --shadow:    5px 5px 0 var(--ink);
+
+  --riso-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --riso-disp: "Rubik", system-ui, sans-serif;
+  --riso-body: "Onest", system-ui, sans-serif;
+  --riso-ease: cubic-bezier(.2,.8,.2,1);
+  color-scheme: light;
+}
+
+/* ── Бумага и зерно ───────────────────────────────────────────────────── */
+body {
+  font-family: var(--riso-body);
+  font-size: 16.5px;
+  background: var(--bg);
+}
+/* Печатная фактура поверх всего. Рисуется фильтром, файл не нужен. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: 9;
+  pointer-events: none;
+  opacity: .15;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+::selection { background: var(--heat-soft); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--heat); outline-offset: 2px; border-radius: 0; }
+
+h1, h2, h3 {
+  font-family: var(--riso-disp);
+  font-weight: 900;
+  letter-spacing: -.02em;
+  line-height: .98;
+}
+
+/* Моноширинные ярлыки — голос печатного цеха */
+.lbl, .crumbs, .mono, .foot, .posts .meta, .screen figcaption {
+  font-family: var(--riso-mono);
+}
+.lbl {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  color: var(--heat);
+}
+
+/* ── Кнопки: заливка, чернильная рамка, жёсткая тень ──────────────────── */
+.btn {
+  font-family: var(--riso-mono);
+  font-weight: 700;
+  letter-spacing: .14em;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--heat);
+  color: var(--heat-ink);
+  padding: 13px 20px;
+  transition: transform .18s var(--riso-ease), box-shadow .18s var(--riso-ease);
+}
+.btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn.ghost:hover { color: var(--ink); border-color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+.btn.sm { padding: 10px 14px; font-size: .72rem; }
+
+/* ── Шапка ────────────────────────────────────────────────────────────── */
+header {
+  background: var(--bg);
+  backdrop-filter: none;
+  border-bottom: 2px solid var(--ink);
+}
+.brand { font-family: var(--riso-disp); font-weight: 800; letter-spacing: -.01em; text-transform: none; font-size: 1.35rem; color: var(--ready); }
+.dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--heat);
+  border: 2px solid var(--ink);
+  box-shadow: none;
+  animation: none;
+}
+.menu > a, .drop-btn { font-family: var(--riso-mono); font-weight: 600; color: var(--ink); }
+.menu > a:hover, .drop-btn:hover, .drop.open .drop-btn { color: var(--heat); }
+.menu > a[aria-current="page"], .drop-btn.here { color: var(--ink); box-shadow: inset 0 -3px 0 var(--heat); }
+.drop-panel { background: var(--bg); border: 2px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); border-radius: 0; }
+.drop-panel a { border-left: 3px solid transparent; }
+.drop-panel a:hover, .drop-panel a:focus-visible { background: var(--bg-deep); border-left-color: var(--heat); }
+.drop-panel b { font-family: var(--riso-disp); font-weight: 800; }
+.drop-panel span { color: var(--ink-dim); }
+.burger { border: 2px solid var(--ink); color: var(--ink); border-radius: 0; }
+.burger:hover { border-color: var(--ink); background: var(--heat-soft); color: var(--ink); }
+/* В ризографе одна бумага — переключать нечего */
+.theme-btn { display: none !important; }
+
+/* ── Шапка страницы ───────────────────────────────────────────────────── */
+.page-hero {
+  background: var(--bg);
+  border-bottom: 2px solid var(--ink);
+  padding: 54px 0 46px;
+}
+.page-hero h1 {
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  color: var(--heat);
+  /* несовмещение красок: нефритовый дубль на 4 px позади — тенью, чтобы
+     не трогать разметку страниц */
+  text-shadow: 4px 4px 0 var(--ready);
+  margin: 14px 0 20px;
+}
+.page-hero .lede { color: var(--ink); font-size: 1.05rem; }
+.crumbs { font-size: .72rem; letter-spacing: .14em; color: var(--ink-dim); }
+.crumbs a { color: var(--ink-dim); }
+.crumbs a:hover { color: var(--heat); }
+
+/* ── Секции и заголовки ───────────────────────────────────────────────── */
+section { padding: 70px 0; }
+section.deep { background: var(--bg-deep); border-block: 2px solid var(--ink); }
+.head h2 { font-size: clamp(1.7rem, 3.6vw, 2.6rem); color: var(--ready); margin: 10px 0 16px; }
+.head p { color: var(--ink); }
+
+/* ── Карточки: отдельные листы с чернильной рамкой ────────────────────── */
+.cards, .more { gap: 12px; background: transparent; border: 0; }
+.card {
+  background: var(--bg);
+  border: 2px solid var(--ink);
+  padding: 24px 22px;
+  transition: transform .2s var(--riso-ease), box-shadow .2s var(--riso-ease);
+}
+.card:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--ink); }
+section.deep .card { background: var(--bg); }
+.card h3 { font-family: var(--riso-disp); font-weight: 900; font-size: 1.12rem; line-height: 1.1; margin-bottom: 10px; }
+.card p { color: var(--ink); font-size: .94rem; }
+/* Кромка цветом — как краска, которой печатали лист */
+.cards .card:nth-child(3n+1) { border-top: 9px solid var(--heat); }
+.cards .card:nth-child(3n+2) { border-top: 9px solid var(--ready); }
+.cards .card:nth-child(3n+3) { border-top: 9px solid var(--heat-soft); }
+
+/* ── Перелинковка ─────────────────────────────────────────────────────── */
+.more a {
+  background: var(--bg);
+  border: 2px solid var(--ink);
+  padding: 22px 20px;
+  transition: transform .2s var(--riso-ease), box-shadow .2s var(--riso-ease);
+}
+section.deep .more a { background: var(--bg); }
+.more a:hover { background: var(--bg); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--ink); }
+.more b { font-family: var(--riso-disp); font-weight: 800; }
+.more span { color: var(--ink-dim); }
+
+/* ── Текст статьи ─────────────────────────────────────────────────────── */
+.prose p, .prose li { color: var(--ink); }
+.prose h2 { color: var(--ready); }
+.prose h3 { font-family: var(--riso-disp); font-weight: 800; }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose a { color: var(--heat); text-decoration-thickness: 2px; }
+.prose th, .prose td { border: 2px solid var(--ink); color: var(--ink); }
+.prose th { font-family: var(--riso-mono); background: var(--bg-deep); color: var(--ink); }
+.callout {
+  border: 2px solid var(--ink);
+  border-left-width: 2px;
+  background: var(--heat-soft);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.callout p { color: var(--ink); }
+.callout .lbl { color: var(--ink); }
+
+/* ── Вопросы ──────────────────────────────────────────────────────────── */
+details {
+  border: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  background: var(--bg);
+  padding: 0;
+  margin-bottom: 10px;
+}
+details[open] { background: var(--bg-deep); box-shadow: 4px 4px 0 var(--ink); }
+summary { font-family: var(--riso-disp); font-weight: 800; font-size: 1rem; padding: 13px 15px; }
+summary:hover { color: var(--heat); }
+summary::after { font-family: var(--riso-mono); font-weight: 700; color: var(--heat); }
+details p { color: var(--ink); margin: 0 15px 12px; font-size: .92rem; }
+details p + p { margin-top: 10px; }
+
+/* ── Финальный призыв ─────────────────────────────────────────────────── */
+.call {
+  background: var(--heat-soft);
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.call h2 { color: var(--ink); }
+.call p { color: var(--ink); }
+.call .lbl { color: var(--ink); }
+
+/* ── Список статей ────────────────────────────────────────────────────── */
+.posts { border: 2px solid var(--ink); background: var(--bg); }
+.posts a { border-bottom: 2px solid var(--ink); padding: 24px 22px; }
+.posts a:hover { background: var(--bg-deep); }
+.posts .meta { color: var(--heat); font-weight: 700; letter-spacing: .18em; }
+.posts h2 { font-family: var(--riso-disp); font-weight: 900; font-size: 1.3rem; }
+.posts p { color: var(--ink); }
+
+/* ── Расчётный листок ─────────────────────────────────────────────────── */
+.slip {
+  background: var(--ready);
+  color: var(--bg);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  font-family: var(--riso-mono);
+}
+.slip .lbl, .slip .who { color: var(--heat-soft); }
+.slip dt { color: rgba(242,234,216,.85); }
+.slip dt small { color: rgba(242,234,216,.6); }
+.slip dd { color: var(--heat-soft); }
+.slip .minus { color: var(--heat-soft); }
+.slip .total { border-top: 2px dashed rgba(242,234,216,.5); color: var(--bg); }
+
+/* ── Экраны продукта ──────────────────────────────────────────────────── */
+/* Снимки тёмного интерфейса на бежевой бумаге сами по себе выглядят дырой,
+   поэтому наклеиваем их на лист второй бумаги и обводим чернилами. */
+.screen {
+  background: var(--bg-deep);
+  border: 2px solid var(--ink);
+  padding: 12px;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.screen img {
+  border: 2px solid var(--ink);
+  filter: none;
+}
+.screen figcaption { margin: 12px 2px 0; text-align: left; }
+.screens .screen, .screen.phone { padding: 10px; }
+.screen figcaption { color: var(--ink-dim); font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; }
+
+/* ── Подвал ───────────────────────────────────────────────────────────── */
+footer { background: var(--ready); color: var(--bg); border-top: 2px solid var(--ink); padding: 40px 0 46px; }
+.foot { color: rgba(242,234,216,.75); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; }
+.foot a { color: var(--heat-soft); }
+.foot a:hover { color: var(--bg); }
+
+@media (max-width: 900px) {
+  .cards, .more { gap: 10px; }
+  .page-hero h1 { text-shadow: 3px 3px 0 var(--ready); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .card, .more a { transition: none; }
+}

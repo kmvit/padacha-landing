@@ -1,0 +1,2433 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Программа для кафе и ресторана: QR-меню, экраны кухни и бара, склад, смены и зарплата. Одна цена за заведение — от 3 990 ₽/мес, экраны без доплат.">
+<meta name="theme-color" content="#F2EAD8">
+<link rel="canonical" href="https://padacha.ru/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:title" content="Падача — программа для автоматизации кафе и ресторана">
+<meta property="og:description" content="Экранов сколько нужно, цена одна. QR-меню и заказы со стола, кухня и бар, склад, смены и зарплата — от 3 990 ₽/мес за заведение.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://padacha.ru/">
+<meta property="og:site_name" content="Падача">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://padacha.ru/promo-poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<title>Падача — программа для автоматизации кафе и ресторана</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Три гарнитуры, как в референсе, но кириллические: Bricolage/Hanken/Spline Sans Mono
+     кириллицы не имеют вовсе. Rubik — дисплей (тяжёлый гротеск с характером),
+     Onest — текст, IBM Plex Mono — все трекинговые ярлыки и цены. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;0,600;0,800;0,900;1,600;1,800&family=Onest:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600;700&display=swap">
+
+<link rel="stylesheet" href="../nav.css">
+<style>
+  /* ── Токены ──────────────────────────────────────────────────────────── */
+  :root {
+    --bone:      #F2EAD8;
+    --bone2:     #E7DBC0;
+    --poppy:     #F0431F;
+    --jade:      #0E8F6E;
+    --jade-deep: #0A5E49;
+    --butter:    #F6C544;
+    --ink:       #181613;
+    --hair-light: rgba(242,234,216,.18);
+    --jade-tint:  rgba(14,143,110,.1);
+    --leader:     rgba(24,22,19,.35);
+
+    --disp: 'Rubik', system-ui, sans-serif;
+    --body: 'Onest', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    --ease: cubic-bezier(.2,.8,.2,1);
+    --wrap: 1280px;
+
+    /* Шапка приезжает со всего сайта (tools/header.py + nav.css), а он
+       написан на общих именах токенов — раздаём их своей палитрой. */
+    --bg:        var(--bone);
+    --surface:   var(--bone);
+    --raised:    var(--bone2);
+    --line:      var(--ink);
+    --ink-dim:   var(--jade-deep);
+    --ink-faint: var(--jade-deep);
+    --heat:      var(--poppy);
+    --shadow:    6px 6px 0 var(--ink);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bone);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Печатная фактура поверх всего. В оригинале это PNG с CDN; здесь шум
+     рисуется фильтром — страница остаётся самодостаточной, как index.html. */
+  .grain {
+    position: fixed;
+    inset: -10%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .16;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+    will-change: transform;
+  }
+
+  ::selection { background: var(--butter); color: var(--ink); }
+
+  :focus-visible { outline: 3px solid var(--poppy); outline-offset: 2px; }
+
+  a { color: inherit; }
+
+  .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 32px; position: relative; z-index: 2; }
+
+  /* ── Повторяющиеся детали печати ──────────────────────────────────────── */
+
+  /* Несовмещение красок: нефритовый дубль на 4px позади заголовка */
+  .ghost { position: relative; display: inline-block; }
+  .ghost i {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
+    font-style: normal;
+    color: var(--jade);
+    z-index: -1;
+    transform: translate(4px, 4px);
+  }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--poppy);
+    margin: 0;
+  }
+
+  .handnote {
+    font-family: var(--disp);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--jade-deep);
+    margin: 10px 0 0;
+  }
+
+  .datechip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    background: var(--butter);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 5px 10px;
+  }
+
+  .btn {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: var(--poppy);
+    color: var(--bone);
+    border: 2px solid var(--ink);
+    padding: 13px 20px;
+    transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn.ghostbtn { background: transparent; color: var(--ink); }
+  .btn.bonebtn  { background: var(--bone); color: var(--ink); }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: 1.5px solid var(--jade);
+    color: var(--jade-deep);
+    border-radius: 999px;
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+  .tag.b { border-color: var(--poppy); color: var(--poppy); }
+
+  .pr {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: var(--butter);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  /* ── Шапка ────────────────────────────────────────────────────────────── */
+  /* Разметка общая для всего сайта: её раскладывает tools/header.py, поведение
+     выпадашек и бургера — nav.js, раскладку даёт nav.css. Здесь только краски,
+     иначе главная разъедется с остальными страницами при первой же правке меню. */
+  header {
+    position: relative;
+    z-index: 60;
+    background: var(--bone);
+    border-bottom: 2px solid var(--ink);
+  }
+  .nav { height: 74px; gap: 16px; }
+  .brand {
+    font-family: var(--disp);
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -.01em;
+    text-transform: none;
+    color: var(--jade);
+    gap: 11px;
+  }
+  .dot {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--poppy);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+    animation: none;
+  }
+  .menu > a, .drop-btn {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: var(--ink);
+  }
+  .menu > a:hover, .drop-btn:hover, .drop.open .drop-btn { color: var(--poppy); }
+  .menu > a[aria-current="page"], .drop-btn.here { color: var(--ink); box-shadow: inset 0 -3px 0 var(--poppy); }
+  .drop-panel {
+    background: var(--bone);
+    border: 2px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .drop-panel a { border-left: 3px solid transparent; }
+  .drop-panel a:hover, .drop-panel a:focus-visible { background: var(--bone2); border-left-color: var(--poppy); }
+  .drop-panel b { font-family: var(--disp); font-weight: 800; font-size: .92rem; color: var(--ink); }
+  .drop-panel span { color: var(--jade-deep); font-size: .85rem; }
+  .burger { border: 2px solid var(--ink); color: var(--ink); }
+  .burger:hover { background: var(--butter); border-color: var(--ink); color: var(--ink); }
+  /* В ризографе одна бумага — переключать нечего */
+  .theme-btn { display: none !important; }
+  .nav .btn.sm { padding: 10px 14px; font-size: 11px; letter-spacing: .12em; }
+
+  @media (max-width: 1200px) {
+    .menu { background: var(--bone); border-bottom: 2px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+    .menu > a { border-bottom: 2px solid rgba(24,22,19,.14); }
+    .drop { border-bottom: 2px solid rgba(24,22,19,.14); }
+    .drop-btn { color: var(--jade-deep); }
+    /* Внутри бургера рамка у группы остаётся, а тень только мешает —
+       она ложится на следующий пункт списка. */
+    .drop-panel { box-shadow: none; }
+  }
+
+  /* ── Первый экран ─────────────────────────────────────────────────────── */
+  .hero { padding: 38px 0 58px; }
+  .hero .wrap {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 54px;
+    align-items: start;
+  }
+
+  .mosaic {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 10px;
+  }
+  .tile {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--jade);
+    border: 2px solid var(--ink);
+    overflow: hidden;
+  }
+  .tile img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: contrast(1.05) saturate(.95);
+  }
+  .tile .cap {
+    position: absolute;
+    left: 0; bottom: 0;
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    background: var(--bone);
+    color: var(--ink);
+    border-top: 2px solid var(--ink);
+    border-right: 2px solid var(--ink);
+    padding: 3px 7px;
+  }
+  /* Плитки рисованные, а не скриншоты: интерфейс, ужатый до 150 px, не читается
+     никак — ни на экране, ни тем более в печати. Экраны показываем крупно ниже. */
+  .tile.pic { background: var(--bone2); }
+  .tile.plate {
+    background: var(--jade-deep);
+    color: var(--butter);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    line-height: 2;
+  }
+  .tile.pic img { filter: none; }
+
+  /* Два правила на всю страницу: еда — печать в две краски, интерфейс — кадр
+     как есть, наклеенный на бумагу. Подкрашивать скриншот нельзя: его читают. */
+
+  .tile.gap {
+    background: var(--bone2);
+    border-style: dashed;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--jade-deep);
+    padding: 8px;
+  }
+
+  .hero-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+
+  h1.disp {
+    font-family: var(--disp);
+    font-weight: 900;
+    font-size: clamp(38px, 5.2vw, 76px);
+    line-height: .92;
+    letter-spacing: -.025em;
+    color: var(--poppy);
+    margin: 0;
+  }
+
+  .lede { font-size: 16.5px; margin: 16px 0 0; max-width: 46ch; }
+
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 0; }
+
+  .hero-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--jade-deep);
+    margin: 16px 0 0;
+  }
+
+  /* строки прайса — как позиции меню */
+  .rule { border: 0; border-top: 3px solid var(--ink); margin: 20px 0 0; }
+  .row { padding: 13px 0; border-bottom: 2px solid rgba(24,22,19,.14); transition: background .2s var(--ease); }
+  .row:hover { background: var(--jade-tint); }
+  .row .line { display: flex; align-items: baseline; gap: 4px; }
+  .row .nm { font-family: var(--disp); font-weight: 800; font-size: 19px; }
+  .row .leader { flex: 1; border-bottom: 2px dotted var(--leader); transform: translateY(-4px); margin: 0 4px; }
+  .row .amt {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    color: var(--jade);
+    white-space: nowrap;
+  }
+  .row .desc { margin: 6px 0 0; font-size: 14px; color: var(--jade-deep); }
+  .row .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
+
+  .switch { display: inline-flex; border: 2px solid var(--ink); margin-top: 16px; }
+  .switch button {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink);
+    border: 0;
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+  .switch button + button { border-left: 2px solid var(--ink); }
+  .switch button[aria-pressed="true"] { background: var(--ink); color: var(--bone); }
+
+  /* ── Бегущая строка ───────────────────────────────────────────────────── */
+  .marquee {
+    position: relative;
+    z-index: 2;
+    background: var(--jade-deep);
+    color: var(--bone);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    overflow: hidden;
+    padding: 14px 0;
+  }
+  .mtrack { display: flex; gap: 48px; white-space: nowrap; width: max-content; will-change: transform; }
+  .mtrack span {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+  .mtrack i { color: var(--butter); font-style: normal; }
+
+  /* ── Секции ───────────────────────────────────────────────────────────── */
+  .sec { padding: 88px 0; position: relative; z-index: 2; }
+  .sec.paper { background: var(--bone2); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+  .sec.dark { background: var(--jade-deep); color: var(--bone); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+
+  .sechead { max-width: 54ch; margin-bottom: 42px; }
+  .sechead h2 {
+    font-family: var(--disp);
+    font-weight: 900;
+    font-size: clamp(34px, 4.6vw, 64px);
+    line-height: .95;
+    letter-spacing: -.02em;
+    color: var(--jade);
+    margin: 10px 0 0;
+  }
+  .sec.dark .sechead h2 { color: var(--butter); }
+  .sec.dark .kicker { color: var(--butter); }
+  .sechead p { margin: 16px 0 0; max-width: 60ch; }
+  .sec.dark .sechead p { color: rgba(242,234,216,.8); }
+
+  /* ── Вся система: двухколоночный прайс ────────────────────────────────── */
+  .legend { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 30px; }
+
+  .cats { columns: 2; column-gap: 48px; }
+  .cat { break-inside: avoid; border-top: 3px solid var(--ink); padding-top: 14px; margin-bottom: 42px; }
+  .cat h3 {
+    font-family: var(--disp);
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--poppy);
+    margin: 0;
+    line-height: 1;
+  }
+  .cat .cat-sub {
+    font-family: var(--disp);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--jade-deep);
+    margin: 8px 0 14px;
+  }
+  .mrow { display: flex; align-items: baseline; gap: 4px; padding: 7px 0; }
+  .mrow .nm { font-size: 15px; font-weight: 500; }
+  .mrow .leader { flex: 1; border-bottom: 2px dotted var(--leader); transform: translateY(-4px); margin: 0 6px; min-width: 20px; }
+
+  .cat.darkcat {
+    background: var(--jade-deep);
+    color: var(--bone);
+    border: 2px solid var(--ink);
+    padding: 22px;
+  }
+  .cat.darkcat h3 { color: var(--butter); }
+  .cat.darkcat .cat-sub { color: rgba(242,234,216,.75); }
+  .cat.darkcat .mrow .leader { border-color: rgba(242,234,216,.4); }
+  .cat.darkcat .pr { background: var(--bone); }
+
+  /* ── Станции: строка вкладок, экран сразу под ней ──────────────────────── */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--bone);
+    border: 2px solid rgba(242,234,216,.35);
+    padding: 12px 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform .16s var(--ease), box-shadow .16s var(--ease), background .16s var(--ease);
+  }
+  .tab .n { color: var(--butter); }
+  .tab:hover { border-color: var(--bone); }
+  .tab[aria-selected="true"] {
+    background: var(--poppy);
+    color: var(--bone);
+    border-color: var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: translate(-2px,-2px);
+  }
+  .tab[aria-selected="true"] .n { color: var(--butter); }
+
+  /* Экран роли во всю ширину колонки. Маленькое превью под курсором пришлось
+     убрать: интерфейс на 2000 px, ужатый до 440, не читается — а показать надо
+     именно его. Высоту задаём, ширину берёт картинка: телефонные кадры узкие,
+     настольные широкие, оба попадают примерно в свой натуральный масштаб. */
+  .screen {
+    margin: 26px 0 0;
+    border: 2px solid var(--ink);
+    background: var(--bone);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+  .screen .frame { padding: 16px; background: var(--bone2); }
+  .screen .ui { transition: opacity .2s var(--ease); }
+  .screen.swap .ui { opacity: 0; }
+  .screen figcaption {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    flex-wrap: wrap;
+    border-top: 2px solid var(--ink);
+    background: var(--bone);
+    color: var(--ink);
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .screen figcaption b { color: var(--poppy); font-weight: 700; }
+  .screen figcaption .what { color: var(--jade-deep); }
+  .screen figcaption p {
+    flex-basis: 100%;
+    margin: 2px 0 0;
+    font-family: var(--body);
+    font-size: 14.5px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+    max-width: 92ch;
+  }
+
+
+  /* Один настоящий экран во всю ширину колонки: мелкие плитки показывают,
+     из чего система состоит, а этот кадр — как она выглядит на самом деле. */
+  .wide-shot { margin: 46px 0 0; border: 2px solid var(--ink); background: var(--bone); }
+  .wide-shot img { display: block; width: 100%; height: auto; filter: contrast(1.04) saturate(.95); }
+  .wide-shot figcaption {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--bone);
+    border-top: 2px solid var(--ink);
+    padding: 11px 16px;
+  }
+
+  /* ── Экраны системы: собраны разметкой, а не сняты скриншотом ──────────
+     Пересобрать в красках страницы оказалось честнее, чем перекрашивать
+     снимок тёмного интерфейса: фильтр портит и фотографии блюд, и мелкий
+     шрифт. Здесь всё живое — режется под любую ширину и ничего не весит.
+     Настоящие тут только фотографии еды: их как раз трогать нельзя. */
+  .ui {
+    background: var(--bone);
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.45;
+    overflow: hidden;
+  }
+  .ui-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: var(--bone2);
+    border-bottom: 2px solid var(--ink);
+    padding: 13px 16px;
+  }
+  .ui-head b { font-family: var(--disp); font-weight: 800; font-size: 19px; line-height: 1; }
+  .ui-head span { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; color: var(--jade-deep); }
+  .ui-head .badge {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: 2px solid var(--ink);
+    background: var(--butter);
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  .ui-body { padding: 14px; display: grid; gap: 12px; }
+
+  .lbl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .mono-s { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .num { font-family: var(--mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* кухня: три колонки станций */
+  .kan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: start; }
+  .kan-col { border: 2px solid var(--ink); background: rgba(231,219,192,.5); }
+  .kan-col > .t {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid var(--ink);
+    background: var(--bone2);
+    padding: 7px 10px;
+  }
+  .kan-col > .list { padding: 8px; display: grid; gap: 8px; }
+  .tick { border: 2px solid var(--ink); background: var(--bone); padding: 9px 10px; }
+  .tick.hot { border-color: var(--poppy); box-shadow: 3px 3px 0 var(--poppy); }
+  .tick .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .tick .no { font-family: var(--disp); font-weight: 800; font-size: 16px; }
+  .tick .when { color: var(--poppy); }
+  .tick .when.ok { color: var(--jade); }
+  .tick .it { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-top: 7px; }
+  .tick .it i { font-style: normal; color: var(--ink); }
+  .tick .it em { font-style: normal; display: block; font-size: 11px; color: var(--jade-deep); }
+  .tick .it s { color: var(--jade-deep); }
+  .btn-s {
+    font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; border: 2px solid var(--ink); background: var(--bone2);
+    padding: 3px 7px; white-space: nowrap;
+  }
+  .btn-s.go { background: var(--poppy); color: var(--bone); }
+  .btn-s.done { background: var(--jade); color: var(--bone); }
+  .tick .all { margin-top: 9px; text-align: center; border: 2px solid var(--ink); background: var(--jade); color: var(--bone); padding: 5px; }
+
+  /* зал: карта столов */
+  .tables { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .tbl { border: 2px solid var(--ink); background: var(--bone2); padding: 9px 8px; text-align: center; }
+  .tbl b { display: block; font-family: var(--disp); font-weight: 800; font-size: 18px; }
+  .tbl span { display: block; font-family: var(--mono); font-size: 8.5px; letter-spacing: .06em; text-transform: uppercase; margin-top: 3px; }
+  .tbl.cook { background: var(--poppy); color: var(--bone); }
+  .tbl.ready { background: var(--jade); color: var(--bone); }
+  .tbl.pay { background: var(--butter); }
+  .pass-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+  /* склад, смены, деньги: строки */
+  .rows { border: 2px solid var(--ink); background: var(--bone); }
+  .rows .r { display: grid; gap: 10px; align-items: center; padding: 9px 11px; border-bottom: 2px solid rgba(24,22,19,.12); }
+  .rows .r:last-child { border-bottom: 0; }
+  .rows .r.h { background: var(--bone2); border-bottom-width: 2px; border-bottom-color: var(--ink); }
+  .rows .r.h span { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--jade-deep); }
+  .r-stock { grid-template-columns: 1fr 86px 76px 88px; }
+  .r-shift { grid-template-columns: 1fr 92px 86px 86px; }
+  .r-money { grid-template-columns: 1fr 110px; }
+  .warn { color: var(--poppy); font-weight: 600; }
+  .bar-s { height: 9px; border: 2px solid var(--ink); background: var(--bone2); }
+  .bar-s i { display: block; height: 100%; background: var(--jade); }
+  .bar-s.low i { background: var(--poppy); }
+  .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+           border: 2px solid var(--ink); background: var(--butter); padding: 11px 13px; }
+  .total b { font-family: var(--disp); font-weight: 900; font-size: 22px; }
+
+  /* телефон гостя */
+  .phone { border: 2px solid var(--ink); background: var(--bone); max-width: 340px; margin: 0 auto; }
+  .phone-top { display: flex; justify-content: space-between; align-items: center;
+               font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+               border-bottom: 2px solid var(--ink); background: var(--bone2); padding: 6px 12px; }
+  .phone-body { padding: 13px; display: grid; gap: 11px; }
+  .phone h4 { font-family: var(--disp); font-weight: 900; font-size: 22px; margin: 0; line-height: 1; }
+  .phone .sub { font-size: 12px; color: var(--jade-deep); margin: 0; }
+  .dish { display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: center;
+          border-top: 2px solid rgba(24,22,19,.12); padding-top: 9px; }
+  .dish img { width: 46px; height: 46px; object-fit: cover; border: 2px solid var(--ink); display: block; }
+  .dish b { display: block; font-weight: 600; font-size: 13px; }
+  .dish em { font-style: normal; font-family: var(--mono); font-size: 9px; color: var(--jade-deep); }
+  .dish .price { font-family: var(--mono); font-weight: 700; font-size: 12px; }
+  .plus { width: 26px; height: 26px; border: 2px solid var(--ink); background: var(--poppy); color: var(--bone);
+          display: grid; place-items: center; font-size: 15px; line-height: 1; }
+  .reel { position: relative; border: 2px solid var(--ink); }
+  .reel img { display: block; width: 100%; height: 300px; object-fit: cover; }
+  .reel .cap { position: absolute; left: 0; bottom: 0; right: 0; background: var(--bone);
+               border-top: 2px solid var(--ink); padding: 8px 11px; display: flex;
+               justify-content: space-between; align-items: baseline; gap: 10px; }
+  .reel .cap b { font-family: var(--disp); font-weight: 800; font-size: 15px; }
+  .pay-btn { border: 2px solid var(--ink); background: var(--poppy); color: var(--bone); text-align: center;
+             font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .12em;
+             text-transform: uppercase; padding: 11px; }
+  .pay-btn.ghost { background: var(--bone2); color: var(--ink); }
+
+  /* ── Фото блюд ────────────────────────────────────────────────────────── */
+  .gen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .phones .genshot { background: var(--bone2); padding: 14px 14px 0; display: flex; flex-direction: column; }
+  .phones .phone { max-width: none; margin: 0; }
+  /* подписи прижаты к низу: телефоны разной высоты, иначе ряд рваный */
+  .phones .genshot figcaption { margin: 14px -14px 0; margin-top: auto; }
+  .genshot { position: relative; margin: 0; border: 2px solid var(--ink); background: var(--bone); }
+  .genshot img { display: block; width: 100%; height: auto; filter: contrast(1.04) saturate(.97); }
+  .genshot .gen-tag {
+    position: absolute;
+    left: 0; top: 0;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    background: var(--butter);
+    color: var(--ink);
+    border-right: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 5px 10px;
+  }
+  .genshot .gen-tag.out { background: var(--poppy); color: var(--bone); }
+  .genshot figcaption { border-top: 2px solid var(--ink); padding: 13px 15px; }
+  .genshot figcaption b { display: block; font-family: var(--disp); font-weight: 800; font-size: 17px; }
+  .genshot figcaption span { display: block; margin-top: 6px; font-size: 13.5px; color: var(--jade-deep); }
+
+  /* ── Три кирпича: размеры и опции ──────────────────────────────────── */
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .brick {
+    border: 2px solid var(--ink);
+    background: var(--bone);
+    padding: 22px;
+    transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .brick:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--ink); }
+  .brick:nth-child(1) { border-top: 10px solid var(--poppy); }
+  .brick:nth-child(2) { border-top: 10px solid var(--jade); }
+  .brick:nth-child(3) { border-top: 10px solid var(--butter); }
+  .brick .btag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--poppy);
+  }
+  .brick h3 { font-family: var(--disp); font-weight: 900; font-size: 22px; margin: 10px 0 0; line-height: 1.05; }
+  .brick p { margin: 10px 0 0; font-size: 14.5px; }
+
+  /* ── Ролик ─────────────────────────────────────────────────────────────── */
+  .video-wrap { position: relative; border: 2px solid var(--ink); background: var(--ink); line-height: 0; }
+  .video-wrap video { display: block; width: 100%; height: auto; }
+  .video-play {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%,-50%);
+    width: 86px; height: 86px;
+    background: var(--poppy);
+    color: var(--bone);
+    border: 2px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform .18s var(--ease);
+  }
+  .video-play:hover { transform: translate(-50%,-50%) scale(1.06); }
+  .video-sound {
+    position: absolute;
+    right: 14px; bottom: 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    background: var(--bone);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 7px 11px;
+    cursor: pointer;
+  }
+  .sec.dark .fine { color: rgba(242,234,216,.7); }
+
+  /* ── Приход: шаги и накладная ─────────────────────────────────────────── */
+  .ordergrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 54px; align-items: start; }
+  .step { display: grid; grid-template-columns: 86px 1fr; gap: 20px; padding: 22px 0; border-bottom: 2px solid rgba(24,22,19,.14); }
+  .step .n {
+    font-family: var(--disp);
+    font-weight: 900;
+    font-size: 54px;
+    line-height: .8;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--jade);
+  }
+  .step b { font-family: var(--disp); font-weight: 800; font-size: 20px; display: block; }
+  .step span { display: block; margin-top: 6px; font-size: 15px; color: var(--jade-deep); }
+
+  .receipt-wrap { position: relative; }
+  .receipt {
+    background: var(--jade-deep);
+    color: var(--bone);
+    border: 2px solid var(--ink);
+    padding: 26px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    --perf: radial-gradient(circle at 6px 0, transparent 5px, #000 5.5px);
+    -webkit-mask-image: var(--perf); mask-image: var(--perf);
+    -webkit-mask-size: 12px 100%; mask-size: 12px 100%;
+    -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+  }
+  .receipt .rhead {
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    border-bottom: 2px dashed rgba(242,234,216,.4);
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+  .receipt .rsub { display: block; font-size: 10px; letter-spacing: .1em; color: rgba(242,234,216,.6); margin-top: 6px; }
+  .rline { display: flex; align-items: baseline; gap: 4px; padding: 6px 0; }
+  .rline .leader { flex: 1; border-bottom: 2px dotted rgba(242,234,216,.4); transform: translateY(-4px); margin: 0 6px; }
+  .rline b { color: var(--butter); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .rtotal { border-top: 2px dashed rgba(242,234,216,.4); margin-top: 14px; padding-top: 14px; }
+  .rtotal .rline b { font-size: 16px; }
+  .ding {
+    position: absolute;
+    right: 18px; bottom: -14px;
+    background: var(--bone);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    font-family: var(--disp);
+    font-style: italic;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 4px 12px;
+    transform: rotate(-4deg);
+  }
+
+  /* ── Счёт за автоматизацию ────────────────────────────────────────────── */
+  .bill { border-top: 3px solid var(--ink); }
+  .bill-row {
+    display: grid;
+    grid-template-columns: 240px 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 2px solid rgba(24,22,19,.14);
+  }
+  .bill-row .who { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .bar-track { height: 22px; border: 2px solid var(--ink); background: var(--bone2); }
+  .bar { display: block; height: 100%; width: var(--w); background: var(--jade); border-right: 2px solid var(--ink); transition: width 1s var(--ease); }
+  .bill-row.us .bar { background: var(--poppy); }
+  .bill-row.us .who { color: var(--poppy); font-weight: 700; }
+
+  .shout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 26px;
+    align-items: center;
+    background: var(--poppy);
+    color: var(--bone);
+    border: 2px solid var(--ink);
+    padding: 26px;
+    margin-top: 34px;
+  }
+  .shout b { font-family: var(--disp); font-weight: 900; font-size: clamp(38px, 5vw, 64px); line-height: .9; letter-spacing: -.02em; }
+  .shout span { font-size: 15px; max-width: 54ch; }
+
+  /* ── Тарифы: бенто ────────────────────────────────────────────────────── */
+  .bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(170px, auto); gap: 14px; }
+  .cell {
+    border: 2px solid var(--ink);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform .22s var(--ease), box-shadow .22s var(--ease), opacity .4s var(--ease);
+    overflow: hidden;
+    text-decoration: none;
+  }
+  .bento .cell:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--ink); }
+  .cell .ctag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .cell h3 { font-family: var(--disp); font-weight: 900; font-size: 27px; margin: 12px 0 10px; line-height: 1; }
+  .cell p { margin: 10px 0 0; font-size: 14.5px; }
+  .cell .cprice { font-family: var(--disp); font-weight: 900; font-size: clamp(30px,3.4vw,46px); line-height: 1; letter-spacing: -.02em; margin-top: auto; }
+  .cell .cper { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-top: 8px; }
+
+  .cell.big   { grid-column: span 2; grid-row: span 2; background: var(--poppy); color: var(--bone); }
+  .cell.shot  { grid-column: span 2; grid-row: span 2; background: var(--bone2); padding: 0; position: relative; }
+  /* Кадр вынут из потока: вертикальная фотография иначе растягивает ряд бенто
+     на пол-экрана, и соседние плитки превращаются в пустые простыни. */
+  .cell.shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.04) saturate(.96); }
+  .cell.pale  { grid-column: span 2; background: var(--bone); }
+  .cell.gold  { grid-column: span 1; background: var(--butter); }
+  .cell.deep  { grid-column: span 1; background: var(--jade-deep); color: var(--bone); }
+  .cell.deep .cper, .cell.big .cper { color: rgba(242,234,216,.75); }
+
+  .fine { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--jade-deep); margin-top: 26px; line-height: 1.9; }
+
+  /* ── Вопросы ──────────────────────────────────────────────────────────── */
+  /* Четырнадцать вопросов в столбик — это метр пустых рамок. Кладём их в два
+     столбца и поджимаем: align-items: start, чтобы открытый вопрос не тянул
+     за собой высоту соседа. */
+  .qa {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: start;
+    align-content: start;
+  }
+  details { border: 2px solid var(--ink); background: var(--bone); margin: 0; }
+  details[open] { background: var(--bone2); box-shadow: 4px 4px 0 var(--ink); }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 12px 15px;
+    font-family: var(--disp);
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1.25;
+    display: flex;
+    align-items: baseline;
+    gap: 11px;
+  }
+  summary:hover { color: var(--poppy); }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "+";
+    font-family: var(--mono);
+    font-weight: 700;
+    color: var(--poppy);
+    font-size: 17px;
+    line-height: 1;
+  }
+  details[open] summary::before { content: "−"; }
+  details p { margin: 0 15px 12px; font-size: 14px; }
+  details p:first-of-type { padding-top: 2px; }
+
+  /* ── Контакты и подвал ────────────────────────────────────────────────── */
+  .call { background: var(--butter); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 72px 0; position: relative; z-index: 2; }
+  .call .kicker { color: var(--ink); }
+  .call h2 { font-family: var(--disp); font-weight: 900; font-size: clamp(34px,4.6vw,64px); line-height: .95; letter-spacing: -.02em; margin: 10px 0 0; }
+  .call p { max-width: 54ch; }
+  .contacts { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+
+  footer { background: var(--jade-deep); color: var(--bone); padding: 64px 0 34px; position: relative; z-index: 2; }
+  .fname {
+    font-family: var(--disp);
+    font-weight: 900;
+    font-size: clamp(58px, 15vw, 210px);
+    line-height: .82;
+    letter-spacing: -.04em;
+    color: var(--bone);
+    margin: 0;
+  }
+  .fstripe { height: 14px; background: var(--poppy); border: 2px solid var(--ink); margin: 26px 0; transform-origin: left; }
+  .fgrid { display: flex; gap: 32px; flex-wrap: wrap; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(242,234,216,.75); }
+  .fgrid a { color: var(--butter); text-decoration: none; }
+  .fgrid a:hover { text-decoration: underline; }
+  .fnav { flex-basis: 100%; order: -1; margin-bottom: 18px; line-height: 2.1; }
+
+  /* ── Нижняя панель ────────────────────────────────────────────────────── */
+  .dock {
+    position: fixed;
+    z-index: 30;
+    left: 50%;
+    bottom: 22px;
+    transform: translate(-50%, 140%);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--ink);
+    color: var(--bone);
+    border-radius: 999px;
+    padding: 10px 10px 10px 22px;
+    box-shadow: 0 18px 40px -12px rgba(0,0,0,.5);
+    transition: transform .4s var(--ease);
+    max-width: calc(100vw - 32px);
+  }
+  .dock.up { transform: translate(-50%, 0); }
+  .dock .dstat { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .dock .dstat .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--jade); animation: pulse 2s infinite; }
+  .dock .dsum { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--butter); white-space: nowrap; }
+  .dock .btn { border-radius: 999px; padding: 11px 18px; }
+  .dock .btn:hover { box-shadow: none; }
+
+  /* ── Ассистент ─────────────────────────────────────────────────────────── */
+  .ask-btn {
+    position: fixed;
+    z-index: 32;
+    right: 22px; bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--poppy);
+    color: var(--bone);
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: transform .18s var(--ease);
+  }
+  .ask-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
+  .ask-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+  .ask-panel {
+    position: fixed;
+    z-index: 33;
+    right: 22px; bottom: 22px;
+    width: 390px;
+    max-width: calc(100vw - 32px);
+    height: 540px;
+    max-height: calc(100vh - 44px);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    background: var(--bone);
+    border: 2px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+  .ask-panel[hidden] { display: none; }
+  .ask-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--jade-deep);
+    color: var(--bone);
+    border-bottom: 2px solid var(--ink);
+    padding: 13px 15px;
+  }
+  .ask-head b { font-family: var(--disp); font-weight: 800; font-size: 16px; display: block; }
+  .ask-head span {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(242,234,216,.7);
+    margin-top: 4px;
+  }
+  .ask-close {
+    background: transparent;
+    color: var(--bone);
+    border: 2px solid rgba(242,234,216,.4);
+    font-size: 13px;
+    line-height: 1;
+    padding: 6px 9px;
+    cursor: pointer;
+  }
+  .ask-close:hover { background: var(--poppy); border-color: var(--ink); }
+  .ask-log { overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .ask-msg { font-size: 14.5px; line-height: 1.5; border: 2px solid var(--ink); padding: 10px 12px; max-width: 86%; }
+  .ask-msg.bot { background: var(--bone2); }
+  .ask-msg.me { background: var(--butter); align-self: flex-end; }
+  .ask-msg.wait {
+    background: transparent;
+    border-style: dashed;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--jade-deep);
+  }
+  .ask-msg a { color: var(--poppy); }
+  .ask-form { display: flex; border-top: 2px solid var(--ink); }
+  .ask-form input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: var(--bone);
+    font-family: var(--body);
+    font-size: 14.5px;
+    color: var(--ink);
+    padding: 13px 14px;
+  }
+  .ask-form input:focus { outline: none; background: var(--bone2); }
+  .ask-form button {
+    background: var(--poppy);
+    color: var(--bone);
+    border: 0;
+    border-left: 2px solid var(--ink);
+    font-size: 17px;
+    width: 52px;
+    cursor: pointer;
+  }
+  .ask-form button:disabled { background: var(--ink); cursor: default; }
+
+  /* ── Появление ────────────────────────────────────────────────────────── */
+  .rise { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
+  .rise.in { opacity: 1; transform: none; }
+  .sechead.v-skew h2 { transform: skewY(7deg); transition: transform .8s var(--ease); }
+  .sechead.v-skew.in h2 { transform: none; }
+  .sechead.v-blur h2 { filter: blur(16px); transition: filter .8s var(--ease); }
+  .sechead.v-blur.in h2 { filter: none; }
+  .sechead.v-track h2 { letter-spacing: .32em; transition: letter-spacing .8s var(--ease); }
+  .sechead.v-track.in h2 { letter-spacing: -.02em; }
+  .tile { opacity: 0; }
+  .tile.in { opacity: 1; transition: transform .9s var(--ease), opacity .5s var(--ease); }
+  .scrub .line, .scrub .desc, .scrub .tags { clip-path: inset(0 100% 0 0); transition: clip-path .7s var(--ease); }
+  .scrub.in .line, .scrub.in .desc, .scrub.in .tags { clip-path: inset(0 0 0 0); }
+  .scrub.in .desc { transition-delay: .08s; }
+  .scrub.in .tags { transition-delay: .14s; }
+
+
+  .cell.wide { grid-column: span 4; background: var(--bone2); }
+  .bill:not(.in) .bar { width: 0; }
+  .cell { opacity: 0; transform: translateY(14px); }
+  .cell.in { opacity: 1; transform: none; }
+
+  /* ── Узко ─────────────────────────────────────────────────────────────── */
+  /* Между 1000 и 1240 в шапку перестают помещаться меню, часы и кнопка
+     разом — сначала поджимаем промежутки, потом убираем часы. */
+  /* Ноутбук: экран широкий, но низкий — первый разворот должен помещаться
+     целиком, иначе тарифы уезжают под обрез. */
+  @media (min-width: 1001px) and (max-height: 900px) {
+    .hero { padding: 26px 0 40px; }
+    h1.disp { font-size: clamp(36px, 4vw, 60px); }
+    .handnote { font-size: 16px; margin-top: 6px; }
+    .lede { font-size: 15.5px; margin-top: 12px; }
+    .hero-head { margin-bottom: 14px; }
+    .row { padding: 10px 0; }
+    .row .nm { font-size: 17px; }
+    .rule { margin-top: 14px; }
+    .hero-cta { margin-top: 16px; }
+    .mosaic { gap: 8px; }
+  }
+
+  @media (max-width: 1000px) {
+    .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
+    .hero-text { order: 1; }
+    .mosaic { order: 2; }
+    .ordergrid { grid-template-columns: 1fr; gap: 40px; }
+    .cats { columns: 1; }
+    .gen { grid-template-columns: repeat(2, 1fr); }
+    .trio { grid-template-columns: 1fr; }
+    .phones { grid-template-columns: 1fr; max-width: 420px; }
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .cell.big, .cell.shot, .cell.pale { grid-column: span 2; }
+    .cell.shot { grid-row: span 1; aspect-ratio: 16 / 10; }
+    .cell.gold, .cell.deep { grid-column: span 1; }
+    .cell.wide { grid-column: span 2; }
+    header nav { display: none; }
+    .bill-row { grid-template-columns: 1fr auto; }
+    .bill-row .bar-track { grid-column: 1 / -1; order: 3; }
+  }
+  @media (max-width: 880px) {
+    .qa { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .wrap { padding-left: 18px; padding-right: 18px; }
+    .sec { padding: 60px 0; }
+    .hero { padding: 36px 0 60px; }
+    .brand { font-size: 1.15rem; }
+    .mosaic { grid-template-columns: repeat(3, 1fr); }
+    .tile.hide-sm { display: none; }
+    .shout { grid-template-columns: 1fr; gap: 14px; }
+    .step { grid-template-columns: 60px 1fr; gap: 14px; }
+    .step .n { font-size: 38px; }
+    .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
+    .tab { padding: 10px 12px; font-size: 10.5px; }
+    .tab[aria-selected="true"] { transform: none; box-shadow: 3px 3px 0 var(--ink); }
+    /* Экраны собраны разметкой, поэтому на телефоне не ужимаются, а
+       перестраиваются: канбан и карта столов — в одну-две колонки. */
+    .screen .frame { padding: 10px; }
+    .ui-body { padding: 10px; gap: 10px; }
+    .kan, .pass-row { grid-template-columns: 1fr; }
+    .tables { grid-template-columns: repeat(4, 1fr); }
+    .r-stock, .r-shift { grid-template-columns: 1fr 74px; row-gap: 4px; }
+    .r-stock span:nth-child(3), .r-shift span:nth-child(3) { display: none; }
+    .screen figcaption { padding: 11px 13px; }
+    .dock .dstat, .dock .dsum { display: none; }
+    .dock { padding: 8px; gap: 8px; }
+    .ask-btn { right: 14px; bottom: 16px; padding: 12px; font-size: 0; gap: 0; }
+    .ask-btn svg { width: 20px; height: 20px; }
+    .ask-panel { right: 10px; bottom: 10px; height: calc(100vh - 100px); }
+  }
+
+  @media (max-width: 560px) {
+    .gen { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rise, .tile, .cell, .scrub .line, .scrub .desc, .scrub .tags { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+    .sechead h2 { transform: none !important; filter: none !important; letter-spacing: -.02em !important; }
+    .dock .dstat .dot { animation: none; }
+  }
+</style>
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112273830', 'ym');
+
+    ym(112273830, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112273830" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+</head>
+<body>
+<div class="grain" id="grain" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
+    <nav class="menu" id="menu" aria-label="Разделы сайта">
+      <div class="drop">
+        <button class="drop-btn" type="button" aria-expanded="false" aria-controls="features">Возможности <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="features">
+          <a href="/qr-menu/"><b>QR-меню</b><span>Заказ и оплата с телефона гостя</span></a>
+          <a href="/ekran-kuhni/"><b>Экран кухни и бара</b><span>Очереди станций и тайминги блюд</span></a>
+          <a href="/sklad/"><b>Склад и себестоимость</b><span>Тех. карты, приход по фото, списания</span></a>
+          <a href="/personal/"><b>Персонал и зарплата</b><span>Смены, оплата за результат, ведомость</span></a>
+          <a href="/oplata/"><b>Оплата, касса и бонусы</b><span>Онлайн, смарт-касса, возвраты, бонусы гостям</span></a>
+        </div>
+      </div>
+      <div class="drop">
+        <button class="drop-btn" type="button" aria-expanded="false" aria-controls="formats">Форматы <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
+        <div class="drop-panel" id="formats">
+          <a href="/dlya-kofejni/"><b>Точка без зала</b><span>Кофейня, фудтрак, пекарня, окно выдачи, островок в ТЦ</span></a>
+          <a href="/dlya-kafe/"><b>Кафе с залом</b><span>Кафе, бистро, ресторан, бар с посадкой</span></a>
+        </div>
+      </div>
+      <a href="/sravnenie/">Сравнение</a>
+      <a href="/#pricing">Тарифы</a>
+      <a href="/blog/">Статьи</a>
+      <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Демо <span class="ext" aria-hidden="true">↗</span></a>
+    </nav>
+    <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема">
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+    </button>
+    <a class="btn sm" href="#call">Подключить</a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Открыть меню">
+      <svg class="bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero">
+    <div class="wrap">
+
+      <div class="mosaic" id="mosaic" aria-label="Нарисованные блюда">
+        <div class="tile pic"><img src="img/tile-01.webp" alt="Стопка блинов с маслом и сиропом" width="560" height="560" loading="eager"></div>
+        <div class="tile pic"><img src="img/tile-02.webp" alt="Яичница из двух яиц" width="560" height="560" loading="eager"></div>
+        <div class="tile pic"><img src="img/tile-03.webp" alt="Бургер" width="560" height="560" loading="eager"></div>
+        <div class="tile pic"><img src="img/tile-04.webp" alt="Кусок вишнёвого пирога" width="560" height="560" loading="eager"></div>
+        <div class="tile pic"><img src="img/tile-05.webp" alt="Чашка горячего кофе" width="560" height="560" loading="eager"></div>
+        <div class="tile pic hide-sm"><img src="img/tile-06.webp" alt="Молочный коктейль" width="560" height="560" loading="eager"></div>
+        <div class="tile gap">№ 7 ·<br>рисуется</div>
+        <div class="tile pic"><img src="img/tile-08.webp" alt="Полоски бекона" width="560" height="560" loading="lazy"></div>
+        <div class="tile pic"><img src="img/tile-09.webp" alt="Вафли с маслом" width="560" height="560" loading="lazy"></div>
+        <div class="tile pic hide-sm"><img src="img/tile-10.webp" alt="Стакан апельсинового сока" width="560" height="560" loading="lazy"></div>
+        <div class="tile pic"><img src="img/tile-11.webp" alt="Барный стул" width="560" height="560" loading="lazy"></div>
+        <div class="tile pic hide-sm"><img src="img/tile-12.webp" alt="Кетчуп, соль и перец" width="560" height="560" loading="lazy"></div>
+      </div>
+
+      <div class="hero-text">
+        <div class="hero-head">
+          <span class="datechip" id="datechip">ПТ · 12 ОКТ</span>
+          <p class="kicker">— запуск занимает один вечер —</p>
+        </div>
+
+        <h1 class="disp"><span class="ghost">Экранов —<i aria-hidden="true">Экранов —</i></span><br><span class="ghost">сколько нужно.<i aria-hidden="true">сколько нужно.</i></span></h1>
+        <p class="handnote">— а цена одна, за всё заведение —</p>
+
+        <p class="lede">Заказы со стола или выдача по номеру в окно, экраны кухни и бара, склад, смены и зарплата. Открывается на планшете, который у вас уже есть: касса, пас, бар, кладовка.</p>
+
+        <div class="switch" role="group" aria-label="Период оплаты">
+          <button type="button" data-period="month" aria-pressed="true">Помесячно</button>
+          <button type="button" data-period="year" aria-pressed="false">За год −17%</button>
+        </div>
+
+        <hr class="rule">
+
+        <div class="row scrub">
+          <div class="line">
+            <span class="nm">Стойка</span>
+            <span class="leader" aria-hidden="true"></span>
+            <span class="amt price" data-month="3 990 ₽" data-year="3 310 ₽">3 990 ₽</span>
+          </div>
+          <p class="desc">Кофейня, фудтрак, пекарня, окно выдачи, бар навынос</p>
+          <div class="tags">
+            <span class="tag">Без зала</span>
+            <span class="tag">Выдача по номеру</span>
+            <span class="tag b">Бэк-офис целиком</span>
+          </div>
+        </div>
+
+        <div class="row scrub">
+          <div class="line">
+            <span class="nm">Зал</span>
+            <span class="leader" aria-hidden="true"></span>
+            <span class="amt price" data-month="5 990 ₽" data-year="4 970 ₽">5 990 ₽</span>
+          </div>
+          <p class="desc">Кафе, бистро, ресторан, бар с посадкой</p>
+          <div class="tags">
+            <span class="tag">Столы и официант</span>
+            <span class="tag">Кухня и бар</span>
+            <span class="tag b">Бэк-офис целиком</span>
+          </div>
+        </div>
+
+        <div class="hero-cta">
+          <a class="btn" href="#call">Подключить</a>
+          <a class="btn ghostbtn" href="https://demo.padacha.ru" target="_blank" rel="noreferrer">Живое демо ↗</a>
+        </div>
+        <p class="hero-note">без оборудования · экраны не считаем · оплата помесячно</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="mtrack" id="mtrack">
+      <span><i>★</i> Экранов сколько нужно</span>
+      <span><i>★</i> Запуск за один вечер</span>
+      <span><i>★</i> Склад в обоих тарифах</span>
+      <span><i>★</i> Приход по фото накладной</span>
+      <span><i>★</i> Фото блюд рисует нейросеть</span>
+      <span><i>★</i> Зарплата считается сама</span>
+    </div>
+  </div>
+
+  <section class="sec" id="guest">
+    <div class="wrap">
+      <div class="sechead v-track">
+        <p class="kicker">— что видит гость —</p>
+        <h2>Меню в телефоне, а не ламинированная папка</h2>
+        <p>Гость наводит камеру на QR и открывает ваше меню с фотографиями. Собирает заказ сам, платит картой и следит за готовностью в своём телефоне. Печатать новое меню из-за смены цены больше не нужно.</p>
+      </div>
+
+      <div class="phones">
+        <figure class="genshot">
+          <div class="phone">
+            <div class="phone-top"><span>9:41</span><span>кофейня «Компас»</span></div>
+            <div class="phone-body">
+              <h4>Меню</h4>
+              <p class="sub">Соберите заказ и отправьте — официант примет его на ваш стол</p>
+              <div class="lbl-row">
+                <span class="btn-s go">Все</span><span class="btn-s">Кофе</span><span class="btn-s">Завтраки</span><span class="btn-s">Боулы</span>
+              </div>
+              <div class="dish">
+                <img src="../photo-cappuccino.webp" alt="Латте" width="46" height="46" loading="lazy">
+                <div><b>Латте</b><em>320 мл</em></div>
+                <div class="lbl-row"><span class="price">240 ₽</span><span class="plus">+</span></div>
+              </div>
+              <div class="dish">
+                <img src="../photo-raf.webp" alt="Карамельный раф" width="46" height="46" loading="lazy">
+                <div><b>Карамельный раф</b><em>300 мл</em></div>
+                <div class="lbl-row"><span class="price">290 ₽</span><span class="plus">+</span></div>
+              </div>
+              <div class="dish">
+                <img src="../shots/sq_bowl_crab.jpg" alt="Боул с крабом" width="46" height="46" loading="lazy">
+                <div><b>Боул с крабом</b><em>380 г</em></div>
+                <div class="lbl-row"><span class="price">650 ₽</span><span class="plus">+</span></div>
+              </div>
+              <div class="dish">
+                <img src="../shots/sq_hawaii_breakfast.jpg" alt="Гавайский завтрак" width="46" height="46" loading="lazy">
+                <div><b>Гавайский завтрак</b><em>340 г</em></div>
+                <div class="lbl-row"><span class="price">480 ₽</span><span class="plus">+</span></div>
+              </div>
+            </div>
+          </div>
+          <span class="gen-tag">Списком</span>
+          <figcaption><b>Все блюда с ценами и граммовкой</b><span>Когда гость знает, чего хочет, — самый быстрый способ собрать заказ.</span></figcaption>
+        </figure>
+
+        <figure class="genshot">
+          <div class="phone">
+            <div class="phone-top"><span>9:41</span><span>листайте вверх</span></div>
+            <div class="phone-body">
+              <div class="lbl-row">
+                <span class="btn-s go">Боулы</span><span class="btn-s">Кофе</span><span class="btn-s">Завтраки</span>
+              </div>
+              <div class="reel">
+                <img src="../shots/tall_bowl.jpg" alt="Боул с крабом крупным планом" width="780" height="1400" loading="lazy">
+                <div class="cap"><b>Боул с крабом</b><span class="num">650 ₽</span><span class="plus">+</span></div>
+              </div>
+              <p class="sub">Краб, авокадо, огурец, кунжутная заправка · 380 г</p>
+            </div>
+          </div>
+          <span class="gen-tag out">Лентой с фото</span>
+          <figcaption><b>Блюдо во весь экран, листается как в соцсетях</b><span>Продаёт то, о чём гость не думал, — средний чек растёт сам.</span></figcaption>
+        </figure>
+
+        <figure class="genshot">
+          <div class="phone">
+            <div class="phone-top"><span>9:41</span><span>заказ № 214</span></div>
+            <div class="phone-body">
+              <h4>Ваш заказ</h4>
+              <p class="sub">Оплатите онлайн или на кассе — заберёте по номеру</p>
+              <div class="rows">
+                <div class="r r-money"><span>Боул с крабом</span><span class="num">650 ₽</span></div>
+                <div class="r r-money"><span>Латте <em class="mono-s">на овсяном</em></span><span class="num">280 ₽</span></div>
+                <div class="r r-money"><span>Карамельный раф</span><span class="num">290 ₽</span></div>
+              </div>
+              <div class="total"><span class="mono-s">Итого</span><b>1 220 ₽</b></div>
+              <div class="pay-btn">Оплатить онлайн</div>
+              <div class="pay-btn ghost">Оплатить на кассе</div>
+              <div class="lbl-row"><span class="btn-s">Т-Банк</span><span class="btn-s">Сбер</span><span class="btn-s">ЮKassa</span></div>
+              <p class="sub">После оплаты придёт номер — готовность видно здесь же, в телефоне.</p>
+            </div>
+          </div>
+          <span class="gen-tag">Оплата</span>
+          <figcaption><b>Онлайн при заказе или на кассе</b><span>Т-Банк, Сбербанк или ЮKassa — что подключено у вас. Либо «Оплатить на кассе», и заказ уже ждёт кассира на смарт-кассе.</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fine">Оба вида меню — один и тот же каталог: цену и стоп-лист правите один раз, гость видит их сразу в обоих.</p>
+    </div>
+  </section>
+
+  <section class="sec paper" id="photos">
+    <div class="wrap">
+      <div class="sechead v-blur">
+        <p class="kicker">— фото блюд —</p>
+        <h2>Фотограф не приедет — меню нарисует нейросеть</h2>
+        <p>Съёмка меню стоит как несколько месяцев автоматизации и устаревает с первым новым напитком. «Падача» рисует фотографии сама — и не картинками из интернета, а вашими блюдами в вашей посуде.</p>
+      </div>
+
+      <div class="gen">
+        <figure class="genshot">
+          <img src="../photo-sample.webp" alt="Загруженный образец посуды: крафтовый стакан с синей полосой" width="760" height="760" loading="lazy">
+          <span class="gen-tag">Загрузили</span>
+          <figcaption><b>Ваш стакан</b><span>Одно фото посуды — на всё меню. Крафт, синяя полоса, значок переработки: нейросеть повторит их на каждом кадре.</span></figcaption>
+        </figure>
+        <figure class="genshot">
+          <img src="../photo-cappuccino.webp" alt="Сгенерированное фото капучино в том же стакане на барной стойке" width="760" height="760" loading="lazy">
+          <span class="gen-tag out">Нарисовано</span>
+          <figcaption><b>Капучино</b><span>Кадр собирается вокруг вашей посуды: латте-арт, барная стойка, кофемашина в расфокусе.</span></figcaption>
+        </figure>
+        <figure class="genshot">
+          <img src="../photo-raf.webp" alt="Сгенерированное фото карамельного рафа с паром" width="760" height="760" loading="lazy">
+          <span class="gen-tag out">Нарисовано</span>
+          <figcaption><b>Карамельный раф</b><span>Стиль съёмки один на всё заведение — меню выглядит как одна фотосессия, а не сборная солянка.</span></figcaption>
+        </figure>
+        <figure class="genshot">
+          <img src="../photo-espresso.webp" alt="Сгенерированное фото эспрессо в том же стакане" width="760" height="760" loading="lazy">
+          <span class="gen-tag out">Нарисовано</span>
+          <figcaption><b>Эспрессо</b><span>Не понравилось — рисуете заново. Пока вы сами не поставите кадр в меню, гость ничего не увидит.</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="fine">Настоящие генерации с демо-стенда, а не рекламные макеты. Фото в меню помечается для гостя как иллюстрация; своё можно загрузить в любой момент, пометка снимется сама.<br>Пакет 100 генераций — 2 000 ₽, не сгорает по месяцам.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="bill">
+    <div class="wrap">
+      <div class="sechead v-skew">
+        <p class="kicker">— счёт за автоматизацию —</p>
+        <h2>Рынок продаёт лицензии на экраны</h2>
+        <p>У классических систем каждый терминал — отдельная платная лицензия: касса, экран кухни, экран бара. Кафе на три экрана платит как за трёх сотрудников. У нас экраны — вкладки браузера, и они не стоят ничего.</p>
+      </div>
+
+      <div class="bill">
+        <div class="bill-row">
+          <span class="who">iiko «Профессиональный»</span>
+          <span class="bar-track"><span class="bar" style="--w: 100%"></span></span>
+          <span class="pr">25 800 ₽</span>
+        </div>
+        <div class="bill-row">
+          <span class="who">Quick Resto «Про»</span>
+          <span class="bar-track"><span class="bar" style="--w: 62%"></span></span>
+          <span class="pr">15 970 ₽</span>
+        </div>
+        <div class="bill-row">
+          <span class="who">r_keeper «Клауд Про»</span>
+          <span class="bar-track"><span class="bar" style="--w: 47%"></span></span>
+          <span class="pr">12 200 ₽</span>
+        </div>
+        <div class="bill-row us">
+          <span class="who">Падача «Зал»</span>
+          <span class="bar-track"><span class="bar" style="--w: 23%"></span></span>
+          <span class="pr">5 990 ₽</span>
+        </div>
+        <div class="bill-row us">
+          <span class="who">Падача «Стойка»</span>
+          <span class="bar-track"><span class="bar" style="--w: 15%"></span></span>
+          <span class="pr">3 990 ₽</span>
+        </div>
+      </div>
+      <p class="fine">Касса + экран кухни + экран бара, в месяц. У «Стойки» кухни и бара нет по формату — там касса и экран выдачи.<br>Публичные цены с сайтов iiko.ru, quickresto.ru, rkeeper.ru — август 2026.</p>
+
+      <div class="shout">
+        <b>238 000 ₽</b>
+        <span>столько остаётся в кафе за год при переходе с iiko «Профессиональный» на «Падачу». Это годовая зарплата повара или новая кофемашина каждые полгода.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec dark" id="roles">
+    <div class="wrap">
+      <div class="sechead v-track">
+        <p class="kicker">— шесть рабочих мест —</p>
+        <h2>У каждого в смене свой экран</h2>
+        <p>Одна система, разные экраны. Каждый видит только то, что нужно ему, и всё обновляется вживую.</p>
+      </div>
+
+      <div class="tabs" id="tabs" role="tablist" aria-label="Рабочие места">
+        <button class="tab" type="button" role="tab" aria-selected="false" data-pane="01" data-role="01 · Гость" data-what="QR-меню" data-cap="Листает меню с фото, видит стоп-лист, собирает заказ сам по QR со стола — или просто показывает пальцем, как привычнее.">
+          <span class="n">01</span>Гость
+        </button>
+        <button class="tab" type="button" role="tab" aria-selected="true" data-pane="02" data-role="02 · Официант" data-what="Столы-светофор" data-cap="Весь зал на одном экране: где ждут, где готово, где пора нести счёт. Заказ с планшета за полминуты, счёт раскладывается по гостям.">
+          <span class="n">02</span>Официант
+        </button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-pane="03" data-role="03 · Кухня и бар" data-what="Очередь станции" data-cap="Свои позиции, свой ритм: принял — готовлю — отдал. Звук на новый заказ, время по каждому блюду, стоп-лист одной кнопкой.">
+          <span class="n">03</span>Кухня и бар
+        </button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-pane="04" data-role="04 · Склад" data-what="Остатки без ревизий" data-cap="Ингредиенты списываются в момент отдачи блюда по тех. картам. Система показывает, что заканчивается, и собирает закуп на день.">
+          <span class="n">04</span>Склад
+        </button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-pane="05" data-role="05 · Управляющий" data-what="Смены и зарплата" data-cap="Ставка плюс процент — или оплата за результат: бонус за выручку в час, надбавки за фокусные позиции и допродажи. Excel можно закрыть.">
+          <span class="n">05</span>Управляющий
+        </button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-pane="06" data-role="06 · Владелец" data-what="Деньги и бренд" data-cap="Выручка по факту оплаты: наличные, карта и онлайн раздельно, возвраты отдельной строкой. Бонусы гостям, свой логотип и цвета.">
+          <span class="n">06</span>Владелец
+        </button>
+      </div>
+
+      <figure class="screen" id="screen">
+        <div class="frame">
+
+          <div class="ui" data-pane="01" hidden>
+            <div class="ui-head"><b>Меню гостя</b><span>кофейня «Компас» · стол 7</span><span class="badge">по QR</span></div>
+            <div class="ui-body">
+              <div class="phone">
+                <div class="phone-top"><span>9:41</span><span>Войти</span></div>
+                <div class="phone-body">
+                  <h4>Меню</h4>
+                  <p class="sub">Соберите заказ и отправьте — официант примет его на ваш стол</p>
+                  <div class="lbl-row">
+                    <span class="btn-s go">Все</span><span class="btn-s">Кофе</span><span class="btn-s">Завтраки</span><span class="btn-s">Боулы</span>
+                  </div>
+                  <div class="dish">
+                    <img src="../photo-cappuccino.webp" alt="Латте" width="46" height="46" loading="lazy">
+                    <div><b>Латте</b><em>320 мл · на овсяном +40 ₽</em></div>
+                    <div class="lbl-row"><span class="price">240 ₽</span><span class="plus">+</span></div>
+                  </div>
+                  <div class="dish">
+                    <img src="../photo-raf.webp" alt="Карамельный раф" width="46" height="46" loading="lazy">
+                    <div><b>Карамельный раф</b><em>300 мл</em></div>
+                    <div class="lbl-row"><span class="price">290 ₽</span><span class="plus">+</span></div>
+                  </div>
+                  <div class="dish">
+                    <img src="../shots/sq_bowl_crab.jpg" alt="Боул с крабом" width="46" height="46" loading="lazy">
+                    <div><b>Боул с крабом</b><em>380 г</em></div>
+                    <div class="lbl-row"><span class="price">650 ₽</span><span class="plus">+</span></div>
+                  </div>
+                  <div class="dish">
+                    <img src="../shots/sq_hawaii_breakfast.jpg" alt="Гавайский завтрак" width="46" height="46" loading="lazy">
+                    <div><b>Гавайский завтрак</b><em>340 г · стоп-лист с 15:00</em></div>
+                    <div class="lbl-row"><span class="price">480 ₽</span><span class="plus">+</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui" data-pane="02" hidden>
+            <div class="ui-head"><b>Столы</b><span>выберите стол, чтобы создать заказ или закрыть счёт</span><span class="badge">к подаче 3</span></div>
+            <div class="ui-body">
+              <div class="pass-row">
+                <div class="tick">
+                  <div class="top"><span class="no">Стол 4 · №211</span><span class="mono-s">кухня</span></div>
+                  <div class="it"><i>Тартар из лосося <s>×1</s></i></div>
+                  <div class="it"><i>Паста карбонара <s>×1</s></i></div>
+                  <div class="all">✓ Подал · стол 4</div>
+                </div>
+                <div class="tick">
+                  <div class="top"><span class="no">Стол 4 · №211</span><span class="mono-s">бар</span></div>
+                  <div class="it"><i>Лимонад манго <s>×2</s><em>0,5 · без льда</em></i></div>
+                  <div class="all">✓ Подал · стол 4</div>
+                </div>
+                <div class="tick">
+                  <div class="top"><span class="no">Стол 9 · №207</span><span class="mono-s">кухня</span></div>
+                  <div class="it"><i>Поке с тунцом <s>×1</s></i></div>
+                  <div class="it"><i>Брускетта <s>×2</s></i></div>
+                  <div class="all">✓ Подал · стол 9</div>
+                </div>
+              </div>
+              <div class="tables">
+                <div class="tbl"><b>1</b><span>свободен</span></div>
+                <div class="tbl cook"><b>2</b><span>готовится 15 мин</span></div>
+                <div class="tbl"><b>3</b><span>свободен</span></div>
+                <div class="tbl ready"><b>4</b><span>готов · 2 мин</span></div>
+                <div class="tbl cook"><b>5</b><span>готовится 7 мин</span></div>
+                <div class="tbl"><b>6</b><span>свободен</span></div>
+                <div class="tbl"><b>7</b><span>свободен</span></div>
+                <div class="tbl pay"><b>8</b><span>счёт 2 140 ₽</span></div>
+                <div class="tbl"><b>9</b><span>подано</span></div>
+                <div class="tbl"><b>10</b><span>свободен</span></div>
+                <div class="tbl pay"><b>11</b><span>счёт 1 350 ₽</span></div>
+                <div class="tbl"><b>12</b><span>свободен</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui" data-pane="03" hidden>
+            <div class="ui-head"><b>Кухня</b><span>еда — отмечайте готовность позиций</span><span class="badge">6 заказов</span></div>
+            <div class="ui-body">
+              <div class="kan">
+                <div class="kan-col">
+                  <div class="t"><span class="mono-s">Новый</span><span class="num">2</span></div>
+                  <div class="list">
+                    <div class="tick">
+                      <div class="top"><span class="no">№214</span><span class="mono-s">стол 7</span></div>
+                      <div class="mono-s when">ждёт 2 мин</div>
+                      <div class="it"><i>Паста карбонара <s>×1</s></i><span class="btn-s">В работу</span></div>
+                      <div class="it"><i>Цезарь с курицей <s>×2</s><em>без сухариков</em></i><span class="btn-s">В работу</span></div>
+                    </div>
+                    <div class="tick">
+                      <div class="top"><span class="no">№215</span><span class="mono-s">стол 3</span></div>
+                      <div class="mono-s when">ждёт 1 мин · аллергия на орехи</div>
+                      <div class="it"><i>Сырники <s>×1</s><em>сметана, ягодный соус</em></i><span class="btn-s">В работу</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="kan-col">
+                  <div class="t"><span class="mono-s">В процессе</span><span class="num">3</span></div>
+                  <div class="list">
+                    <div class="tick hot">
+                      <div class="top"><span class="no">№209</span><span class="mono-s">стол 11</span></div>
+                      <div class="mono-s when">готовим 14 мин</div>
+                      <div class="it"><i>Том ям <s>×1</s></i><span class="btn-s done">✓</span></div>
+                      <div class="it"><i>Бургер с говядиной <s>×1</s><em>прожарка medium</em></i><span class="btn-s go">Готово</span></div>
+                      <div class="all">✓ Готово всё</div>
+                    </div>
+                    <div class="tick">
+                      <div class="top"><span class="no">№211</span><span class="mono-s">стол 4</span></div>
+                      <div class="mono-s when ok">готовим 6 мин</div>
+                      <div class="it"><i>Тартар из лосося <s>×1</s></i><span class="btn-s go">Готово</span></div>
+                    </div>
+                    <div class="tick">
+                      <div class="top"><span class="no">№212</span><span class="mono-s">стол 2</span></div>
+                      <div class="mono-s when ok">готовим 4 мин</div>
+                      <div class="it"><i>Гранола с йогуртом <s>×2</s></i><span class="btn-s go">Готово</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="kan-col">
+                  <div class="t"><span class="mono-s">Готов</span><span class="num">1</span></div>
+                  <div class="list">
+                    <div class="tick">
+                      <div class="top"><span class="no">№207</span><span class="mono-s">стол 9</span></div>
+                      <div class="mono-s when ok">готово за 11 мин</div>
+                      <div class="it"><i>Поке с тунцом <s>×1</s></i><span class="btn-s done">✓</span></div>
+                      <div class="it"><i>Брускетта <s>×2</s></i><span class="btn-s done">✓</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui" data-pane="04" hidden>
+            <div class="ui-head"><b>Склад</b><span>списано по тех. картам · инвентаризация 27 сентября</span><span class="badge">3 заканчиваются</span></div>
+            <div class="ui-body">
+              <div class="rows">
+                <div class="r r-stock h"><span>Ингредиент</span><span>Остаток</span><span>Хватит</span><span>Цена закупки</span></div>
+                <div class="r r-stock"><div>Молоко 3,2%<div class="bar-s"><i style="width:62%"></i></div></div><span class="num">7,4 л</span><span class="mono-s">2 дня</span><span class="num">94 ₽/л</span></div>
+                <div class="r r-stock"><div>Зерно, эспрессо-бленд<div class="bar-s"><i style="width:48%"></i></div></div><span class="num">1,9 кг</span><span class="mono-s">3 дня</span><span class="num">1 890 ₽/кг</span></div>
+                <div class="r r-stock"><div class="warn">Сироп карамель<div class="bar-s low"><i style="width:14%"></i></div></div><span class="num warn">0,4 л</span><span class="mono-s warn">сегодня</span><span class="num">540 ₽/л</span></div>
+                <div class="r r-stock"><div class="warn">Молоко овсяное<div class="bar-s low"><i style="width:18%"></i></div></div><span class="num warn">1,2 л</span><span class="mono-s warn">завтра</span><span class="num">168 ₽/л</span></div>
+                <div class="r r-stock"><div>Лосось с/с<div class="bar-s"><i style="width:71%"></i></div></div><span class="num">2,8 кг</span><span class="mono-s">4 дня</span><span class="num">1 240 ₽/кг</span></div>
+              </div>
+              <div class="total"><span class="mono-s">Себестоимость латте 0,4 · по последнему приходу</span><b>48,20 ₽</b></div>
+            </div>
+          </div>
+
+          <div class="ui" data-pane="05" hidden>
+            <div class="ui-head"><b>Смены</b><span>оплата за результат: ставка, бонус за выручку в час, надбавки</span><span class="badge">12 октября</span></div>
+            <div class="ui-body">
+              <div class="rows">
+                <div class="r r-shift h"><span>Смена</span><span>Часы</span><span>Выручка</span><span>К выплате</span></div>
+                <div class="r r-shift"><div><b>Мария</b><div class="mono-s">бариста · старшая смены</div></div><span class="num">11,5</span><span class="num">34 200 ₽</span><span class="num">3 420 ₽</span></div>
+                <div class="r r-shift"><div><b>Олег</b><div class="mono-s">повар · полная смена</div></div><span class="num">12,0</span><span class="num">21 800 ₽</span><span class="num">2 980 ₽</span></div>
+                <div class="r r-shift"><div><b>Дина</b><div class="mono-s">официант · подработка</div></div><span class="num">6,0</span><span class="num">12 460 ₽</span><span class="num">1 640 ₽</span></div>
+                <div class="r r-shift"><div><b>Артём</b><div class="mono-s">бар · фокус: лимонады +4</div></div><span class="num">8,5</span><span class="num">15 940 ₽</span><span class="num">2 210 ₽</span></div>
+              </div>
+              <div class="total"><span class="mono-s">Фонд смены · 38 часов, четыре человека</span><b>10 250 ₽</b></div>
+            </div>
+          </div>
+
+          <div class="ui" data-pane="06" hidden>
+            <div class="ui-head"><b>Деньги заведения</b><span>выручка по факту оплаты · 12 октября</span><span class="badge">смена открыта</span></div>
+            <div class="ui-body">
+              <div class="rows">
+                <div class="r r-money h"><span>Статья</span><span>За день</span></div>
+                <div class="r r-money"><span>Онлайн с телефона гостя</span><span class="num">41 280 ₽</span></div>
+                <div class="r r-money"><span>Карта на кассе</span><span class="num">18 640 ₽</span></div>
+                <div class="r r-money"><span>Наличные</span><span class="num">8 480 ₽</span></div>
+                <div class="r r-money"><span class="warn">Возвраты · 2 заказа</span><span class="num warn">−1 340 ₽</span></div>
+                <div class="r r-money"><span>Списано продуктов по себестоимости</span><span class="num">−21 060 ₽</span></div>
+                <div class="r r-money"><span>Смена, четыре человека</span><span class="num">−10 250 ₽</span></div>
+              </div>
+              <div class="total"><span class="mono-s">Осталось в кассе за день</span><b>35 750 ₽</b></div>
+            </div>
+          </div>
+
+        </div>
+        <figcaption>
+          <b id="screenRole">02 · Официант</b>
+          <span class="what" id="screenWhat">Столы-светофор</span>
+          <p id="screenCap">Весь зал на одном экране: где ждут, где готово, где пора нести счёт. Заказ с планшета за полминуты, счёт раскладывается по гостям.</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sec" id="sizes">
+    <div class="wrap">
+      <div class="sechead v-skew">
+        <p class="kicker">— размеры и опции —</p>
+        <h2>Латте на овсяном, большой, без сиропа — одна позиция в меню</h2>
+        <p>Три объёма, три вида молока, сироп — у систем, которые считают опции «плюс-минус граммами», это превращается в девять карточек меню и девять тех. карт. У нас объём и опции живут отдельно, и меню остаётся меню.</p>
+      </div>
+
+      <div class="trio">
+        <div class="brick">
+          <span class="btag">Объём</span>
+          <h3>Размер со своей ценой</h3>
+          <p>0,3 / 0,4 / 0,5 — у каждого своя цена, вес, время приготовления и свой состав. Кончилось зерно на большой — ставите на стоп только его, средний продолжает продаваться.</p>
+        </div>
+        <div class="brick">
+          <span class="btag">Опции</span>
+          <h3>Набираются поверх</h3>
+          <p>«Молоко», «Сиропы», «Добавки» заводятся один раз и цепляются ко всем кофе сразу. Гость отмечает их в своём телефоне, официант — в два касания. Надбавка считается сама.</p>
+        </div>
+        <div class="brick">
+          <span class="btag">Склад</span>
+          <h3>Списывает по-честному</h3>
+          <p>«На овсяном» заменит молоко ровно в том количестве, которое стоит в тех. карте проданного объёма. Одна опция — на все размеры, и она не врёт после правки рецепта.</p>
+        </div>
+      </div>
+
+      <p class="fine">Себестоимость считается по каждому размеру отдельно — видно, какой объём на самом деле зарабатывает.</p>
+    </div>
+  </section>
+
+  <section class="sec paper" id="scan">
+    <div class="wrap">
+      <div class="sechead v-blur">
+        <p class="kicker">— приход на склад —</p>
+        <h2>Сфотографировал накладную — приход готов</h2>
+        <p>Единственная система в своей цене, которая читает накладные сама. Нейросеть достаёт позиции, количество и цены и сверяет их с вашей номенклатурой. Ручной ввод никуда не делся — фото просто быстрее.</p>
+      </div>
+
+      <div class="ordergrid">
+        <div>
+          <div class="step">
+            <span class="n">01</span>
+            <div><b>Снимок у машины</b><span>Кладовщик фотографирует накладную на телефон, пока поставщик разгружается.</span></div>
+          </div>
+          <div class="step">
+            <span class="n">02</span>
+            <div><b>Позиции и цены</b><span>Нейросеть вытаскивает строки, переводит килограммы в граммы, литры в миллилитры.</span></div>
+          </div>
+          <div class="step">
+            <span class="n">03</span>
+            <div><b>Узнаёт ваши названия</b><span>Система помнит, что «Молоко Простоквашино 3,2%» — это ваше «Молоко», и с каждым разом ошибается реже.</span></div>
+          </div>
+          <div class="step">
+            <span class="n">04</span>
+            <div><b>Остатки обновлены</b><span>После подтверждения меняются остатки и цены закупки, себестоимость блюд пересчитывается.</span></div>
+          </div>
+        </div>
+
+        <div class="receipt-wrap">
+          <div class="receipt">
+            <div class="rhead">Приход № 148 · разобрано
+              <span class="rsub">ООО «Поставщик» · накладная с фото · 12 октября</span>
+            </div>
+            <div class="rline"><span>Молоко 3,2% · 12 л</span><span class="leader" aria-hidden="true"></span><b>1 128 ₽</b></div>
+            <div class="rline"><span>Зерно Бразилия · 3 кг</span><span class="leader" aria-hidden="true"></span><b>2 940 ₽</b></div>
+            <div class="rline"><span>Сироп карамель · 4 шт</span><span class="leader" aria-hidden="true"></span><b>1 480 ₽</b></div>
+            <div class="rline"><span>Стакан 0,4 · 500 шт</span><span class="leader" aria-hidden="true"></span><b>1 868 ₽</b></div>
+            <div class="rtotal">
+              <div class="rline"><span>Итого приход</span><span class="leader" aria-hidden="true"></span><b>7 416 ₽</b></div>
+              <div class="rline"><span>Себестоимость латте 0,4</span><span class="leader" aria-hidden="true"></span><b>48,20 ₽</b></div>
+            </div>
+          </div>
+          <span class="ding">остатки обновлены!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec dark" id="video">
+    <div class="wrap">
+      <div class="sechead v-blur">
+        <p class="kicker">— обзор · 1,5 минуты —</p>
+        <h2>Как устроена работа заведения</h2>
+        <p>Один заказ проходит через все роли: гость, официант, кухня и бар, стойка, склад, менеджер.</p>
+      </div>
+
+      <div class="video-wrap">
+        <video id="promo" playsinline muted preload="none" poster="../promo-poster.jpg">
+          <source src="../promo.mp4" type="video/mp4">
+        </video>
+        <button class="video-play" id="play" type="button" aria-label="Смотреть ролик">▶</button>
+        <button class="video-sound" id="sound" type="button" hidden>Звук выкл</button>
+      </div>
+      <p class="fine">Ролик с закадровым рассказом. По кнопке ▶ он запустится со звуком.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="system">
+    <div class="wrap">
+      <div class="sechead v-skew">
+        <p class="kicker">— полный прайс-лист —</p>
+        <h2>Вся система на одном листе</h2>
+        <p>Тариф зависит от формата заведения, а не от набора функций. Бэк-офис одинаковый в обоих: урезанной версии склада или зарплаты не существует.</p>
+      </div>
+
+      <div class="legend">
+        <span class="tag">Оба — входит в оба тарифа</span>
+        <span class="tag">Стойка — формат без зала</span>
+        <span class="tag">Зал — формат с посадкой</span>
+        <span class="tag b">₽ — платная надстройка</span>
+      </div>
+
+      <div class="cats">
+
+        <div class="cat">
+          <h3>Заказ и касса</h3>
+          <p class="cat-sub">что видит гость и куда падают деньги</p>
+          <div class="mrow"><span class="nm">Меню по QR с фотографиями</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Меню лентой: блюдо во весь экран</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Размеры 0,3 / 0,4 / 0,5 со своей ценой</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Опции: молоко, сиропы, добавки</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Стоп-лист одной кнопкой</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Оплата онлайн: Т-Банк, Сбер, ЮKassa</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Смарт-касса aQsi: заказ сам на кассе</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Возвраты с чеком и возвратом на склад</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Экран стойки и выдача по номеру</span><span class="leader" aria-hidden="true"></span><span class="pr">Стойка</span></div>
+        </div>
+
+        <div class="cat">
+          <h3>Зал и станции</h3>
+          <p class="cat-sub">смена, в которой больше одного человека</p>
+          <div class="mrow"><span class="nm">Столы-светофор у официанта</span><span class="leader" aria-hidden="true"></span><span class="pr">Зал</span></div>
+          <div class="mrow"><span class="nm">Заказ с планшета за полминуты</span><span class="leader" aria-hidden="true"></span><span class="pr">Зал</span></div>
+          <div class="mrow"><span class="nm">Счёт по гостям и дозаказ в два касания</span><span class="leader" aria-hidden="true"></span><span class="pr">Зал</span></div>
+          <div class="mrow"><span class="nm">Экраны кухни и бара со своими очередями</span><span class="leader" aria-hidden="true"></span><span class="pr">Зал</span></div>
+          <div class="mrow"><span class="nm">Тайминги по каждой станции</span><span class="leader" aria-hidden="true"></span><span class="pr">Зал</span></div>
+          <div class="mrow"><span class="nm">Блок «К подаче» и звук на новый заказ</span><span class="leader" aria-hidden="true"></span><span class="pr">Зал</span></div>
+        </div>
+
+        <div class="cat darkcat">
+          <h3>Бэк-офис</h3>
+          <p class="cat-sub">одинаковый в обоих тарифах — целиком</p>
+          <div class="mrow"><span class="nm">Склад: остатки, приход, списания</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Приход по фото накладной, 30 в месяц</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Тех. карты и себестоимость по размерам</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Автосписание по проданному</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Закуп на день по остаткам</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Смены: ставка, процент, оплата за результат</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Ведомость за месяц</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Финансы: прибыль, расходы, журнал платежей</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+        </div>
+
+        <div class="cat">
+          <h3>Гости и запуск</h3>
+          <p class="cat-sub">бренд, лояльность и разовые работы</p>
+          <div class="mrow"><span class="nm">Бонусная программа: бонус = рубль</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Свой логотип, цвета и домен</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Отчёты продаж и выручки</span><span class="leader" aria-hidden="true"></span><span class="pr">Оба</span></div>
+          <div class="mrow"><span class="nm">Фотостудия меню, 100 генераций</span><span class="leader" aria-hidden="true"></span><span class="pr">2 000 ₽</span></div>
+          <div class="mrow"><span class="nm">Подключение под ключ, разово</span><span class="leader" aria-hidden="true"></span><span class="pr">15 000 ₽</span></div>
+          <div class="mrow"><span class="nm">Сводный кабинет сети</span><span class="leader" aria-hidden="true"></span><span class="pr">Скоро</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sec paper" id="pricing">
+    <div class="wrap">
+      <div class="sechead v-track">
+        <p class="kicker">— тарифы —</p>
+        <h2>Цена за заведение, а не за железо</h2>
+        <p>Устройства, экраны, сотрудники и обновления — без ограничений и доплат на любом тарифе.</p>
+      </div>
+
+      <div class="bento">
+        <div class="cell big">
+          <span class="ctag">Тариф 02 · чаще всего</span>
+          <div>
+            <h3>Зал</h3>
+            <p>Кафе, бистро, ресторан, бар с посадкой. Столы, официант, экраны кухни и бара, тайминги станций — и весь бэк-офис.</p>
+          </div>
+          <div>
+            <div class="cprice price" data-month="5 990 ₽" data-year="4 970 ₽">5 990 ₽</div>
+            <div class="cper per">в месяц за заведение</div>
+          </div>
+        </div>
+
+        <div class="cell shot"><img src="../shots/tall_bowl.jpg" alt="Боул с крабом" width="780" height="1400" loading="lazy"></div>
+
+        <div class="cell pale">
+          <span class="ctag">Тариф 01</span>
+          <div>
+            <h3>Стойка</h3>
+            <p>Кофейня, фудтрак, пекарня, окно выдачи. Без столов и официанта: заказ собирает один человек и выдаёт по номеру.</p>
+          </div>
+          <div>
+            <div class="cprice price" data-month="3 990 ₽" data-year="3 310 ₽">3 990 ₽</div>
+            <div class="cper per">в месяц за заведение</div>
+          </div>
+        </div>
+
+        <div class="cell gold">
+          <span class="ctag">Надстройка</span>
+          <h3>Фотостудия</h3>
+          <div>
+            <div class="cprice">2 000 ₽</div>
+            <div class="cper">100 генераций, не сгорают</div>
+          </div>
+        </div>
+
+        <div class="cell deep">
+          <span class="ctag">Разово</span>
+          <h3>Подключение</h3>
+          <div>
+            <div class="cprice">15 000 ₽</div>
+            <div class="cper">меню, столы, склад, обучение</div>
+          </div>
+        </div>
+
+        <div class="cell wide">
+          <span class="ctag">Сеть или франшиза</span>
+          <div>
+            <h3>Каждая точка — на своём тарифе</h3>
+            <p>Наценки за количество нет. Сводный кабинет сети — общие тех. карты, сравнение фудкоста, консолидированные финансы — 3 990 ₽ в месяц за аккаунт; сейчас в работе, подключение обсуждаем отдельно.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="fine">Подключение — разовый платёж, дальше только тариф за заведение.<br>Никаких доплат «за кассу», «за пользователя», «за обновление» и «за поддержку».</p>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="sechead v-skew">
+        <p class="kicker">— вопросы —</p>
+        <h2>Честно о том, что спрашивают</h2>
+      </div>
+
+      <div class="qa">
+        <details>
+          <summary>Можно посмотреть систему до подключения?</summary>
+          <p>Да, стенд открыт: <a href="https://demo.padacha.ru" target="_blank" rel="noreferrer">demo.padacha.ru</a>. Это вымышленная кофейня с настоящими данными за три недели — меню, заказы, склад, смены и финансы. Меняйте что угодно, боевых данных там нет.</p>
+          <p>Чтобы увидеть рабочие экраны, войдите под любой ролью, пароль у всех <b>demo12345</b>: <b>demo_admin</b> — панель владельца с выручкой, <b>demo_manager</b> — склад, смены и финансы, <b>demo_waiter</b> — зал, <b>demo_cook</b> и <b>demo_bar</b> — кухня и бар. Экраны у ролей разные — в этом и смысл.</p>
+        </details>
+        <details>
+          <summary>Какое оборудование нужно покупать?</summary>
+          <p>Никакое. Подойдут планшеты и телефоны, которые уже есть — «Падача» открывается в браузере и ставится на экран как приложение. Кассовые моноблоки, серверы и лицензии на них не нужны.</p>
+        </details>
+        <details>
+          <summary>Обязательно клеить QR-коды на столы?</summary>
+          <p>Нет. С QR гость заказывает сам, и стол определяется автоматически — это экономит время официанта в час пик. Без QR всё работает как обычно: официант принимает заказ и выбирает стол на своём планшете.</p>
+        </details>
+        <details>
+          <summary>А если у нас нет зала — киоск, фудтрак, окно выдачи?</summary>
+          <p>Это тариф «Стойка» — 3 990 ₽ в месяц. Столов и официанта не будет: гость сканирует QR, заказывает и получает номер, а его заказ сразу попадает на экран человека за стойкой. Тот собирает и выдаёт по номеру, гость следит за готовностью в своём телефоне. Один человек может быть и кассиром, и баристой — второго экрана не нужно.</p>
+          <p>Если подключена оплата, заказ уходит в работу только после денег — гость, который заказал по QR и не пришёл, больше не оставляет вам готовый кофе. Неоплаченный заказ сам отменяется через 15 минут, а гостя с наличными бариста видит в колонке «Ждут оплаты».</p>
+          <p>Урезанным этот тариф не является: склад, тех. карты, себестоимость, смены и финансы входят в него полностью. Нет только экранов кухни и бара — в окне выдачи заказ собирает один человек, и делить его между станциями не по чему.</p>
+        </details>
+        <details>
+          <summary>Откуда берутся фотографии блюд, если снимать некому?</summary>
+          <p>Их рисует нейросеть по фото вашей посуды. Вы загружаете снимок стакана, чашки или тарелки — один раз на всё меню, — а дальше отмечаете блюда и получаете готовые кадры в этой же посуде. Стиль съёмки общий на заведение, поэтому меню выглядит как одна фотосессия.</p>
+          <p>Каждый кадр — черновик: пока вы сами не поставите его в меню, гость ничего не видит. Неудачное удаляете и рисуете заново. Фото в меню подписывается как иллюстрация — гость должен понимать, что это не снимок его порции. Своё настоящее фото можно загрузить в любой момент, оно заменит нарисованное.</p>
+          <p>Это платная надстройка к любому тарифу: 2 000 ₽ за 100 генераций. Пакет не сгорает в конце месяца; когда генерации закончатся, докупаете следующие 100.</p>
+        </details>
+        <details>
+          <summary>Чем «Стойка» отличается от «Зала», кроме цены?</summary>
+          <p>Только форматом работы. «Стойка» — для точки без зала: гость забирает заказ по номеру. «Зал» — для заведения с посадкой: столы, экран официанта, канбан кухни и бара, тайминги станций. Функции учёта одинаковые: склад, тех. карты и себестоимость, приход по фото накладной, смены и зарплата, финансы и бонусы входят в оба тарифа.</p>
+          <p>Мы намеренно не режем учёт по тарифам. Кофейне себестоимость нужна не меньше, чем ресторану: молоко и сиропы — её основной расход, и без них тариф был бы бессмысленным.</p>
+        </details>
+        <details>
+          <summary>Что с доставкой и агрегаторами?</summary>
+          <p>Интеграций с Яндекс Едой и Деливери пока нет — скажем прямо, чтобы вы не теряли время. «Падача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню.</p>
+        </details>
+        <details>
+          <summary>А фискализация и онлайн-касса?</summary>
+          <p>Оплаты фиксируются в системе — наличные и карта отдельно, выручка считается сама. Есть прямая связь со смарт-кассой aQsi от Т-Банка: гость жмёт «Оплатить на кассе», заказ сам появляется на кассе, кассир пробивает чек как обычно, а «Падача» видит оплату и отправляет заказ в работу. Вводить сумму руками не нужно.</p>
+          <p>Если терминал потерял связь с облаком aQsi и не видит заказ, у баристы есть кнопка «Синхронизировать». С другой онлайн-кассой всё работает как раньше: чек пробиваете на ней, способ оплаты отмечаете в системе.</p>
+        </details>
+        <details>
+          <summary>Как вернуть деньги гостю?</summary>
+          <p>Кнопкой на закрытом заказе — у официанта и у баристы, ждать владельца не нужно. Оплату онлайн банк вернёт на карту сам, оплату на кассе aQsi касса вернёт на карту и пробьёт чек возврата, наличные отмечаются выдачей из кассы. Если продукты не успели потратить, галочкой возвращаете их на склад; бонусы гостя откатываются.</p>
+          <p>Выручка вчерашнего дня от сегодняшнего возврата не меняется — возврат ложится отдельной строкой в день, когда его сделали. Зарплата за прошлые смены не пересчитывается.</p>
+        </details>
+        <details>
+          <summary>Можно платить бариста и официантам за результат, а не поровну?</summary>
+          <p>Да. Владелец выбирает схему: поровну — ставка за смену плюс процент от выручки дня на всех — или за результат. Во втором случае у каждого ставка по роли и типу смены, бонус за личную выручку в час по сетке, надбавки за фокусные позиции и допродажи, отдельная надбавка старшему. Можно платить по отработанным часам.</p>
+          <p>Всё это поля в настройках, а не числа в коде: меняете сами, прошлые смены остаются посчитанными по своим правилам. Сотрудник видит свой расчёт целиком, а суммы коллег — нет. <a href="/personal/">Подробнее про смены и зарплату</a>.</p>
+        </details>
+        <details>
+          <summary>Есть бонусная программа для гостей?</summary>
+          <p>Есть, встроенная и без доплат. Один бонус — один рубль: гостю начисляется процент от оплаченного деньгами и приветственные бонусы, списывает их персонал или сам гость в телефоне. Бариста может завести гостя прямо в заказе по номеру телефона, а гостей из прежней программы можно перенести вместе с остатком бонусов. <a href="/oplata/">Подробнее про оплату и бонусы</a>.</p>
+        </details>
+        <details>
+          <summary>Сколько стоит внедрение и обучение персонала?</summary>
+          <p>15 000 ₽, один раз при подключении. За эти деньги мы делаем всё сами: поднимаем систему на адресе вида вашекафе.padacha.ru (или подключаем ваш домен), переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Запуск занимает вечер, официант и повар осваиваются за десять минут — экраны сделаны так, что учить нечему.</p>
+          <p>Дальше — только тариф. Доплат за поддержку, обновления и новые экраны нет.</p>
+        </details>
+        <details>
+          <summary>Что будет с моими данными, если я уйду?</summary>
+          <p>Заберёте их с собой. Меню, продажи, склад и историю смен выгрузим в таблицы по первой просьбе. Данные ваши, а не наши.</p>
+        </details>
+        <details>
+          <summary>Правда безлимит экранов? В чём подвох?</summary>
+          <p>Подвоха нет, это следствие архитектуры. Мы работаем в браузере, и нам незачем продавать лицензию на каждое устройство, как это делают классические POS-системы. Ограничение одно: подписка действует на одно заведение.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="call" id="call">
+    <div class="wrap">
+      <p class="kicker">— заказ принят —</p>
+      <h2>Попробуйте на своей смене</h2>
+      <p>Запуск за вечер. Поможем перенести меню и не сломать ничего в разгар сервиса.</p>
+      <div class="contacts">
+        <a class="btn" href="tel:+79943121222">Позвонить · +7 994 312-12-22</a>
+        <a class="btn bonebtn" href="https://wa.me/79289557566" target="_blank" rel="noreferrer">WhatsApp</a>
+        <a class="btn bonebtn" href="https://t.me/+79289557566" target="_blank" rel="noreferrer">Telegram</a>
+        <a class="btn bonebtn" href="https://max.ru/u/f9LHodD0cOIIAAQbhXr2nnV8L7VZRhxS-b2jl7dlT1-hrMK2KHMn_9lIDfw" target="_blank" rel="noreferrer">MAX</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fname" id="fname">Падача</p>
+    <div class="fstripe" id="fstripe"></div>
+    <div class="fgrid">
+      <span>© 2026 Падача — система управления кафе</span>
+      <span class="fnav"><a href="/qr-menu/">QR-меню</a> · <a href="/ekran-kuhni/">Экран кухни и бара</a> · <a href="/sklad/">Склад и себестоимость</a> · <a href="/personal/">Персонал и зарплата</a> · <a href="/oplata/">Оплата, касса и бонусы</a> · <a href="/dlya-kofejni/">Точка без зала</a> · <a href="/dlya-kafe/">Кафе с залом</a> · <a href="/sravnenie/">Сравнение</a> · <a href="/blog/">Статьи</a></span>
+    </div>
+  </div>
+</footer>
+
+<div class="dock" id="dock">
+  <span class="dstat"><span class="dot" aria-hidden="true"></span>Смена открыта · <span id="clock2">19:42</span></span>
+  <span class="dsum">от 3 990 ₽ в месяц</span>
+  <a class="btn" href="#call">Подключить</a>
+</div>
+
+<button class="ask-btn" id="askOpen" type="button">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4V5Z" stroke-linejoin="round"/></svg>
+  Спросить
+</button>
+<div class="ask-panel" id="askPanel" hidden role="dialog" aria-label="Вопрос о работе Падачи">
+  <div class="ask-head">
+    <div><b>Ассистент «Падачи»</b><span>Отвечает по документации сервиса</span></div>
+    <button class="ask-close" id="askClose" type="button" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="ask-log" id="askLog"></div>
+  <form class="ask-form" id="askForm">
+    <input id="askInput" type="text" placeholder="Например: как считается себестоимость" maxlength="1000" autocomplete="off">
+    <button type="submit" id="askSend" aria-label="Отправить">→</button>
+  </form>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── Часы смены и дата на чипе ─────────────────────────────────────── */
+  var mins = 19 * 60 + 42;
+  var clocks = [document.getElementById("clock"), document.getElementById("clock2")];
+  function paintClock() {
+    var h = String(Math.floor(mins / 60) % 24).padStart(2, "0");
+    var m = String(mins % 60).padStart(2, "0");
+    clocks.forEach(function (el) { if (el) el.textContent = h + ":" + m; });
+  }
+  paintClock();
+  if (!reduce) setInterval(function () { mins += 1; paintClock(); }, 8000);
+
+  var days = ["ВС", "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"];
+  var months = ["ЯНВ", "ФЕВ", "МАР", "АПР", "МАЯ", "ИЮН", "ИЮЛ", "АВГ", "СЕН", "ОКТ", "НОЯ", "ДЕК"];
+  var now = new Date();
+  var chip = document.getElementById("datechip");
+  if (chip) chip.textContent = days[now.getDay()] + " · " + now.getDate() + " " + months[now.getMonth()];
+
+  /* ── Переключатель периода оплаты ──────────────────────────────────── */
+  var periodBtns = document.querySelectorAll(".switch button");
+  periodBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var period = btn.dataset.period;
+      periodBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
+      document.querySelectorAll(".price").forEach(function (el) { el.textContent = el.dataset[period]; });
+      document.querySelectorAll(".per").forEach(function (el) {
+        el.textContent = period === "year" ? "в месяц, при оплате за год" : "в месяц за заведение";
+      });
+    });
+  });
+
+  /* ── Появление блоков ──────────────────────────────────────────────── */
+  var marks = document.querySelectorAll(".sechead, .scrub, .bill, .cat, .role, .step, .shout, .cell");
+  if (reduce || !("IntersectionObserver" in window)) {
+    marks.forEach(function (el) { el.classList.add("in"); });
+    document.querySelectorAll(".tile").forEach(function (t) { t.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px" });
+    marks.forEach(function (el) { io.observe(el); });
+
+    /* Мозаика собирается из разлёта — как плитки, которые разложили на доске */
+    var tiles = [].slice.call(document.querySelectorAll(".mosaic .tile"));
+    tiles.forEach(function (tile, i) {
+      var dx = (Math.random() * 2 - 1) * 180;
+      var dy = (Math.random() * 2 - 1) * 140;
+      var rot = (Math.random() * 2 - 1) * 14;
+      tile.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + rot + "deg)";
+      setTimeout(function () {
+        tile.classList.add("in");
+        tile.style.transform = "none";
+      }, 120 + i * 45);
+    });
+  }
+
+  /* ── Бегущая строка: быстрее при прокрутке ─────────────────────────── */
+  var track = document.getElementById("mtrack");
+  if (track && !reduce) {
+    track.innerHTML += track.innerHTML;
+    var x = 0, lastY = window.scrollY, boost = 0;
+    var half = 0;
+    requestAnimationFrame(function step() {
+      if (!half) half = track.scrollWidth / 2;
+      var y = window.scrollY;
+      boost = Math.min(7, Math.abs(y - lastY) * 0.35) * 0.3 + boost * 0.7;
+      lastY = y;
+      x -= 0.6 + boost;
+      if (half && -x >= half) x += half;
+      track.style.transform = "translateX(" + x + "px)";
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ── Станции: вкладка показывает свою панель ───────────────────────── */
+  var tabs = document.getElementById("tabs");
+  var screenBox = document.getElementById("screen");
+  if (tabs && screenBox) {
+    var panes = {};
+    [].slice.call(screenBox.querySelectorAll("[data-pane]")).forEach(function (el) {
+      panes[el.dataset.pane] = el;
+    });
+    var capRole = document.getElementById("screenRole");
+    var capWhat = document.getElementById("screenWhat");
+    var capText = document.getElementById("screenCap");
+    var items = [].slice.call(tabs.querySelectorAll(".tab"));
+    var shown = items.filter(function (t) { return t.getAttribute("aria-selected") === "true"; })[0] || items[0];
+
+    var paint = function (tab) {
+      for (var key in panes) panes[key].hidden = key !== tab.dataset.pane;
+      capRole.textContent = tab.dataset.role;
+      capWhat.textContent = tab.dataset.what;
+      capText.textContent = tab.dataset.cap;
+      screenBox.classList.remove("swap");
+    };
+
+    var show = function (tab) {
+      if (tab === shown) return;
+      shown = tab;
+      items.forEach(function (t) { t.setAttribute("aria-selected", String(t === tab)); });
+      if (reduce) { paint(tab); return; }
+      screenBox.classList.add("swap");
+      setTimeout(function () { paint(tab); }, 150);
+    };
+
+    items.forEach(function (tab) {
+      tab.addEventListener("mouseenter", function () { show(tab); });
+      tab.addEventListener("focus", function () { show(tab); });
+      tab.addEventListener("click", function () { show(tab); });
+    });
+    paint(shown);
+  }
+
+  /* ── Промо-ролик. На широком экране заводим сам и без звука: автозапуск со
+     звуком браузер запретит, да и говорящее видео в лицо гостю невежливо.
+     Нажали ▶ — значит, звук уместен. ─────────────────────────────────── */
+  var promo = document.getElementById("promo");
+  var play = document.getElementById("play");
+  var sound = document.getElementById("sound");
+  if (promo && play && sound) {
+    var start = function () {
+      promo.preload = "auto";
+      var pr = promo.play();
+      if (pr && pr.catch) pr.catch(function () { play.hidden = false; });
+    };
+    // кнопку прячем, только когда ролик реально пошёл
+    promo.addEventListener("playing", function () { play.hidden = true; sound.hidden = false; });
+    promo.addEventListener("pause", function () { play.hidden = false; });
+    promo.addEventListener("click", function () { if (promo.paused) start(); else promo.pause(); });
+    promo.addEventListener("ended", function () { play.hidden = false; promo.currentTime = 0; });
+    play.addEventListener("click", function () {
+      promo.muted = false;
+      sound.textContent = "Звук вкл";
+      start();
+    });
+    sound.addEventListener("click", function () {
+      promo.muted = !promo.muted;
+      sound.textContent = promo.muted ? "Звук выкл" : "Звук вкл";
+      if (!promo.muted) promo.play();
+    });
+    if (window.innerWidth >= 900 && !reduce) start();
+  }
+
+  /* ── Нижняя панель и зерно ─────────────────────────────────────────── */
+  var dock = document.getElementById("dock");
+  var grain = document.getElementById("grain");
+  var call = document.getElementById("call");
+  function onScroll() {
+    var y = window.scrollY;
+    if (dock) {
+      var nearCall = call && call.getBoundingClientRect().top < window.innerHeight;
+      dock.classList.toggle("up", y > 520 && !nearCall);
+    }
+    if (grain && !reduce) grain.style.transform = "translateY(" + (y * 0.06) + "px)";
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+<script>
+  /* Ассистент: отдельный блок, работает и при prefers-reduced-motion. Сессия
+     открывается лениво, при первом клике: заглянувший на сайт человек, который
+     кнопку не нажал, не занимает у сервиса место в лимите открытых диалогов. */
+  (function () {
+    var API = "/api/assistant";
+    var btn = document.getElementById("askOpen");
+    var panel = document.getElementById("askPanel");
+    var closeBtn = document.getElementById("askClose");
+    var log = document.getElementById("askLog");
+    var form = document.getElementById("askForm");
+    var input = document.getElementById("askInput");
+    var send = document.getElementById("askSend");
+    if (!btn || !panel || !form) return;
+
+    var sessionId = null;
+    var starting = null;
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    var LINK_LABELS = { "wa.me": "WhatsApp", "t.me": "Telegram", "max.ru": "MAX" };
+
+    function linkify(text) {
+      // один проход одним регэкспом: иначе цифры номера внутри «t.me/+7…»
+      // повторно попадают под телефонный шаблон и рвут уже готовую ссылку
+      var pattern = /(https?:\/\/[^\s<]+)|(\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2})/g;
+      return escapeHtml(text).replace(pattern, function (m, url) {
+        if (url) {
+          var trail = "";
+          var t = url.match(/[.,;:!?)]+$/);
+          if (t) { trail = t[0]; url = url.slice(0, -trail.length); }
+          var label = url;
+          try {
+            var host = new URL(url).hostname.replace(/^www\./, "");
+            if (LINK_LABELS[host]) label = LINK_LABELS[host];
+          } catch (e) { /* не распарсился — покажем адрес как есть */ }
+          return '<a href="' + url + '" target="_blank" rel="noreferrer">' + label + "</a>" + trail;
+        }
+        return '<a href="tel:+7' + m.replace(/\D/g, "").slice(1) + '">' + m + "</a>";
+      });
+    }
+
+    function bubble(role, text) {
+      var el = document.createElement("div");
+      el.className = "ask-msg " + role;
+      if (role === "bot") el.innerHTML = linkify(text);
+      else el.textContent = text;
+      log.appendChild(el);
+      log.scrollTop = log.scrollHeight;
+      return el;
+    }
+
+    function ensureSession() {
+      if (sessionId) return Promise.resolve();
+      if (starting) return starting;
+      starting = fetch(API + "/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d.session_id) throw new Error("no session");
+          sessionId = d.session_id;
+          bubble("bot", d.greeting || "Здравствуйте.");
+        })
+        .catch(function () {
+          bubble("bot", "Ассистент сейчас недоступен. Напишите нам напрямую — контакты внизу страницы.");
+        })
+        .finally(function () { starting = null; });
+      return starting;
+    }
+
+    btn.addEventListener("click", function () {
+      panel.hidden = false;
+      btn.hidden = true;
+      ensureSession().then(function () { input.focus(); });
+    });
+    closeBtn.addEventListener("click", function () { panel.hidden = true; btn.hidden = false; });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !panel.hidden) { panel.hidden = true; btn.hidden = false; }
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      send.disabled = true;
+      bubble("me", text);
+      var waiting = bubble("wait", "печатает…");
+
+      ensureSession()
+        .then(function () {
+          return fetch(API + "/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_id: sessionId, message: text }),
+          });
+        })
+        .then(function (r) {
+          if (r.status === 410) {
+            // сессия истекла — открываем новую и повторяем тот же вопрос молча
+            sessionId = null;
+            waiting.remove();
+            return ensureSession().then(function () {
+              return fetch(API + "/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id: sessionId, message: text }),
+              }).then(function (r2) { return r2.json(); });
+            });
+          }
+          return r.json();
+        })
+        .then(function (d) {
+          if (waiting.parentNode) waiting.remove();
+          bubble("bot", d.reply || d.message || "Не получилось ответить — попробуйте ещё раз.");
+        })
+        .catch(function () {
+          if (waiting.parentNode) waiting.remove();
+          bubble("bot", "Не получилось отправить сообщение. Проверьте связь и попробуйте ещё раз.");
+        })
+        .finally(function () { send.disabled = false; input.focus(); });
+    });
+  })();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Падача",
+      "url": "https://padacha.ru/",
+      "description": "Программа для автоматизации кафе и ресторана: QR-меню и заказы со стола, экраны кухни и бара, склад и себестоимость, смены и зарплата. Одна цена за заведение, экраны без доплат.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "ru",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "RUB",
+        "lowPrice": "3990",
+        "highPrice": "5990",
+        "offerCount": "2",
+        "offers": [
+          {"@type": "Offer", "name": "Стойка", "price": "3990", "priceCurrency": "RUB", "description": "Точка без зала — кофейня, фудтрак, окно выдачи, бар: QR-меню, выдача по номеру, экран стойки, склад и себестоимость, смены, финансы"},
+          {"@type": "Offer", "name": "Зал", "price": "5990", "priceCurrency": "RUB", "description": "Заведение с посадкой: столы и официант, канбан кухни, экран бара, тайминги станций, склад и себестоимость, смены, финансы"}
+        ]
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Падача",
+        "url": "https://padacha.ru/",
+        "telephone": "+7 994 312-12-22"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Можно посмотреть систему до подключения?", "acceptedAnswer": {"@type": "Answer", "text": "Да, стенд открыт: demo.padacha.ru. Это вымышленная кофейня с настоящими данными за три недели — меню, заказы, склад, смены и финансы. Меняйте что угодно, боевых данных там нет. Чтобы увидеть рабочие экраны, войдите под любой ролью, пароль у всех demo12345: demo_admin — панель владельца с выручкой, demo_manager — склад, смены и финансы, demo_waiter — зал, demo_cook и demo_bar — кухня и бар. Экраны у ролей разные — в этом и смысл."}},
+        {"@type": "Question", "name": "Какое оборудование нужно покупать?", "acceptedAnswer": {"@type": "Answer", "text": "Никакое. Подойдут планшеты и телефоны, которые уже есть — «Падача» открывается в браузере и ставится на экран как приложение. Кассовые моноблоки, серверы и лицензии на них не нужны."}},
+        {"@type": "Question", "name": "Обязательно клеить QR-коды на столы?", "acceptedAnswer": {"@type": "Answer", "text": "Нет. С QR гость заказывает сам, и стол определяется автоматически — это экономит время официанта в час пик. Без QR всё работает как обычно: официант принимает заказ и выбирает стол на своём планшете."}},
+        {"@type": "Question", "name": "А если у нас нет зала — киоск, фудтрак, окно выдачи?", "acceptedAnswer": {"@type": "Answer", "text": "Это тариф «Стойка» — 3 990 ₽ в месяц. Столов и официанта не будет: гость сканирует QR, заказывает и получает номер, а его заказ сразу попадает на экран человека за стойкой. Тот собирает и выдаёт по номеру, гость следит за готовностью в своём телефоне. Один человек может быть и кассиром, и баристой — второго экрана не нужно. Если подключена оплата, заказ уходит в работу только после денег — гость, который заказал по QR и не пришёл, больше не оставляет вам готовый кофе. Неоплаченный заказ сам отменяется через 15 минут, а гостя с наличными бариста видит в колонке «Ждут оплаты». Урезанным этот тариф не является: склад, тех. карты, себестоимость, смены и финансы входят в него полностью. Нет только экранов кухни и бара — в окне выдачи заказ собирает один человек, и делить его между станциями не по чему."}},
+        {"@type": "Question", "name": "Откуда берутся фотографии блюд, если снимать некому?", "acceptedAnswer": {"@type": "Answer", "text": "Их рисует нейросеть по фото вашей посуды. Вы загружаете снимок стакана, чашки или тарелки — один раз на всё меню, — а дальше отмечаете блюда и получаете готовые кадры в этой же посуде. Стиль съёмки общий на заведение, поэтому меню выглядит как одна фотосессия. Каждый кадр — черновик: пока вы сами не поставите его в меню, гость ничего не видит. Неудачное удаляете и рисуете заново. Фото в меню подписывается как иллюстрация — гость должен понимать, что это не снимок его порции. Своё настоящее фото можно загрузить в любой момент, оно заменит нарисованное. Это платная надстройка к любому тарифу: 2 000 ₽ за 100 генераций. Пакет не сгорает в конце месяца; когда генерации закончатся, докупаете следующие 100."}},
+        {"@type": "Question", "name": "Чем «Стойка» отличается от «Зала», кроме цены?", "acceptedAnswer": {"@type": "Answer", "text": "Только форматом работы. «Стойка» — для точки без зала: гость забирает заказ по номеру. «Зал» — для заведения с посадкой: столы, экран официанта, канбан кухни и бара, тайминги станций. Функции учёта одинаковые: склад, тех. карты и себестоимость, приход по фото накладной, смены и зарплата, финансы и бонусы входят в оба тарифа. Мы намеренно не режем учёт по тарифам. Кофейне себестоимость нужна не меньше, чем ресторану: молоко и сиропы — её основной расход, и без них тариф был бы бессмысленным."}},
+        {"@type": "Question", "name": "Что с доставкой и агрегаторами?", "acceptedAnswer": {"@type": "Answer", "text": "Интеграций с Яндекс Едой и Деливери пока нет — скажем прямо, чтобы вы не теряли время. «Падача» сфокусирована на заведениях с посадкой: зал, кухня, бар, склад. Самовывоз работает через то же меню."}},
+        {"@type": "Question", "name": "А фискализация и онлайн-касса?", "acceptedAnswer": {"@type": "Answer", "text": "Оплаты фиксируются в системе — наличные и карта отдельно, выручка считается сама. Есть прямая связь со смарт-кассой aQsi от Т-Банка: гость жмёт «Оплатить на кассе», заказ сам появляется на кассе, кассир пробивает чек как обычно, а «Падача» видит оплату и отправляет заказ в работу. Вводить сумму руками не нужно. Если терминал потерял связь с облаком aQsi и не видит заказ, у баристы есть кнопка «Синхронизировать». С другой онлайн-кассой всё работает как раньше: чек пробиваете на ней, способ оплаты отмечаете в системе."}},
+        {"@type": "Question", "name": "Как вернуть деньги гостю?", "acceptedAnswer": {"@type": "Answer", "text": "Кнопкой на закрытом заказе — у официанта и у баристы, ждать владельца не нужно. Оплату онлайн банк вернёт на карту сам, оплату на кассе aQsi касса вернёт на карту и пробьёт чек возврата, наличные отмечаются выдачей из кассы. Если продукты не успели потратить, галочкой возвращаете их на склад; бонусы гостя откатываются. Выручка вчерашнего дня от сегодняшнего возврата не меняется — возврат ложится отдельной строкой в день, когда его сделали. Зарплата за прошлые смены не пересчитывается."}},
+        {"@type": "Question", "name": "Можно платить бариста и официантам за результат, а не поровну?", "acceptedAnswer": {"@type": "Answer", "text": "Да. Владелец выбирает схему: поровну — ставка за смену плюс процент от выручки дня на всех — или за результат. Во втором случае у каждого ставка по роли и типу смены, бонус за личную выручку в час по сетке, надбавки за фокусные позиции и допродажи, отдельная надбавка старшему. Можно платить по отработанным часам. Всё это поля в настройках, а не числа в коде: меняете сами, прошлые смены остаются посчитанными по своим правилам. Сотрудник видит свой расчёт целиком, а суммы коллег — нет. Подробнее про смены и зарплату."}},
+        {"@type": "Question", "name": "Есть бонусная программа для гостей?", "acceptedAnswer": {"@type": "Answer", "text": "Есть, встроенная и без доплат. Один бонус — один рубль: гостю начисляется процент от оплаченного деньгами и приветственные бонусы, списывает их персонал или сам гость в телефоне. Бариста может завести гостя прямо в заказе по номеру телефона, а гостей из прежней программы можно перенести вместе с остатком бонусов. Подробнее про оплату и бонусы."}},
+        {"@type": "Question", "name": "Сколько стоит внедрение и обучение персонала?", "acceptedAnswer": {"@type": "Answer", "text": "15 000 ₽, один раз при подключении. За эти деньги мы делаем всё сами: поднимаем систему на адресе вида вашекафе.padacha.ru (или подключаем ваш домен), переносим меню с фотографиями, настраиваем столы и склад, обучаем команду. Запуск занимает вечер, официант и повар осваиваются за десять минут — экраны сделаны так, что учить нечему. Дальше — только тариф. Доплат за поддержку, обновления и новые экраны нет."}},
+        {"@type": "Question", "name": "Что будет с моими данными, если я уйду?", "acceptedAnswer": {"@type": "Answer", "text": "Заберёте их с собой. Меню, продажи, склад и историю смен выгрузим в таблицы по первой просьбе. Данные ваши, а не наши."}},
+        {"@type": "Question", "name": "Правда безлимит экранов? В чём подвох?", "acceptedAnswer": {"@type": "Answer", "text": "Подвоха нет, это следствие архитектуры. Мы работаем в браузере, и нам незачем продавать лицензию на каждое устройство, как это делают классические POS-системы. Ограничение одно: подписка действует на одно заведение."}}
+      ]
+    }
+  ]
+}
+</script>
+<script src="../nav.js" defer></script>
+<script>
+  /* Цели Метрики: имена согласованы с кампанией Директа (direct/kampaniya-poisk-skfo.md) */
+  (function () {
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a || typeof ym !== "function") return;
+      var h = a.getAttribute("href");
+      var goal =
+        h === "#call" ? "click_connect" :
+        h.indexOf("tel:") === 0 ? "click_phone" :
+        /wa\.me|t\.me|max\.ru/.test(h) ? "click_messenger" :
+        h.indexOf("demo.padacha.ru") !== -1 ? "click_demo" : null;
+      if (goal) ym(112273830, "reachGoal", goal);
+    });
+  })();
+</script>
+</body>
+
+</html>

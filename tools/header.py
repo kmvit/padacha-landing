@@ -48,6 +48,8 @@ MOON = ('<svg class="moon" viewBox="0 0 24 24" aria-hidden="true">'
 
 
 def url_of(path: Path) -> str:
+    if path.name == "home-classic.html":
+        return "/"
     rel = path.parent.relative_to(ROOT).as_posix()
     return "/" if rel == "." else f"/{rel}/"
 
@@ -106,8 +108,11 @@ def footer_links() -> str:
 
 
 def main() -> None:
-    # 404.html — та же шапка; nginx отдаёт её на любой несуществующий адрес
-    for page in sorted(ROOT.glob("**/index.html")) + [ROOT / "404.html"]:
+    # 404.html — та же шапка; nginx отдаёт её на любой несуществующий адрес.
+    # home-classic.html — главная в прежнем оформлении, её откладывает
+    # tools/theme.py; без неё меню отстанет после возврата темы.
+    extra = [ROOT / "404.html", ROOT / "home-classic.html"]
+    for page in sorted(ROOT.glob("**/index.html")) + [p for p in extra if p.exists()]:
         if any(part in {"assistant", "pult", "direct", "node_modules", "tools"} for part in page.parts):
             continue
         src = page.read_text(encoding="utf-8")
