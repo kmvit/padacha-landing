@@ -56,6 +56,62 @@ def plan_items(card: str) -> dict:
     return {"входит": included, "нет_в_тарифе": missing}
 
 
+def includes(page: str, plan: str) -> list[str]:
+    """Состав тарифа из раздела «Вся система»: строки с пометкой «Оба» плюс
+    строки своего тарифа. В ризографической вёрстке состав живёт там, а не
+    в карточке цены."""
+    try:
+        block = section(page, 'id="system"', 'id="pricing"')
+    except ValueError:
+        return []
+    out = []
+    for row in re.findall(r'<div class="mrow">(.*?)</div>\s*(?=<div class="mrow"|</div>)', block, re.S):
+        name = re.search(r'<span class="nm">(.*?)</span>', row, re.S)
+        mark = re.search(r'<span class="pr">(.*?)</span>', row, re.S)
+        if not (name and mark):
+            continue
+        # В «входит» — только то, что тариф действительно включает. Строки
+        # с ценой (фотостудия, подключение) и «скоро» сюда не идут: ассистент
+        # прочёл бы их как включённые и продал клиенту то, за что надо платить.
+        tag = text(mark.group(1)).lower()
+        if tag in {"оба", plan.lower()}:
+            out.append(text(name.group(1)))
+    return out
+
+
+def riso_cards(page: str, block: str) -> list[dict]:
+    """Карточки тарифов в ризографической вёрстке: цена в .cprice, описание
+    в <p>, а состав приходится брать из раздела «Вся система»."""
+    plans = []
+    for cell in re.findall(r'<div class="cell[^"]*">(.*?)(?=<div class="cell|</div>\s*<p class="fine")', block, re.S):
+        price = re.search(r'data-month="([^"]*)"\s+data-year="([^"]*)"', cell)
+        name = re.search(r"<h3>(.*?)</h3>", cell, re.S)
+        if not (name and price):
+            continue
+        who = re.search(r"<p>(.*?)</p>", cell, re.S)
+        plan = text(name.group(1))
+        plans.append({
+            "тариф": plan,
+            "в_месяц": text(price.group(1)),
+            "при_оплате_за_год": text(price.group(2)),
+            "кому": text(who.group(1)) if who else "",
+            "входит": includes(page, plan),
+            "нет_в_тарифе": [],
+        })
+    return plans
+
+
+def riso_extras(block: str) -> list[str]:
+    """Надстройки и разовые работы: в ризографической вёрстке это плитки
+    бенто без помесячной цены — фотостудия, подключение, сводный кабинет."""
+    out = []
+    for cell in re.findall(r'<div class="cell[^"]*">(.*?)(?=<div class="cell|</div>\s*<p class="fine")', block, re.S):
+        if "data-month" in cell or "<h3>" not in cell:
+            continue
+        out.append(text(cell).strip())
+    return out
+
+
 def tariffs(page: str) -> dict:
     block = section(page, 'id="pricing"', 'id="faq"')
     plans = []
@@ -72,6 +128,12 @@ def tariffs(page: str) -> dict:
             "кому": text(who.group(1)) if who else "",
             **plan_items(card),
         })
+    # У сайта два оформления (см. tools/theme.py), и тарифы в них свёрстаны
+    # по-разному. Знание о ценах одно, поэтому разбираем обе вёрстки: пустой
+    # список здесь означал бы, что ассистент вышел к клиенту без прайса.
+    if not plans:
+        plans = riso_cards(page, block)
+
     # блоки под карточками: внедрение, платные надстройки, условия для сетей.
     # Берём их поимённо, а не «хвостом после последней кнопки»: хвост ломался
     # от любой перестановки блоков и молча терял то, что в них написано.
@@ -79,6 +141,8 @@ def tariffs(page: str) -> dict:
         text(e).strip()
         for e in re.findall(r'<div class="extra">(.*?)</div>', block, re.S)
     ]
+    if not extras:
+        extras = riso_extras(block)
     fine = re.search(r'<p class="fine">(.*?)</p>', block, re.S)
     return {
         "тарифы": plans,
