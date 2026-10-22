@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import json
+import ssl
 import subprocess
 import sys
 import urllib.request
@@ -57,16 +58,23 @@ def main(args: list[str]) -> None:
         "keyLocation": f"https://{HOST}/{k}.txt",
         "urlList": [f"https://{HOST}{p}" for p in paths],
     }).encode()
+    try:  # у Python с python.org на macOS нет системных сертификатов
+        import certifi
+        ctx = ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        ctx = ssl.create_default_context()
+    ok = 0
     for url in ENDPOINTS:
         req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json; charset=utf-8"})
         try:
-            with urllib.request.urlopen(req, timeout=20) as r:
+            with urllib.request.urlopen(req, timeout=20, context=ctx) as r:
                 print(f"{url}: {r.status}")
+                ok += r.status in (200, 202)
         except urllib.error.HTTPError as e:
             print(f"{url}: {e.code} {e.read().decode(errors='replace')[:200]}")
         except urllib.error.URLError as e:
             print(f"{url}: нет связи — {e.reason}")
-    print(f"отправлено адресов: {len(paths)}")
+    print(f"адресов: {len(paths)}, приняли: {ok} из {len(ENDPOINTS)}")
 
 
 if __name__ == "__main__":

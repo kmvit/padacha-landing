@@ -8,6 +8,16 @@ pult/.venv/bin/python tools/article.py            # все статьи
 pult/.venv/bin/python tools/article.py menyu-dlya-kofejni   # одну
 ```
 
+После выкатки на сервер сообщите поисковикам о новых страницах (IndexNow —
+Яндекс и Bing приходят за ними в течение суток):
+
+```bash
+python3 tools/indexnow.py --since HEAD~1      # всё, что поменялось в последнем коммите
+python3 tools/indexnow.py /blog/menyu-dlya-kofejni/
+```
+
+Если ругается на сертификат — запустите тем же `pult/.venv/bin/python`.
+
 Поля совпадают с моделью `Article` в `pult/content/models.py`, чтобы статьи
 можно было перенести в пульт без переписывания.
 
