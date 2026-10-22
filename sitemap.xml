@@ -56,7 +56,7 @@
   </url>
   <url>
     <loc>https://padacha.ru/blog/</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -80,7 +80,79 @@
   </url>
   <url>
     <loc>https://padacha.ru/blog/grafik-smen/</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/kak-vesti-uchet-v-kafe/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/programma-loyalnosti-dlya-kafe/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/menyu-dlya-kofejni/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/kak-sdelat-menyu-dlya-kafe/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/biznes-plan-kofejni/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/inventarizaciya-v-kafe/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/kassa-dlya-kofejni/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/lgota-nds-obshchepit/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/programma-proizvodstvennogo-kontrolya/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/skolko-stoit-iiko/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/summirovannyj-uchet-rabochego-vremeni/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://padacha.ru/blog/zhurnaly-obshchepita-sanpin/</loc>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

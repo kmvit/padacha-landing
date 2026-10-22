@@ -4,7 +4,22 @@ Disallow: /api/
 Disallow: /pult/
 Disallow: /shots/
 Disallow: /tools/
+Disallow: /content/
 Disallow: /404.html
 Disallow: /riso/
+Disallow: /home-classic.html
+
+# Яндекс: ссылки из Директа и соцсетей — та же страница, не дубли
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+Disallow: /pult/
+Disallow: /shots/
+Disallow: /tools/
+Disallow: /content/
+Disallow: /404.html
+Disallow: /riso/
+Disallow: /home-classic.html
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&ysclid&gclid&fbclid
 
 Sitemap: https://padacha.ru/sitemap.xml

@@ -345,6 +345,19 @@
     margin: 0;
   }
 
+  /* Что это за продукт — первой строкой заголовка: поисковик читает h1 целиком */
+  h1.disp .h1-pre {
+    display: block;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 14px;
+  }
+
   .lede { font-size: 16.5px; margin: 16px 0 0; max-width: 46ch; }
 
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 0; }
@@ -1267,7 +1280,7 @@
           <p class="kicker">— запуск занимает один вечер —</p>
         </div>
 
-        <h1 class="disp"><span class="ghost">Экранов —<i aria-hidden="true">Экранов —</i></span><br><span class="ghost">сколько нужно.<i aria-hidden="true">сколько нужно.</i></span></h1>
+        <h1 class="disp"><span class="h1-pre">Программа для кафе, кофейни и ресторана</span><span class="ghost">Экранов —<i aria-hidden="true">Экранов —</i></span><br><span class="ghost">сколько нужно.<i aria-hidden="true">сколько нужно.</i></span></h1>
         <p class="handnote">— а цена одна, за всё заведение —</p>
 
         <p class="lede">Заказы со стола или выдача по номеру в окно, экраны кухни и бара, склад, смены и зарплата. Открывается на планшете, который у вас уже есть: касса, пас, бар, кладовка.</p>
