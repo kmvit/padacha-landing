@@ -8,15 +8,29 @@ pult/.venv/bin/python tools/article.py            # все статьи
 pult/.venv/bin/python tools/article.py menyu-dlya-kofejni   # одну
 ```
 
-После выкатки на сервер сообщите поисковикам о новых страницах (IndexNow —
-Яндекс и Bing приходят за ними в течение суток):
+## Публикация по расписанию
+
+Статьи пишутся заранее, партией. У каждой — время выхода по Москве:
+`published: 2026-10-25 09:00`. Пока оно не наступило, генератор статью не
+собирает: её нет ни на сайте, ни в списке, ни в sitemap. Посмотреть такую
+статью локально можно предпросмотром — список и sitemap он не трогает:
 
 ```bash
-python3 tools/indexnow.py --since HEAD~1      # всё, что поменялось в последнем коммите
-python3 tools/indexnow.py /blog/menyu-dlya-kofejni/
+pult/.venv/bin/python tools/article.py --preview franshiza-kofejni
 ```
 
-Если ругается на сертификат — запустите тем же `pult/.venv/bin/python`.
+Готовую партию коммитим и выкатываем как обычно — `tools/publish.sh` на
+сервере (см. README в корне). Дальше cron в 9:05 и 15:05 сам пересобирает
+блог: у статей, чьё время пришло, появляются страница, карточка и строка в
+sitemap, и сразу уходит уведомление в IndexNow. Ритм — две статьи в день,
+слоты 09:00 и 15:00.
+
+Отправить адреса в IndexNow руками (если ругается на сертификат — тем же
+`pult/.venv/bin/python`):
+
+```bash
+python3 tools/indexnow.py /blog/menyu-dlya-kofejni/
+```
 
 Поля совпадают с моделью `Article` в `pult/content/models.py`, чтобы статьи
 можно было перенести в пульт без переписывания.

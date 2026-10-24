@@ -12,6 +12,11 @@
 
     pult/.venv/bin/python tools/article.py                 # все статьи
     pult/.venv/bin/python tools/article.py fudkost lgota   # только эти
+    pult/.venv/bin/python tools/article.py --preview slug  # статья из будущего,
+                                                           # без списка и sitemap
+
+Статья с published в будущем (`2026-10-25 09:00`, по Москве) не собирается:
+её выпускает tools/publish.sh по cron на сервере, когда время наступит.
 
 Markdown берётся тот же, что в пульте (pult/.venv), и с теми же правками
 результата, что в pult/content/markup.py: потом статьи переедут в базу
@@ -23,7 +28,8 @@ import html
 import json
 import re
 import sys
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 try:
@@ -40,6 +46,7 @@ SITE = "https://padacha.ru"
 OG_IMAGE = f"{SITE}/promo-poster.jpg"
 METRIKA = 112273830
 THEME_LINK = '<link rel="stylesheet" href="/theme-riso.css">'
+MSK = ZoneInfo("Europe/Moscow")
 REQUIRED = ("slug", "title", "description", "crumb", "lede", "published")
 
 # Метки в blog/index.html, между которыми живут собранные карточки.
@@ -79,6 +86,15 @@ def parse(path: Path) -> dict:
         if line.startswith("- "):
             href, name, note = (p.strip() for p in (line[2:].split("|") + ["", ""])[:3])
             meta["related"].append((href, name, note))
+
+    # Время публикации: «2026-10-25» или «2026-10-25 09:00» (Москва). Пока оно
+    # не наступило, статья не собирается — её выпускает cron на сервере.
+    when = re.fullmatch(r"(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?", meta["published"])
+    if not when:
+        raise ValueError(f"{path.name}: published — ГГГГ-ММ-ДД или ГГГГ-ММ-ДД ЧЧ:ММ")
+    meta["published"] = when.group(1)
+    meta["pub_at"] = datetime.fromisoformat(f"{when.group(1)}T{when.group(2) or '00:00'}")
+    meta["published_iso"] = f"{when.group(1)}T{when.group(2)}:00+03:00" if when.group(2) else when.group(1)
 
     for field, limit in (("title", 70), ("description", 170)):
         if len(meta[field]) > limit:
@@ -169,8 +185,8 @@ def jsonld(a: dict, url: str) -> str:
             "headline": a.get("headline") or one_line(a.get("h1") or a["title"]),
             "description": a["description"],
             "inLanguage": "ru",
-            "datePublished": a["published"],
-            "dateModified": a.get("updated") or a["published"],
+            "datePublished": a["published_iso"],
+            "dateModified": a.get("updated") or a["published_iso"],
             "image": a.get("image") or OG_IMAGE,
             "mainEntityOfPage": {"@type": "WebPage", "@id": url},
             "author": org,
@@ -263,8 +279,8 @@ def page(a: dict) -> str:
 <meta property="og:site_name" content="Падача">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:image" content="{image}">
-<meta property="article:published_time" content="{a["published"]}">
-<meta property="article:modified_time" content="{a.get("updated") or a["published"]}">
+<meta property="article:published_time" content="{a["published_iso"]}">
+<meta property="article:modified_time" content="{a.get("updated") or a["published_iso"]}">
 <meta name="twitter:card" content="summary_large_image">
 <title>{e(a["title"])}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -373,7 +389,7 @@ def update_index(articles: list[dict]) -> None:
     path = ROOT / "blog" / "index.html"
     src = path.read_text(encoding="utf-8")
     e = html.escape
-    fresh = sorted(articles, key=lambda a: (a["published"], a["slug"]), reverse=True)
+    fresh = sorted(articles, key=lambda a: (a["pub_at"], a["slug"]), reverse=True)
 
     cards = "\n".join(
         f"""        <a href="/blog/{a["slug"]}/">
@@ -401,7 +417,7 @@ def update_index(articles: list[dict]) -> None:
             "headline": one_line(a.get("h1") or a["title"]),
             "description": a.get("card") or a["description"],
             "url": f"{SITE}/blog/{a['slug']}/",
-            "datePublished": a["published"],
+            "datePublished": a["published_iso"],
             "author": {"@type": "Organization", "name": "Падача"},
         }
         for a in fresh
@@ -427,11 +443,15 @@ def update_sitemap(articles: list[dict]) -> None:
     path.write_text(src, encoding="utf-8")
 
 
-def main(only: list[str]) -> None:
+def main(only: list[str], preview: bool = False) -> None:
     articles = [parse(p) for p in sorted(SRC.glob("*.md")) if p.name != "README.md"]
     if not articles:
         sys.exit("в content/blog нет статей")
-    for a in articles:
+    now = datetime.now(MSK).replace(tzinfo=None)
+    due = [a for a in articles if a["pub_at"] <= now]
+    for a in sorted((a for a in articles if a["pub_at"] > now), key=lambda a: a["pub_at"]):
+        print(f"  запланировано: {a['slug']} — {a['pub_at']:%d.%m %H:%M}")
+    for a in (articles if preview else due):
         if only and a["slug"] not in only:
             continue
         out = ROOT / "blog" / a["slug"] / "index.html"
@@ -439,13 +459,19 @@ def main(only: list[str]) -> None:
         out.write_text(page(a), encoding="utf-8")
         words = len(plain(a["body"]).split())
         print(f"собрано: blog/{a['slug']}/  ({words} слов, вопросов {len(a['faq'])})")
-    # список и карта сайта — всегда по всем исходникам, иначе потеряются соседи
-    update_index(articles)
-    update_sitemap(articles)
-    print(f"обновлены blog/index.html и sitemap.xml: {len(articles)} статей из content/blog")
+    if preview:
+        print("предпросмотр: список статей и sitemap не тронуты")
+        return
+    # список и карта сайта — по всем вышедшим статьям, иначе потеряются соседи
+    update_index(due)
+    update_sitemap(due)
+    print(f"обновлены blog/index.html и sitemap.xml: {len(due)} статей из content/blog")
 
 
 if __name__ == "__main__":
-    if any(arg.startswith("-") for arg in sys.argv[1:]):
+    args = sys.argv[1:]
+    preview = "--preview" in args
+    args = [a for a in args if a != "--preview"]
+    if any(arg.startswith("-") for arg in args):
         sys.exit(__doc__)
-    main(sys.argv[1:])
+    main(args, preview)
