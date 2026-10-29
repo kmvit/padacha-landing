@@ -76,7 +76,7 @@ ssh -J vpn -p 49197 root@a318f7177847.vps.myjino.ru /opt/padacha/tools/publish.s
 Тот же скрипт стоит в cron на 9:05 и 15:05 по Москве — так выходят статьи,
 написанные заранее (`published: 2026-10-25 09:00` в content/blog/*.md).
 Лог — `/var/log/padacha-publish.log`. Для сборки на сервере отдельное окружение
-`/opt/padacha-build` (python + markdown), пульт его не касается.
+`/opt/padacha-build` (python + markdown).
 Перезапускать nginx не нужно — html не кэшируется.
 
 ### Что осталось до запуска

@@ -10,17 +10,16 @@
   2. blog/index.html — карточка в списке и запись в микроразметке Blog;
   3. sitemap.xml — адрес с датой изменения.
 
-    pult/.venv/bin/python tools/article.py                 # все статьи
-    pult/.venv/bin/python tools/article.py fudkost lgota   # только эти
-    pult/.venv/bin/python tools/article.py --preview slug  # статья из будущего,
+    python3 tools/article.py                 # все статьи
+    python3 tools/article.py fudkost lgota   # только эти
+    python3 tools/article.py --preview slug  # статья из будущего,
                                                            # без списка и sitemap
 
 Статья с published в будущем (`2026-10-25 09:00`, по Москве) не собирается:
 её выпускает tools/publish.sh по cron на сервере, когда время наступит.
 
-Markdown берётся тот же, что в пульте (pult/.venv), и с теми же правками
-результата, что в pult/content/markup.py: потом статьи переедут в базу
-без переписывания.
+Нужен пакет markdown: локально `pip install markdown`, на сервере — окружение
+/opt/padacha-build (его и зовёт tools/publish.sh).
 """
 from __future__ import annotations
 
@@ -35,7 +34,7 @@ from pathlib import Path
 try:
     import markdown as md
 except ImportError:  # pragma: no cover
-    sys.exit("нужен пакет markdown: запускайте через pult/.venv/bin/python")
+    sys.exit("нужен пакет markdown: pip install markdown (на сервере — /opt/padacha-build/bin/python)")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from header import footer_links, header  # noqa: E402

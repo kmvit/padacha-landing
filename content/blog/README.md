@@ -4,8 +4,8 @@
 карточку в `blog/index.html` и строку в `sitemap.xml` собирает скрипт:
 
 ```bash
-pult/.venv/bin/python tools/article.py            # все статьи
-pult/.venv/bin/python tools/article.py menyu-dlya-kofejni   # одну
+python3 tools/article.py            # все статьи
+python3 tools/article.py menyu-dlya-kofejni   # одну
 ```
 
 ## Публикация по расписанию
@@ -16,7 +16,7 @@ pult/.venv/bin/python tools/article.py menyu-dlya-kofejni   # одну
 статью локально можно предпросмотром — список и sitemap он не трогает:
 
 ```bash
-pult/.venv/bin/python tools/article.py --preview franshiza-kofejni
+python3 tools/article.py --preview franshiza-kofejni
 ```
 
 Готовую партию коммитим и выкатываем как обычно — `tools/publish.sh` на
@@ -25,15 +25,14 @@ pult/.venv/bin/python tools/article.py --preview franshiza-kofejni
 sitemap, и сразу уходит уведомление в IndexNow. Ритм — две статьи в день,
 слоты 09:00 и 15:00.
 
-Отправить адреса в IndexNow руками (если ругается на сертификат — тем же
-`pult/.venv/bin/python`):
+Отправить адреса в IndexNow руками:
 
 ```bash
 python3 tools/indexnow.py /blog/menyu-dlya-kofejni/
 ```
 
-Поля совпадают с моделью `Article` в `pult/content/models.py`, чтобы статьи
-можно было перенести в пульт без переписывания.
+Поля совпадают с моделью `Article` сайта на Django (репозиторий
+`kmvit/padacha`), туда статьи заливаются командой `import_articles`.
 
 ## Формат файла
 

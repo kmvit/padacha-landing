@@ -113,7 +113,7 @@ def main() -> None:
     # tools/theme.py; без неё меню отстанет после возврата темы.
     extra = [ROOT / "404.html", ROOT / "home-classic.html"]
     for page in sorted(ROOT.glob("**/index.html")) + [p for p in extra if p.exists()]:
-        if any(part in {"assistant", "pult", "direct", "node_modules", "tools"} for part in page.parts):
+        if any(part in {"assistant", "direct", "node_modules", "tools"} for part in page.parts):
             continue
         src = page.read_text(encoding="utf-8")
         out, n = re.subn(r"<header>.*?</header>", header(url_of(page)), src, count=1, flags=re.S)

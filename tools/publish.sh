@@ -15,7 +15,7 @@
 set -euo pipefail
 
 SITE=/opt/padacha
-PY=/opt/padacha-build/bin/python   # отдельное окружение с markdown, пульт не трогаем
+PY=/opt/padacha-build/bin/python   # отдельное окружение с markdown
 
 # Тело в функции: git pull может обновить этот файл, а bash читает его
 # по ходу выполнения — так скрипт целиком прочитан до первой команды.
