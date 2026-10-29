@@ -1,7 +1,20 @@
 /* Шапка сайта — одна на все страницы. Разметку раскладывает tools/header.py,
    поведение (выпадашка, бургер) — nav.js. Токены цветов берутся со страницы. */
+
+/* Рукописная «а» логотипа: только две буквы шрифта Caveat, а не весь шрифт */
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@700&text=%D0%B0%D0%90&display=swap");
+
 .nav { display:flex; align-items:center; gap:18px; height:68px; }
 .nav .brand { margin-right:auto; }
+
+/* Логотип «Опечатка»: «Подача», где «о» зачёркнута и сверху от руки
+   исправлена на «а». Шрифт, размер и цвет слова задаёт тема — здесь только
+   устройство знака, в em, чтобы он рос вместе со шрифтом. */
+.brand.lg { --lg-red:var(--poppy, var(--heat)); gap:0; line-height:1; }
+.lg-o { position:relative; display:inline-block; }
+.lg-old { opacity:.42; }
+.lg-strike { position:absolute; left:-12%; right:-12%; top:52%; height:.11em; border-radius:3px; background:var(--lg-red); transform:rotate(-30deg); pointer-events:none; }
+.lg-fix { position:absolute; left:50%; bottom:62%; transform:translateX(-46%) rotate(-10deg); font:700 1.25em/1 "Caveat", cursive; letter-spacing:0; text-transform:none; color:var(--lg-red); pointer-events:none; }
 
 .menu { display:flex; align-items:center; gap:4px; }
 .menu > a, .drop-btn {

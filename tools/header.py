@@ -80,7 +80,7 @@ def header(url: str) -> str:
     )
     return f"""<header>
   <div class="wrap nav">
-    <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
+    <a class="brand lg" href="/" aria-label="Падача">П<span class="lg-o" aria-hidden="true"><span class="lg-old">о</span><i class="lg-strike"></i><b class="lg-fix">а</b></span>дача</a>
     <nav class="menu" id="menu" aria-label="Разделы сайта">
 {drop(url, "features", "Возможности", FEATURES)}
 {drop(url, "formats", "Форматы", FORMATS)}

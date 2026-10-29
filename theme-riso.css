@@ -104,7 +104,10 @@ header {
   backdrop-filter: none;
   border-bottom: 2px solid var(--ink);
 }
-.brand { font-family: var(--riso-disp); font-weight: 800; letter-spacing: -.01em; text-transform: none; font-size: 1.35rem; color: var(--ready); }
+.brand { font-family: var(--riso-disp); font-weight: 900; letter-spacing: -.02em; text-transform: none; font-size: 1.35rem; color: var(--ink-dim); }
+/* .nav — чтобы перебить мобильный размер из nav.css */
+.nav .brand.lg { font-size: 1.8rem; }
+@media (max-width: 768px) { .nav .brand.lg { font-size: 1.45rem; } }
 .dot {
   width: 26px; height: 26px;
   flex: none;            /* в тесной шапке флекс иначе сплющит кружок в овал */

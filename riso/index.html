@@ -204,12 +204,12 @@
     display: inline-flex;
     align-items: center;
     font-family: var(--disp);
-    font-weight: 800;
-    font-size: 1.4rem;
-    letter-spacing: -.01em;
+    font-weight: 900;
+    font-size: 1.8rem;
+    letter-spacing: -.02em;
     text-transform: none;
     text-decoration: none;   /* page.css сюда не подключён — снимаем сами */
-    color: var(--jade);
+    color: var(--jade-deep);
     gap: 11px;
   }
   .dot {
@@ -1165,7 +1165,7 @@
     .wrap { padding-left: 18px; padding-right: 18px; }
     .sec { padding: 60px 0; }
     .hero { padding: 36px 0 60px; }
-    .brand { font-size: 1.15rem; }
+    .brand { font-size: 1.45rem; }
     .mosaic { grid-template-columns: repeat(3, 1fr); }
     .tile.hide-sm { display: none; }
     .shout { grid-template-columns: 1fr; gap: 14px; }
@@ -1220,7 +1220,7 @@
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Падача</a>
+    <a class="brand lg" href="/" aria-label="Падача">П<span class="lg-o" aria-hidden="true"><span class="lg-old">о</span><i class="lg-strike"></i><b class="lg-fix">а</b></span>дача</a>
     <nav class="menu" id="menu" aria-label="Разделы сайта">
       <div class="drop">
         <button class="drop-btn" type="button" aria-expanded="false" aria-controls="features">Возможности <svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5"/></svg></button>
